@@ -246,7 +246,14 @@ export default function VoiceTab() {
                 Connect
               </Button>
               {vc.status === 'connected' && (
-                <Button size="sm" className="flex-1 bg-studio-accent hover:bg-studio-accent/80" disabled={!vc.hasReferenceAudio}>
+                <Button size="sm" className="flex-1 bg-studio-accent hover:bg-studio-accent/80" disabled={!vc.hasReferenceAudio} onClick={async () => {
+                  try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 48000, echoCancellation: true } })
+                    await vc.startConversion(stream)
+                  } catch (err) {
+                    console.error('Failed to start streaming:', err)
+                  }
+                }}>
                   <Play className="w-3.5 h-3.5 mr-1.5" />
                   Start Streaming
                 </Button>

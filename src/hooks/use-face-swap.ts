@@ -255,10 +255,9 @@ export function useFaceSwap(): UseFaceSwapReturn {
           img.onload = () => {
             const canvas = canvasRef.current!
             const ctx = canvas.getContext('2d')!
-            // Clear and draw the swapped frame
+            // Clear and draw the swapped frame (contain-fit to match video CSS)
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            // Scale to fill the canvas while maintaining aspect ratio
-            const scale = Math.max(
+            const scale = Math.min(
               canvas.width / img.width,
               canvas.height / img.height
             )

@@ -67,13 +67,21 @@ export default function StudioShell() {
   // Build combined stream for recording
   const buildCombinedStream = useCallback(async () => {
     const tracks: MediaStreamTrack[] = []
-    if (videoRef.current?.srcObject) {
+    // When face swap is active, capture the canvas (with swapped faces) instead of raw video
+    if (
+      faceSwap.faceSwapEnabled &&
+      faceSwap.status === 'active' &&
+      faceSwapCanvasRef.current
+    ) {
+      const canvasStream = faceSwapCanvasRef.current.captureStream(30)
+      tracks.push(...canvasStream.getVideoTracks())
+    } else if (videoRef.current?.srcObject) {
       const vidStream = videoRef.current.srcObject as MediaStream
       tracks.push(...vidStream.getVideoTracks())
     }
     combinedStreamRef.current = new MediaStream(tracks)
     return combinedStreamRef.current
-  }, [])
+  }, [faceSwap.faceSwapEnabled, faceSwap.status])
 
   // Start session handler
   const handleStartSession = useCallback(async () => {
@@ -235,6 +243,15 @@ export default function StudioShell() {
             >
               <AlertCircle className="w-2.5 h-2.5" />
               No Provider
+            </Badge>
+          )}
+          {activeFaceProvider && (
+            <Badge
+              variant="outline"
+              className="text-[10px] px-2 py-0 gap-1 border-studio-warning/30 text-studio-warning hidden sm:flex"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-studio-warning animate-pulse-glow" />
+              {activeFaceProvider.name}
             </Badge>
           )}
           <SettingsDialog />
@@ -466,7 +483,7 @@ function SidePanelContent() {
 }
 
 function SettingsDialog() {
-  const { providers, setProviders, activeProvider, setActiveProvider, updateProviderStatus } = useStudioStore()
+  const { providers, setProviders, activeProvider, activeFaceProvider, setActiveProvider, setActiveFaceProvider, updateProviderStatus } = useStudioStore()
   const [name, setName] = useState('')
   const [type, setType] = useState<ProviderType>('seed-vc')
   const [endpoint, setEndpoint] = useState('')
@@ -610,17 +627,31 @@ function SettingsDialog() {
                     >
                       Test
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        'h-7 text-xs',
-                        activeProvider?.id === p.id && 'text-studio-accent'
-                      )}
-                      onClick={() => setActiveProvider(p)}
-                    >
-                      {activeProvider?.id === p.id ? 'Active' : 'Use'}
-                    </Button>
+                    {p.type === 'faceswap' ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          'h-7 text-xs',
+                          activeFaceProvider?.id === p.id && 'text-studio-accent'
+                        )}
+                        onClick={() => setActiveFaceProvider(p)}
+                      >
+                        {activeFaceProvider?.id === p.id ? 'Active' : 'Use'}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          'h-7 text-xs',
+                          activeProvider?.id === p.id && 'text-studio-accent'
+                        )}
+                        onClick={() => setActiveProvider(p)}
+                      >
+                        {activeProvider?.id === p.id ? 'Active' : 'Use'}
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}

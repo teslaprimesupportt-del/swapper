@@ -1,0 +1,685 @@
+   501→   501→   501→    const resampled = resampleAudio(mono, audioBuffer.sampleRate, targetRate)
+   502→   502→   502→
+   503→   503→   503→    // 10 second chunks at model sample rate
+   504→   504→   504→    const chunkDuration = 10 * targetRate
+   505→   505→   505→    const chunks: Float32Array[] = []
+   506→   506→   506→
+   507→   507→   507→    for (let start = 0; start < resampled.length; start += chunkDuration) {
+   508→   508→   508→      const end = Math.min(start + chunkDuration, resampled.length)
+   509→   509→   509→      const chunk = resampled.slice(start, end)
+   510→   510→   510→      chunks.push(chunk)
+   511→   511→   511→    }
+   512→   512→   512→
+   513→   513→   513→    // Process chunks sequentially (could parallelize for offline)
+   514→   514→   514→    const convertedChunks: Float32Array[] = []
+   515→   515→   515→    for (const chunk of chunks) {
+   516→   516→   516→      const converted = await this.convertChunk(chunk, targetRate)
+   517→   517→   517→      convertedChunks.push(converted)
+   518→   518→   518→    }
+   519→   519→   519→
+   520→   520→   520→    // Concatenate all converted chunks
+   521→   521→   521→    const totalLength = convertedChunks.reduce((sum, c) => sum + c.length, 0)
+   522→   522→   522→    const result = new Float32Array(totalLength)
+   523→   523→   523→    let offset = 0
+   524→   524→   524→    for (const chunk of convertedChunks) {
+   525→   525→   525→      result.set(chunk, offset)
+   526→   526→   526→      offset += chunk.length
+   527→   527→   527→    }
+   528→   528→   528→
+   529→   529→   529→    return result
+   530→   530→   530→  }
+   531→   531→   531→
+   532→   532→   532→  /**
+   533→   533→   533→   * Test the connection to the Gradio instance.
+   534→   534→   534→   * Returns true if the connection is healthy.
+   535→   535→   535→   */
+   536→   536→   536→  async testConnection(): Promise<{ success: boolean; latency: number; modelInfo?: string }> {
+   537→   537→   537→    const startTime = performance.now()
+   538→   538→   538→    try {
+   539→   539→   539→      const schema = await this.fetchAPISchema()
+   540→   540→   540→      const latency = Math.round(performance.now() - startTime)
+   541→   541→   541→
+   542→   542→   542→      // Try to identify which Seed-VC endpoints are available
+   543→   543→   543→      const endpoints = Object.keys(schema.named_endpoints || {})
+   544→   544→   544→      const modelInfo = endpoints.length > 0
+   545→   545→   545→        ? `Available endpoints: ${endpoints.join(', ')}`
+   546→   546→   546→        : 'No named endpoints found'
+   547→   547→   547→
+   548→   548→   548→      this.updateState({ status: 'connected', apiSchema: schema, latency })
+   549→   549→   549→      return { success: true, latency, modelInfo }
+   550→   550→   550→    } catch (err) {
+   551→   551→   551→      const latency = Math.round(performance.now() - startTime)
+   552→   552→   552→      const message = err instanceof Error ? err.message : 'Connection failed'
+   553→   553→   553→      this.updateState({ status: 'error', errorMessage: message })
+   554→   554→   554→      return { success: false, latency, modelInfo: message }
+   555→   555→   555→    }
+   556→   556→   556→  }
+   557→   557→   557→
+   558→   558→   558→  /**
+   559→   559→   559→   * Update the configuration (e.g. change model, diffusion steps, etc.)
+   560→   560→   560→   */
+   561→   561→   561→  updateConfig(partial: Partial<SeedVCConfig>): void {
+   562→   562→   562→    this.config = { ...this.config, ...partial }
+   563→   563→   563→  }
+   564→   564→   564→
+   565→   565→   565→  /**
+   566→   566→   566→   * Get current adapter state.
+   567→   567→   567→   */
+   568→   568→   568→  getState(): SeedVCState {
+   569→   569→   569→    return { ...this.state }
+   570→   570→   570→  }
+   571→   571→   571→
+   572→   572→   572→  /**
+   573→   573→   573→   * Get current configuration.
+   574→   574→   574→   */
+   575→   575→   575→  getConfig(): SeedVCConfig {
+   576→   576→   576→    return { ...this.config }
+   577→   577→   577→  }
+   578→   578→   578→
+   579→   579→   579→  /**
+   580→   580→   580→   * Subscribe to state changes.
+   581→   581→   581→   */
+   582→   582→   582→  onStateChange(callback: SeedVCEventCallback): () => void {
+   583→   583→   583→    this.listeners.add(callback)
+   584→   584→   584→    return () => this.listeners.delete(callback)
+   585→   585→   585→  }
+   586→   586→   586→
+   587→   587→   587→  // ─── Private Methods ─────────────────────────────────────────────────────
+   588→   588→   588→
+   589→   589→   589→  private updateState(partial: Partial<SeedVCState>): void {
+   590→   590→   590→    this.state = { ...this.state, ...partial }
+   591→   591→   591→    this.listeners.forEach((listener) => {
+   592→   592→   592→      try {
+   593→   593→   593→        listener(partial)
+   594→   594→   594→      } catch (e) {
+   595→   595→   595→        console.error('[SeedVCAdapter] listener error:', e)
+   596→   596→   596→      }
+   597→   597→   597→    })
+   598→   598→   598→  }
+   599→   599→   599→
+   600→   600→   600→  private getBaseUrl(): string {
+   601→   601→   601→    return this.config.endpoint.replace(/\/+$/, '')
+   602→   602→   602→  }
+   603→   603→   603→
+   604→   604→   604→  private async fetchAPISchema(): Promise<GradioAPISchema> {
+   605→   605→   605→    const url = `${this.getBaseUrl()}/info`
+   606→   606→   606→    const response = await fetch(url, {
+   607→   607→   607→      method: 'GET',
+   608→   608→   608→      headers: this.getHeaders(),
+   609→   609→   609→      signal: this.getSignal(),
+   610→   610→   610→    })
+   611→   611→   611→
+   612→   612→   612→    if (!response.ok) {
+   613→   613→   613→      throw new Error(`Gradio /info failed: ${response.status} ${response.statusText}`)
+   614→   614→   614→    }
+   615→   615→   615→
+   616→   616→   616→    const data = await response.json()
+   617→   617→   617→    return data as GradioAPISchema
+   618→   618→   618→  }
+   619→   619→   619→
+   620→   620→   620→  /**
+   621→   621→   621→   * Call the Gradio API to perform voice conversion.
+   622→   622→   622→   * 
+   623→   623→   623→   * Seed-VC's Gradio app typically exposes endpoints like:
+   624→   624→   624→   *   - /api/predict (legacy sync)
+   625→   625→   625→   *   - /call/{fn_name} (async)
+   626→   626→   626→   * 
+   627→   627→   627→   * We detect the available endpoint from the schema and use it.
+   628→   628→   628→   * The function sends source WAV + reference WAV and receives converted WAV.
+   629→   629→   629→   */
+   630→   630→   630→  private async callGradioAPI(
+   631→   631→   631→    sourceBase64: string,
+   632→   632→   632→    referenceBase64: string,
+   633→   633→   633→    sourceName: string,
+   634→   634→   634→    referenceName: string
+   635→   635→   635→  ): Promise<ArrayBuffer> {
+   636→   636→   636→    const baseUrl = this.getBaseUrl()
+   637→   637→   637→    const schema = this.state.apiSchema
+   638→   638→   638→
+   639→   639→   639→    // Strategy 1: Try named endpoints (Gradio 4.x /call/{name} pattern)
+   640→   640→   640→    if (schema?.named_endpoints) {
+   641→   641→   641→      const endpointNames = Object.keys(schema.named_endpoints)
+   642→   642→   642→      // Look for VC-related endpoints
+   643→   643→   643→      const vcEndpoint = endpointNames.find(n =>
+   644→   644→   644→        /vc|voice|convert|real.?time/i.test(n)
+   645→   645→   645→      ) || endpointNames[0]
+   646→   646→   646→
+   647→   647→   647→      if (vcEndpoint) {
+   648→   648→   648→        return await this.callNamedEndpoint(baseUrl, vcEndpoint, sourceBase64, referenceBase64)
+   649→   649→   649→      }
+   650→   650→   650→    }
+   651→   651→   651→
+   652→   652→   652→    // Strategy 2: Fall back to legacy /api/predict
+   653→   653→   653→    return await this.callLegacyPredict(baseUrl, sourceBase64, referenceBase64)
+   654→   654→   654→  }
+   655→   655→   655→
+   656→   656→   656→  /**
+   657→   657→   657→   * Call a named Gradio endpoint using the async /call/{name} pattern.
+   658→   658→   658→   * POST /call/{name} -> get event_id -> GET /call/{name}/{event_id} -> poll for result
+   659→   659→   659→   */
+   660→   660→   660→  private async callNamedEndpoint(
+   661→   661→   661→    baseUrl: string,
+   662→   662→   662→    endpointName: string,
+   663→   663→   663→    sourceBase64: string,
+   664→   664→   664→    referenceBase64: string
+   665→   665→   665→  ): Promise<ArrayBuffer> {
+   666→   666→   666→    const url = `${baseUrl}/call/${endpointName}`
+   667→   667→   667→
+   668→   668→   668→    // Step 1: Submit the job
+   669→   669→   669→    const submitResponse = await fetch(url, {
+   670→   670→   670→      method: 'POST',
+   671→   671→   671→      headers: {
+   672→   672→   672→        ...this.getHeaders(),
+   673→   673→   673→        'Content-Type': 'application/json',
+   674→   674→   674→      },
+   675→   675→   675→      body: JSON.stringify({
+   676→   676→   676→        // Gradio expects data as an array of parameter values
+   677→   677→   677→        // The order must match the endpoint's parameter list
+   678→   678→   678→        data: [
+   679→   679→   679→          { data: sourceBase64, meta: { _type: 'gradio.FileData' } },
+   680→   680→   680→          { data: referenceBase64, meta: { _type: 'gradio.FileData' } },
+   681→   681→   681→          // Additional params depend on the Gradio app's interface
+   682→   682→   682→          this.config.diffusionSteps,
+   683→   683→   683→          this.config.cfgRate,
+   684→   684→   684→          this.config.semiToneShift,
+   685→   685→   685→          this.config.lengthAdjust,
+   686→   686→   686→          this.config.f0Condition,
+   687→   687→   687→          this.config.autoF0Adjust,
+   688→   688→   688→        ],
+   689→   689→   689→      }),
+   690→   690→   690→      signal: this.getSignal(),
+   691→   691→   691→    })
+   692→   692→   692→
+   693→   693→   693→    if (!submitResponse.ok) {
+   694→   694→   694→      throw new Error(`Gradio submit failed: ${submitResponse.status} ${submitResponse.statusText}`)
+   695→   695→   695→    }
+   696→   696→   696→
+   697→   697→   697→    const submitData = await submitResponse.json()
+   698→   698→   698→    const eventId = submitData.event_id
+   699→   699→   699→
+   700→   700→   700→    if (!eventId) {
+   701→   701→   701→      // If no event_id, try treating response as direct result (sync mode)
+   702→   702→   702→      if (submitData.data) {
+   703→   703→   703→        return await this.extractAudioFromResponse(submitData, baseUrl)
+   704→   704→   704→      }
+   705→   705→   705→      throw new Error('Gradio did not return an event_id')
+   706→   706→   706→    }
+   707→   707→   707→
+   708→   708→   708→    // Step 2: Poll for the result
+   709→   709→   709→    return await this.pollForResult(baseUrl, endpointName, eventId)
+   710→   710→   710→  }
+   711→   711→   711→
+   712→   712→   712→  /**
+   713→   713→   713→   * Poll the Gradio event endpoint until the job completes.
+   714→   714→   714→   * Gradio sends SSE-style events: 'processing', 'complete', 'error'.
+   715→   715→   715→   */
+   716→   716→   716→  private async pollForResult(
+   717→   717→   717→    baseUrl: string,
+   718→   718→   718→    endpointName: string,
+   719→   719→   719→    eventId: string
+   720→   720→   720→  ): Promise<ArrayBuffer> {
+   721→   721→   721→    const url = `${baseUrl}/call/${endpointName}/${eventId}`
+   722→   722→   722→    const maxPollTime = 30_000 // 30 second timeout for polling
+   723→   723→   723→    const pollInterval = 200   // poll every 200ms
+   724→   724→   724→    const startTime = Date.now()
+   725→   725→   725→
+   726→   726→   726→    while (Date.now() - startTime < maxPollTime) {
+   727→   727→   727→      const response = await fetch(url, {
+   728→   728→   728→        method: 'GET',
+   729→   729→   729→        headers: this.getHeaders(),
+   730→   730→   730→        signal: this.getSignal(),
+   731→   731→   731→      })
+   732→   732→   732→
+   733→   733→   733→      if (!response.ok) {
+   734→   734→   734→        throw new Error(`Gradio poll failed: ${response.status}`)
+   735→   735→   735→      }
+   736→   736→   736→
+   737→   737→   737→      const event = await response.json()
+   738→   738→   738→
+   739→   739→   739→      switch (event.msg) {
+   740→   740→   740→        case 'processing':
+   741→   741→   741→          // Still working, continue polling
+   742→   742→   742→          break
+   743→   743→   743→
+   744→   744→   744→        case 'complete':
+   745→   745→   745→          return await this.extractAudioFromResponse(event.output, baseUrl)
+   746→   746→   746→
+   747→   747→   747→        case 'error':
+   748→   748→   748→          throw new Error(`Seed-VC inference error: ${event.output?.error || 'Unknown error'}`)
+   749→   749→   749→
+   750→   750→   750→        default:
+   751→   751→   751→          // Unknown message type, keep polling
+   752→   752→   752→          break
+   753→   753→   753→      }
+   754→   754→   754→
+   755→   755→   755→      await new Promise(resolve => setTimeout(resolve, pollInterval))
+   756→   756→   756→    }
+   757→   757→   757→
+   758→   758→   758→    throw new Error(`Seed-VC inference timed out after ${maxPollTime / 1000}s`)
+   759→   759→   759→  }
+   760→   760→   760→
+   761→   761→   761→  /**
+   762→   762→   762→   * Fall back to the legacy Gradio /api/predict sync endpoint.
+   763→   763→   763→   * Used when named endpoints are not available (older Gradio versions).
+   764→   764→   764→   */
+   765→   765→   765→  private async callLegacyPredict(
+   766→   766→   766→    baseUrl: string,
+   767→   767→   767→    sourceBase64: string,
+   768→   768→   768→    referenceBase64: string
+   769→   769→   769→  ): Promise<ArrayBuffer> {
+   770→   770→   770→    const url = `${baseUrl}/api/predict`
+   771→   771→   771→
+   772→   772→   772→    const response = await fetch(url, {
+   773→   773→   773→      method: 'POST',
+   774→   774→   774→      headers: {
+   775→   775→   775→        ...this.getHeaders(),
+   776→   776→   776→        'Content-Type': 'application/json',
+   777→   777→   777→      },
+   778→   778→   778→      body: JSON.stringify({
+   779→   779→   779→        // Legacy Gradio expects fn_index and data array
+   780→   780→   780→        fn_index: 0,
+   781→   781→   781→        data: [
+   782→   782→   782→          { data: sourceBase64, meta: { _type: 'gradio.FileData' } },
+   783→   783→   783→          { data: referenceBase64, meta: { _type: 'gradio.FileData' } },
+   784→   784→   784→        ],
+   785→   785→   785→      }),
+   786→   786→   786→      signal: this.getSignal(),
+   787→   787→   787→    })
+   788→   788→   788→
+   789→   789→   789→    if (!response.ok) {
+   790→   790→   790→      throw new Error(`Gradio /api/predict failed: ${response.status} ${response.statusText}`)
+   791→   791→   791→    }
+   792→   792→   792→
+   793→   793→   793→    const result = await response.json() as GradioPredictResponse
+   794→   794→   794→    return await this.extractAudioFromResponse(result, baseUrl)
+   795→   795→   795→  }
+   796→   796→   796→
+   797→   797→   797→  /**
+   798→   798→   798→   * Extract audio ArrayBuffer from a Gradio API response.
+   799→   799→   799→   * Gradio returns file info with a URL; we download the actual WAV data.
+   800→   800→   800→   */
+   801→   801→   801→  private async extractAudioFromResponse(
+   802→   802→   802→    response: { data?: unknown[]; output?: unknown[] },
+   803→   803→   803→    baseUrl: string
+   804→   804→   804→  ): Promise<ArrayBuffer> {
+   805→   805→   805→    const dataArray = response.data || response.output
+   806→   806→   806→    if (!dataArray || dataArray.length === 0) {
+   807→   807→   807→      throw new Error('Gradio returned empty data')
+   808→   808→   808→    }
+   809→   809→   809→
+   810→   810→   810→    const firstResult = dataArray[0]
+   811→   811→   811→
+   812→   812→   812→    // Case 1: Direct base64 data (some Gradio configs return inline data)
+   813→   813→   813→    if (typeof firstResult === 'string' && firstResult.startsWith('data:')) {
+   814→   814→   814→      const base64Data = firstResult.split(',')[1]
+   815→   815→   815→      if (base64Data) {
+   816→   816→   816→        return base64ToArrayBuffer(base64Data)
+   817→   817→   817→      }
+   818→   818→   818→    }
+   819→   819→   819→
+   820→   820→   820→    // Case 2: File URL (standard Gradio behavior)
+   821→   821→   821→    if (firstResult && typeof firstResult === 'object') {
+   822→   822→   822→      const fileInfo = firstResult as GradioFileInfo
+   823→   823→   823→      let fileUrl = fileInfo.url || ''
+   824→   824→   824→
+   825→   825→   825→      // Handle relative URLs
+   826→   826→   826→      if (fileUrl.startsWith('/')) {
+   827→   827→   827→        fileUrl = `${baseUrl}${fileUrl}`
+   828→   828→   828→      }
+   829→   829→   829→
+   830→   830→   830→      if (!fileUrl) {
+   831→   831→   831→        throw new Error('Gradio file response has no URL')
+   832→   832→   832→      }
+   833→   833→   833→
+   834→   834→   834→      const audioResponse = await fetch(fileUrl, {
+   835→   835→   835→        headers: this.getHeaders(),
+   836→   836→   836→        signal: this.getSignal(),
+   837→   837→   837→      })
+   838→   838→   838→
+   839→   839→   839→      if (!audioResponse.ok) {
+   840→   840→   840→        throw new Error(`Failed to download converted audio: ${audioResponse.status}`)
+   841→   841→   841→      }
+   842→   842→   842→
+   843→   843→   843→      return await audioResponse.arrayBuffer()
+   844→   844→   844→    }
+   845→   845→   845→
+   846→   846→   846→    throw new Error(`Unexpected Gradio response format: ${typeof firstResult}`)
+   847→   847→   847→  }
+   848→   848→   848→
+   849→   849→   849→  private getHeaders(): Record<string, string> {
+   850→   850→   850→    const headers: Record<string, string> = {
+   851→   851→   851→      'Accept': 'application/json',
+   852→   852→   852→    }
+   853→   853→   853→    if (this.config.apiKey) {
+   854→   854→   854→      headers['Authorization'] = `Bearer ${this.config.apiKey}`
+   855→   855→   855→    }
+   856→   856→   856→    return headers
+   857→   857→   857→  }
+   858→   858→   858→
+   859→   859→   859→  private getSignal(): AbortSignal {
+   860→   860→   860→    if (!this.abortController) {
+   861→   861→   861→      this.abortController = new AbortController()
+   862→   862→   862→    }
+   863→   863→   863→    return this.abortController.signal
+   864→   864→   864→  }
+   865→   865→   865→
+   866→   866→   866→  private cancelPendingRequests(): void {
+   867→   867→   867→    if (this.abortController) {
+   868→   868→   868→      this.abortController.abort()
+   869→   869→   869→      this.abortController = null
+   870→   870→   870→    }
+   871→   871→   871→    this.isProcessing = false
+   872→   872→   872→  }
+   873→   873→   873→}
+   874→   874→   874→
+   875→   875→   875→// ─── Real-Time Pipeline ─────────────────────────────────────────────────────
+   876→   876→   876→
+   877→   877→   877→/**
+   878→   878→   878→ * Configuration for the real-time audio processing pipeline.
+   879→   879→   879→ */
+   880→   880→   880→export interface RealtimePipelineConfig {
+   881→   881→   881→  /** Source audio sample rate (from browser mic, typically 48000) */
+   882→   882→   882→  sourceSampleRate: number
+   883→   883→   883→  /** Duration of each audio chunk in seconds (Seed-VC default: 0.18s) */
+   884→   884→   884→  chunkDuration: number
+   885→   885→   885→  /** Crossfade duration between chunks in seconds (Seed-VC default: 0.04s) */
+   886→   886→   886→  crossfadeDuration: number
+   887→   887→   887→  /** Extra left context in seconds (Seed-VC default: 2.5s) */
+   888→   888→   888→  leftContext: number
+   889→   889→   889→  /** Extra right context in seconds (Seed-VC default: 0.02s) */
+   890→   890→   890→  rightContext: number
+   891→   891→   891→  /** Whether to apply noise gate before sending chunks */
+   892→   892→   892→  noiseGate: boolean
+   893→   893→   893→  /** Noise gate threshold in dB (e.g. -40) */
+   894→   894→   894→  noiseGateThreshold: number
+   895→   895→   895→}
+   896→   896→   896→
+   897→   897→   897→const DEFAULT_PIPELINE_CONFIG: RealtimePipelineConfig = {
+   898→   898→   898→  sourceSampleRate: 48000,
+   899→   899→   899→  chunkDuration: 0.18,
+   900→   900→   900→  crossfadeDuration: 0.04,
+   901→   901→   901→  leftContext: 2.5,
+   902→   902→   902→  rightContext: 0.02,
+   903→   903→   903→  noiseGate: true,
+   904→   904→   904→  noiseGateThreshold: -40,
+   905→   905→   905→}
+   906→   906→   906→
+   907→   907→   907→/**
+   908→   908→   908→ * Seed-VC Real-Time Pipeline
+   909→   909→   909→ *
+   910→   910→   910→ * Manages the continuous audio stream:
+   911→   911→   911→ *   1. Captures chunks from the microphone via ScriptProcessorNode/AudioWorklet
+   912→   912→   912→ *   2. Maintains a rolling buffer with left/right context
+   913→   913→   913→ *   3. Sends chunks to SeedVCAdapter.convertChunk()
+   914→   914→   914→ *   4. Crossfades output chunks for smooth playback
+   915→   915→   915→ *
+   916→   916→   916→ * Usage:
+   917→   917→   917→ *   const pipeline = new SeedVCRealtimePipeline(adapter, audioContext, config)
+   918→   918→   918→ *   pipeline.start()
+   919→   919→   919→ *   // ... real-time conversion happens ...
+   920→   920→   920→ *   pipeline.stop()
+   921→   921→   921→ */
+   922→   922→   922→export class SeedVCRealtimePipeline {
+   923→   923→   923→  private adapter: SeedVCAdapter
+   924→   924→   924→  private audioContext: AudioContext
+   925→   925→   925→  private config: RealtimePipelineConfig
+   926→   926→   926→  private isRunning: boolean = false
+   927→   927→   927→
+   928→   928→   928→  // Audio nodes
+   929→   929→   929→  private sourceNode: MediaStreamAudioSourceNode | null = null
+   930→   930→   930→  private processorNode: ScriptProcessorNode | null = null
+   931→   931→   931→  private gainNode: GainNode | null = null
+   932→   932→   932→
+   933→   933→   933→  // Buffers
+   934→   934→   934→  private inputRingBuffer: Float32Array = new Float32Array(0)
+   935→   935→   935→  private readonly maxBufferSize: number
+   936→   936→   936→  private playbackQueue: Float32Array[] = []
+   937→   937→   937→  private isPlaying: boolean = false
+   938→   938→   938→
+   939→   939→   939→  // Callbacks
+   940→   940→   940→  private onAudioOutput: ((samples: Float32Array) => void) | null = null
+   941→   941→   941→  private onError: ((error: Error) => void) | null = null
+   942→   942→   942→
+   943→   943→   943→  constructor(
+   944→   944→   944→    adapter: SeedVCAdapter,
+   945→   945→   945→    audioContext: AudioContext,
+   946→   946→   946→    config: Partial<RealtimePipelineConfig> = {}
+   947→   947→   947→  ) {
+   948→   948→   948→    this.adapter = adapter
+   949→   949→   949→    this.audioContext = audioContext
+   950→   950→   950→    this.config = { ...DEFAULT_PIPELINE_CONFIG, ...config }
+   951→   951→   951→    // Max buffer = left context + right context + chunk, with 2x safety margin
+   952→   952→   952→    this.maxBufferSize = Math.ceil(
+   953→   953→   953→      (this.config.leftContext + this.config.rightContext + this.config.chunkDuration) * 2
+   954→   954→   954→      * this.config.sourceSampleRate
+   955→   955→   955→    )
+   956→   956→   956→  }
+   957→   957→   957→
+   958→   958→   958→  /**
+   959→   959→   959→   * Start the real-time conversion pipeline.
+   960→   960→   960→   * Connects to the microphone and begins processing audio chunks.
+   961→   961→   961→   */
+   962→   962→   962→  async start(stream: MediaStream): Promise<void> {
+   963→   963→   963→    if (this.isRunning) return
+   964→   964→   964→    this.isRunning = true
+   965→   965→   965→
+   966→   966→   966→    // Create audio nodes
+   967→   967→   967→    this.sourceNode = this.audioContext.createMediaStreamSource(stream)
+   968→   968→   968→    this.gainNode = this.audioContext.createGain()
+   969→   969→   969→    this.gainNode.gain.value = 1.0
+   970→   970→   970→
+   971→   971→   971→    // ScriptProcessorNode for capturing raw PCM (deprecated but universally supported)
+   972→   972→   972→    // Buffer size = chunk duration in samples
+   973→   973→   973→    const bufferSize = Math.ceil(
+   974→   974→   974→      this.config.chunkDuration * this.config.sourceSampleRate / 128
+   975→   975→   975→    ) * 128 // Round up to power-of-2 multiple
+   976→   976→   976→    this.processorNode = this.audioContext.createScriptProcessor(bufferSize, 1, 1)
+   977→   977→   977→
+   978→   978→   978→    this.processorNode.onaudioprocess = (event) => {
+   979→   979→   979→      if (!this.isRunning) return
+   980→   980→   980→      const inputData = event.inputBuffer.getChannelData(0)
+   981→   981→   981→      this.processInputChunk(inputData)
+   982→   982→   982→    }
+   983→   983→   983→
+   984→   984→   984→    // Connect: mic -> processor (for capture) -> gain -> destination (for monitoring)
+   985→   985→   985→    // We don't connect processor to gain to avoid feedback loop
+   986→   986→   986→    this.sourceNode.connect(this.processorNode)
+   987→   987→   987→    // processor is NOT connected to destination to prevent echo
+   988→   988→   988→  }
+   989→   989→   989→
+   990→   990→   990→  /**
+   991→   991→   991→   * Stop the real-time pipeline and release resources.
+   992→   992→   992→   */
+   993→   993→   993→  stop(): void {
+   994→   994→   994→    this.isRunning = false
+   995→   995→   995→
+   996→   996→   996→    if (this.processorNode) {
+   997→   997→   997→      this.processorNode.onaudioprocess = null
+   998→   998→   998→      this.processorNode.disconnect()
+   999→   999→   999→      this.processorNode = null
+  1000→  1000→  1000→    }
+  1001→  1001→  1001→    if (this.sourceNode) {
+  1002→  1002→  1002→      this.sourceNode.disconnect()
+  1003→  1003→  1003→      this.sourceNode = null
+  1004→  1004→  1004→    }
+  1005→  1005→  1005→    if (this.gainNode) {
+  1006→  1006→  1006→      this.gainNode.disconnect()
+  1007→  1007→  1007→      this.gainNode = null
+  1008→  1008→  1008→    }
+  1009→  1009→  1009→
+  1010→  1010→  1010→    this.inputRingBuffer = new Float32Array(0)
+  1011→  1011→  1011→    this.playbackQueue = []
+  1012→  1012→  1012→    this.isPlaying = false
+  1013→  1013→  1013→  }
+  1014→  1014→  1014→
+  1015→  1015→  1015→  /**
+  1016→  1016→  1016→   * Register a callback for converted audio output.
+  1017→  1017→  1017→   * The callback receives Float32Array samples ready for playback.
+  1018→  1018→  1018→   */
+  1019→  1019→  1019→  setOnAudioOutput(callback: (samples: Float32Array) => void): void {
+  1020→  1020→  1020→    this.onAudioOutput = callback
+  1021→  1021→  1021→  }
+  1022→  1022→  1022→
+  1023→  1023→  1023→  /**
+  1024→  1024→  1024→   * Register a callback for errors.
+  1025→  1025→  1025→   */
+  1026→  1026→  1026→  setOnError(callback: (error: Error) => void): void {
+  1027→  1027→  1027→    this.onError = callback
+  1028→  1028→  1028→  }
+  1029→  1029→  1029→
+  1030→  1030→  1030→  /**
+  1031→  1031→  1031→   * Play converted audio through the speakers.
+  1032→  1032→  1032→   * Creates a temporary AudioBufferSourceNode for each chunk.
+  1033→  1033→  1033→   */
+  1034→  1034→  1034→  playConvertedAudio(samples: Float32Array): void {
+  1035→  1035→  1035→    const sampleRate = this.config.sourceSampleRate
+  1036→  1036→  1036→    const audioBuffer = this.audioContext.createBuffer(1, samples.length, sampleRate)
+  1037→  1037→  1037→    audioBuffer.copyToChannel(samples as Float32Array<ArrayBuffer>, 0)
+  1038→  1038→  1038→
+  1039→  1039→  1039→    const source = this.audioContext.createBufferSource()
+  1040→  1040→  1040→    source.buffer = audioBuffer
+  1041→  1041→  1041→
+  1042→  1042→  1042→    const gainNode = this.audioContext.createGain()
+  1043→  1043→  1043→    gainNode.gain.value = 1.0
+  1044→  1044→  1044→
+  1045→  1045→  1045→    source.connect(gainNode)
+  1046→  1046→  1046→    gainNode.connect(this.audioContext.destination)
+  1047→  1047→  1047→    source.start()
+  1048→  1048→  1048→
+  1049→  1049→  1049→    source.onended = () => {
+  1050→  1050→  1050→      gainNode.disconnect()
+  1051→  1051→  1051→    }
+  1052→  1052→  1052→  }
+  1053→  1053→  1053→
+  1054→  1054→  1054→  /**
+  1055→  1055→  1055→   * Process an incoming chunk of audio from the microphone.
+  1056→  1056→  1056→   * Accumulates into ring buffer, extracts chunks with context, sends to adapter.
+  1057→  1057→  1057→   */
+  1058→  1058→  1058→  private processInputChunk(inputData: Float32Array): void {
+  1059→  1059→  1059→    // Append to ring buffer
+  1060→  1060→  1060→    const newBuffer = new Float32Array(this.inputRingBuffer.length + inputData.length)
+  1061→  1061→  1061→    newBuffer.set(this.inputRingBuffer)
+  1062→  1062→  1062→    newBuffer.set(inputData, this.inputRingBuffer.length)
+  1063→  1063→  1063→    this.inputRingBuffer = newBuffer
+  1064→  1064→  1064→
+  1065→  1065→  1065→    // Trim buffer if it exceeds max size
+  1066→  1066→  1066→    if (this.inputRingBuffer.length > this.maxBufferSize) {
+  1067→  1067→  1067→      const trimAmount = this.inputRingBuffer.length - this.maxBufferSize
+  1068→  1068→  1068→      this.inputRingBuffer = this.inputRingBuffer.slice(trimAmount)
+  1069→  1069→  1069→    }
+  1070→  1070→  1070→
+  1071→  1071→  1071→    // Check if we have enough audio for a chunk
+  1072→  1072→  1072→    const chunkSamples = Math.ceil(this.config.chunkDuration * this.config.sourceSampleRate)
+  1073→  1073→  1073→    const totalNeeded = chunkSamples
+  1074→  1074→  1074→      + Math.ceil(this.config.leftContext * this.config.sourceSampleRate)
+  1075→  1075→  1075→      + Math.ceil(this.config.rightContext * this.config.sourceSampleRate)
+  1076→  1076→  1076→
+  1077→  1077→  1077→    if (this.inputRingBuffer.length >= totalNeeded) {
+  1078→  1078→  1078→      // Extract the chunk with context
+  1079→  1079→  1079→      this.extractAndConvert(chunkSamples)
+  1080→  1080→  1080→    }
+  1081→  1081→  1081→  }
+  1082→  1082→  1082→
+  1083→  1083→  1083→  /**
+  1084→  1084→  1084→   * Extract a chunk from the ring buffer with left/right context
+  1085→  1085→  1085→   * and send it to the Seed-VC adapter for conversion.
+  1086→  1086→  1086→   */
+  1087→  1087→  1087→  private async extractAndConvert(chunkSamples: number): Promise<void> {
+  1088→  1088→  1088→    const leftCtxSamples = Math.ceil(this.config.leftContext * this.config.sourceSampleRate)
+  1089→  1089→  1089→    const rightCtxSamples = Math.ceil(this.config.rightContext * this.config.sourceSampleRate)
+  1090→  1090→  1090→
+  1091→  1091→  1091→    // The chunk is in the middle of the buffer
+  1092→  1092→  1092→    const leftStart = this.inputRingBuffer.length - leftCtxSamples - chunkSamples - rightCtxSamples
+  1093→  1093→  1093→    const chunkStart = leftStart + leftCtxSamples
+  1094→  1094→  1094→    const chunkEnd = chunkStart + chunkSamples
+  1095→  1095→  1095→
+  1096→  1096→  1096→    if (chunkStart < 0 || chunkEnd > this.inputRingBuffer.length) return
+  1097→  1097→  1097→
+  1098→  1098→  1098→    // Extract just the chunk portion for conversion
+  1099→  1099→  1099→    // (The adapter/referene audio handles the voice characteristics;
+  1100→  1100→  1100→    // context is managed by Seed-VC internally for streaming mode)
+  1101→  1101→  1101→    const chunk = this.inputRingBuffer.slice(chunkStart, chunkEnd)
+  1102→  1102→  1102→
+  1103→  1103→  1103→    // Noise gate check
+  1104→  1104→  1104→    if (this.config.noiseGate) {
+  1105→  1105→  1105→      const rms = this.calculateRMS(chunk)
+  1106→  1106→  1106→      const db = 20 * Math.log10(rms + 1e-10)
+  1107→  1107→  1107→      if (db < this.config.noiseGateThreshold) {
+  1108→  1108→  1108→        // Below noise gate, skip conversion but advance buffer
+  1109→  1109→  1109→        this.advanceBuffer(chunkSamples)
+  1110→  1110→  1110→        return
+  1111→  1111→  1111→      }
+  1112→  1112→  1112→    }
+  1113→  1113→  1113→
+  1114→  1114→  1114→    try {
+  1115→  1115→  1115→      // Send to adapter for conversion
+  1116→  1116→  1116→      const converted = await this.adapter.convertChunk(chunk, this.config.sourceSampleRate)
+  1117→  1117→  1117→
+  1118→  1118→  1118→      // Notify via callback
+  1119→  1119→  1119→      if (this.onAudioOutput) {
+  1120→  1120→  1120→        this.onAudioOutput(converted)
+  1121→  1121→  1121→      }
+  1122→  1122→  1122→
+  1123→  1123→  1123→      // Auto-play if no callback set
+  1124→  1124→  1124→      if (!this.onAudioOutput) {
+  1125→  1125→  1125→        this.playConvertedAudio(converted)
+  1126→  1126→  1126→      }
+  1127→  1127→  1127→
+  1128→  1128→  1128→      // Advance the buffer past this chunk
+  1129→  1129→  1129→      this.advanceBuffer(chunkSamples)
+  1130→  1130→  1130→    } catch (err) {
+  1131→  1131→  1131→      if (this.onError) {
+  1132→  1132→  1132→        this.onError(err instanceof Error ? err : new Error(String(err)))
+  1133→  1133→  1133→      } else {
+  1134→  1134→  1134→        console.error('[SeedVCRealtimePipeline] conversion error:', err)
+  1135→  1135→  1135→      }
+  1136→  1136→  1136→    }
+  1137→  1137→  1137→  }
+  1138→  1138→  1138→
+  1139→  1139→  1139→  /**
+  1140→  1140→  1140→   * Advance the ring buffer forward by the given number of samples.
+  1141→  1141→  1141→   */
+  1142→  1142→  1142→  private advanceBuffer(samples: number): void {
+  1143→  1143→  1143→    if (this.inputRingBuffer.length > samples) {
+  1144→  1144→  1144→      this.inputRingBuffer = this.inputRingBuffer.slice(samples)
+  1145→  1145→  1145→    } else {
+  1146→  1146→  1146→      this.inputRingBuffer = new Float32Array(0)
+  1147→  1147→  1147→    }
+  1148→  1148→  1148→  }
+  1149→  1149→  1149→
+  1150→  1150→  1150→  /**
+  1151→  1151→  1151→   * Calculate RMS (Root Mean Square) of audio samples.
+  1152→  1152→  1152→   */
+  1153→  1153→  1153→  private calculateRMS(samples: Float32Array): number {
+  1154→  1154→  1154→    let sum = 0
+  1155→  1155→  1155→    for (let i = 0; i < samples.length; i++) {
+  1156→  1156→  1156→      sum += samples[i] * samples[i]
+  1157→  1157→  1157→    }
+  1158→  1158→  1158→    return Math.sqrt(sum / samples.length)
+  1159→  1159→  1159→  }
+  1160→  1160→  1160→}
+  1161→  1161→  1161→
+  1162→  1162→  1162→// ─── Factory ────────────────────────────────────────────────────────────────
+  1163→  1163→  1163→
+  1164→  1164→  1164→/**
+  1165→  1165→  1165→ * Create a Seed-VC adapter from a studio store AIProviderConfig.
+  1166→  1166→  1166→ * This is the main entry point for the BYOK integration.
+  1167→  1167→  1167→ *
+  1168→  1168→  1168→ * @example
+  1169→  1169→  1169→ * ```ts
+  1170→  1170→  1170→ * const provider = useStudioStore(s => s.activeProvider) // { type: 'seed-vc', endpoint: 'https://xxx.gradio.live' }
+  1171→  1171→  1171→ * const adapter = createSeedVCAdapter(provider)
+  1172→  1172→  1172→ * await adapter.connect();
+  1173→  1173→  1173→ * ```
+  1174→  1174→  1174→ */
+  1175→  1175→  1175→export function createSeedVCAdapter(
+  1176→  1176→  1176→  provider: { endpoint: string; apiKey?: string },
+  1177→  1177→  1177→  config?: Partial<Omit<SeedVCConfig, 'endpoint' | 'apiKey'>>
+  1178→  1178→  1178→): SeedVCAdapter {
+  1179→  1179→  1179→  return new SeedVCAdapter({
+  1180→  1180→  1180→    endpoint: provider.endpoint,
+  1181→  1181→  1181→    apiKey: provider.apiKey,
+  1182→  1182→  1182→    ...config,
+  1183→  1183→  1183→  })
+  1184→  1184→  1184→}
+  1185→  1185→  1185→

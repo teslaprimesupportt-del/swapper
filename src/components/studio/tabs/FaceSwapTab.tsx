@@ -150,6 +150,13 @@ export default function FaceSwapTab() {
                   size="sm"
                   className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
                   disabled={!fs.hasReferenceFace}
+                  onClick={() => {
+                    const video = document.querySelector('video') as HTMLVideoElement | null
+                    const canvas = document.querySelector('canvas') as HTMLCanvasElement | null
+                    if (video && canvas) {
+                      fs.startSwap(video, canvas)
+                    }
+                  }}
                 >
                   <Play className="w-3.5 h-3.5 mr-1.5" />
                   Start Swap
