@@ -19,8 +19,8 @@ export default function ModelsTab() {
       <div className="p-3 rounded-lg border border-studio-warning/20 bg-studio-warning/5 space-y-2">
         <p className="text-xs font-medium text-studio-warning">Face Swap Setup</p>
         <ol className="text-[10px] text-studio-muted-foreground/70 space-y-1 list-decimal pl-3">
-          <li>Install git-xet: <code className="text-studio-accent">winget install git-xet</code></li>
-          <li>Clone the space: <code className="text-studio-accent">GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/spaces/V0pr0S/ComfyUI-Reactor-Fast-Face-Swap-CPU</code></li>
+          <li>Install git-xet: <a href="https://github.com/xetdata/xet-tools" target="_blank" rel="noopener noreferrer" className="text-studio-accent underline underline-offset-2">winget install git-xet</a></li>
+          <li>Clone the space: <a href="https://huggingface.co/spaces/V0pr0S/ComfyUI-Reactor-Fast-Face-Swap-CPU" target="_blank" rel="noopener noreferrer" className="text-studio-accent underline underline-offset-2 break-all">huggingface.co/spaces/V0pr0S/ComfyUI-Reactor-Fast-Face-Swap-CPU</a></li>
           <li>Run ComfyUI locally with ReActor node installed</li>
           <li>Add a Face Swap provider in Settings pointing to http://127.0.0.1:8188</li>
           <li>Upload or capture a reference face, then Start Swap</li>

@@ -423,9 +423,13 @@ export default function StudioShell() {
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               className="lg:hidden fixed inset-x-0 bottom-0 z-40 max-h-[70vh] bg-card/95 backdrop-blur-xl border-t border-studio-border/50 rounded-t-2xl"
             >
-              <div className="flex justify-center pt-2 pb-1">
+              <button
+                onClick={() => setMobileControlsOpen(false)}
+                className="flex justify-center pt-2 pb-1 w-full"
+                aria-label="Close panel"
+              >
                 <div className="w-10 h-1 rounded-full bg-studio-border/50" />
-              </div>
+              </button>
               <ScrollArea className="h-[calc(70vh-2rem)]">
                 <div className="p-4">
                   <SidePanelContent />
