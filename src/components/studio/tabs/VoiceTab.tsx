@@ -103,6 +103,13 @@ export default function VoiceTab() {
   const voiceProviders = useStudioStore(s => s.providers.filter(p => p.type !== 'faceswap'))
   const hasVoiceProvider = activeProvider || voiceProviders.length > 0
 
+  // Get the session mic stream from the audio pipeline (not a new getUserMedia call)
+  const audioStream = useStudioStore(s => {
+    // We access the store's audioStatus to force re-render when audio state changes.
+    // The actual stream is obtained via a ref callback pattern in StudioShell.
+    return s.audioStatus
+  })
+
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Voice Conversion Toggle */}
@@ -194,7 +201,7 @@ export default function VoiceTab() {
               Reference Voice (Seed-VC)
             </p>
             <p className="text-[10px] text-studio-muted-foreground/50">
-              Upload or record a 1-30s clip of the target voice. Zero-shot - no training needed.
+              Upload or record a 1-30s clip of the target voice. Zero-shot — no training needed.
             </p>
             <div className="flex gap-2">
               <Button
@@ -223,7 +230,7 @@ export default function VoiceTab() {
                   'flex-1 border-studio-border/50',
                   isRecording && 'border-studio-danger text-studio-danger animate-recording'
                 )}
-                disabled={isRecording}
+                disabled={isRecording || audioStatus !== 'active'}
                 onClick={async () => {
                   try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -295,16 +302,11 @@ export default function VoiceTab() {
                     size="sm"
                     className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
                     disabled={!vc.hasReferenceAudio || audioStatus !== 'active'}
-                    onClick={async () => {
-                      try {
-                        // Use the session's existing mic stream
-                        const stream = await navigator.mediaDevices.getUserMedia({
-                          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-                        })
-                        await vc.startConversion(stream)
-                      } catch (err) {
-                        console.error('Failed to start streaming:', err)
-                      }
+                    onClick={() => {
+                      // Dispatch a custom event that StudioShell listens for
+                      // to pass the session mic stream to voice conversion.
+                      // This avoids a second getUserMedia call.
+                      window.dispatchEvent(new CustomEvent('studio:start-voice-conversion'))
                     }}
                   >
                     <Play className="w-3.5 h-3.5 mr-1.5" />

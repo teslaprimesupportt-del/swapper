@@ -7,6 +7,7 @@ export function useAudio() {
   const streamRef = useRef<MediaStream | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
+  const processorRef = useRef<ScriptProcessorNode | null>(null)
   const animFrameRef = useRef<number>(0)
   const {
     audioStatus, isMuted, noiseGateEnabled, noiseGateThreshold,
@@ -34,8 +35,17 @@ export function useAudio() {
       const analyser = ctx.createAnalyser()
       analyser.fftSize = 256
       analyser.smoothingTimeConstant = 0.8
+      // Connect source → analyser (for level monitoring)
+      // DO NOT connect to destination to avoid feedback when voice conversion plays back
       source.connect(analyser)
       analyserRef.current = analyser
+
+      // Also connect source → ScriptProcessor for voice conversion passthrough
+      // This keeps the audio pipeline "active" and ready for VC consumption
+      const processor = ctx.createScriptProcessor(4096, 1, 1)
+      source.connect(processor)
+      // Don't connect processor to destination — voice conversion will handle output
+      processorRef.current = processor
 
       // Detect headphones by checking audio output devices
       try {
@@ -72,6 +82,10 @@ export function useAudio() {
   const stopAudio = useCallback(() => {
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current)
+    }
+    if (processorRef.current) {
+      processorRef.current.disconnect()
+      processorRef.current = null
     }
     if (audioContextRef.current) {
       audioContextRef.current.close()

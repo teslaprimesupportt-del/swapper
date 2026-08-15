@@ -84,6 +84,10 @@ export interface AIProviderConfig {
   apiKey: string
   status: ConnectionStatus
   lastTested?: string
+  // ComfyUI-specific options
+  faceRestoreModel?: string
+  faceDetectionModel?: string
+  customWorkflowJson?: string
 }
 
 export interface AudioLevels {

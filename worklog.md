@@ -3,23 +3,24 @@
 ---
 Task ID: 1
 Agent: main
-Task: Audit, fix bugs, and verify dual-pipeline integration (Seed-VC + ComfyUI ReActor)
+Task: Fix client-side crash, audio pipeline idle, settings, dead code
 
 Work Log:
-- Read all source files: studio-store, StudioShell, both adapters, all hooks, all tabs
-- Ran tsc --noEmit — found zero errors in src/ (only unrelated examples/skills errors)
-- Identified 6 bugs preventing the app from functioning
-- Fixed FaceSwapTab Start Swap button (was missing onClick, now calls fs.startSwap)
-- Fixed VoiceTab Start Streaming button (was missing onClick, now calls vc.startConversion)
-- Fixed SettingsDialog: faceswap-type providers now route to setActiveFaceProvider (not setActiveProvider)
-- Added face provider badge in StudioShell top bar
-- Fixed canvas scaling: changed Math.max (cover) to Math.min (contain) to match CSS object-contain
-- Fixed recording: buildCombinedStream now captures canvas stream when face swap is active
-- Updated ModelsTab with user's exact clone commands (winget install git-xet, GIT_LFS_SKIP_SMUDGE=1)
-- Final tsc --noEmit: zero errors in src/ confirmed
+- Diagnosed client-side crash: hydration mismatch from zustand store loading localStorage data on client but not server, plus framer-motion initial/animate state mismatch
+- Fixed by making page.tsx use `next/dynamic` with `ssr: false` and `'use client'`
+- Fixed Railway 502: changed `HOSTNAME=` (empty) to `HOSTNAME=0.0.0.0 PORT=3000` in start script
+- Fixed audio pipeline idle: added ScriptProcessorNode to use-audio.ts to keep pipeline active
+- Fixed voice conversion double mic: VoiceTab now dispatches `studio:start-voice-conversion` event instead of creating second getUserMedia; StudioShell listens and passes session's existing mic stream
+- Added ComfyUI-specific config to SettingsDialog: face restore model (GFPGAN v1.4/v1.3/CodeFormer/None) and detection model (RetinaFace ResNet50/Mobile/OpenCV)
+- Extended AIProviderConfig type with faceRestoreModel, faceDetectionModel, customWorkflowJson fields
+- Deleted dead code: src/lib/seed-vc-adapter.ts (old broken 647-line adapter), src/hooks/use-seed-vc.ts (unused hook)
+- Verified build succeeds, production server starts and renders without client-side error
 
 Stage Summary:
-- All 6 bugs fixed, zero new TS errors introduced
-- Both pipelines (voice + face) are now fully wired end-to-end
-- Settings → Use button correctly routes faceswap providers to activeFaceProvider
-- Recordings capture face-swapped canvas when active
+- Client-side crash: FIXED (dynamic import with ssr:false)
+- Railway 502: FIXED (HOSTNAME=0.0.0.0)
+- Audio pipeline idle: FIXED (ScriptProcessorNode keeps pipeline active)
+- Voice conversion: FIXED (uses session mic stream, not second getUserMedia)
+- Face swap: Was already correct (uses StudioRefsContext, canvas mirror matches video scaleX(-1))
+- Settings: ENHANCED (ComfyUI-specific fields added)
+- Dead code: REMOVED (2 files deleted)

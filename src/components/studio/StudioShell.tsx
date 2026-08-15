@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Video, VideoOff, Mic, MicOff, Settings, Circle, Square,
@@ -64,6 +64,22 @@ export default function StudioShell() {
   const vc = useVoiceConversion()
   const fs = useFaceSwap()
   useSessionTimer()
+
+  // Listen for voice conversion start requests from VoiceTab
+  // This passes the session's existing mic stream instead of creating a second getUserMedia
+  useEffect(() => {
+    const handleStartVC = async () => {
+      if (audioStream.current && vc.status === 'connected' && !vc.isStreaming) {
+        try {
+          await vc.startConversion(audioStream.current)
+        } catch (err) {
+          console.error('Failed to start voice conversion:', err)
+        }
+      }
+    }
+    window.addEventListener('studio:start-voice-conversion', handleStartVC)
+    return () => window.removeEventListener('studio:start-voice-conversion', handleStartVC)
+  }, [vc, audioStream])
 
   // Build combined stream for recording
   const buildCombinedStream = useCallback(async () => {
@@ -552,6 +568,8 @@ function SettingsDialog() {
   const [type, setType] = useState<ProviderType>('seed-vc')
   const [endpoint, setEndpoint] = useState('')
   const [apiKey, setApiKey] = useState('')
+  const [faceRestoreModel, setFaceRestoreModel] = useState('GFPGANv1.4')
+  const [faceDetectionModel, setFaceDetectionModel] = useState('retinaface_resnet50')
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const resetForm = () => {
@@ -559,22 +577,23 @@ function SettingsDialog() {
     setType('seed-vc')
     setEndpoint('')
     setApiKey('')
+    setFaceRestoreModel('GFPGANv1.4')
+    setFaceDetectionModel('retinaface_resnet50')
     setEditingId(null)
   }
 
   const addOrUpdateProvider = () => {
     if (!name || !endpoint) return
     if (editingId) {
-      // Update existing
       setProviders(providers.map(p =>
-        p.id === editingId ? { ...p, name, type, endpoint, apiKey } : p
+        p.id === editingId ? { ...p, name, type, endpoint, apiKey, faceRestoreModel: type === 'faceswap' ? faceRestoreModel : undefined, faceDetectionModel: type === 'faceswap' ? faceDetectionModel : undefined } : p
       ))
     } else {
-      // Add new
       const newProvider = {
         id: crypto.randomUUID(),
         name, type, endpoint, apiKey,
         status: 'disconnected' as const,
+        ...(type === 'faceswap' ? { faceRestoreModel, faceDetectionModel } : {}),
       }
       setProviders([...providers, newProvider])
     }
@@ -589,6 +608,8 @@ function SettingsDialog() {
     setType(p.type)
     setEndpoint(p.endpoint)
     setApiKey(p.apiKey)
+    setFaceRestoreModel(p.faceRestoreModel || 'GFPGANv1.4')
+    setFaceDetectionModel(p.faceDetectionModel || 'retinaface_resnet50')
   }
 
   const deleteProvider = (id: string) => {
@@ -678,13 +699,42 @@ function SettingsDialog() {
                 className="h-9 text-sm"
               />
               {type === 'faceswap' && (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <p className="text-[10px] text-studio-muted-foreground/60">
                     ComfyUI with ReActor node. Use the Colab notebook to set up a free GPU instance.
                   </p>
                   <p className="text-[10px] text-studio-muted-foreground/50">
-                    Workflow: POST /prompt → GET /history/:id → GET /view?filename=X
+                    API: POST /prompt → GET /history/:id → GET /view?filename=X
                   </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-studio-muted-foreground/60">Face Restore</p>
+                      <Select value={faceRestoreModel} onValueChange={setFaceRestoreModel}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="GFPGANv1.4">GFPGAN v1.4</SelectItem>
+                          <SelectItem value="GFPGANv1.3">GFPGAN v1.3</SelectItem>
+                          <SelectItem value="codeformer">CodeFormer</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-studio-muted-foreground/60">Detection Model</p>
+                      <Select value={faceDetectionModel} onValueChange={setFaceDetectionModel}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="retinaface_resnet50">RetinaFace ResNet50</SelectItem>
+                          <SelectItem value="retinaface_mobile0.25">RetinaFace Mobile (fast)</SelectItem>
+                          <SelectItem value="opencv">OpenCV (fastest)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
               )}
               {type === 'seed-vc' && (
