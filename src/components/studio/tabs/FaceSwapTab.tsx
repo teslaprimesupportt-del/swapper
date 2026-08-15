@@ -1,9 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Upload, Camera, Trash2, Play, Square, Link2, Unplug, User
+  Upload, Camera, Trash2, Play, Square, Link2, Unplug, User, Settings, AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -20,13 +20,32 @@ export default function FaceSwapTab() {
     activeFaceProvider,
     setFaceSwapEnabled,
     setFaceSwapFps,
+    setActiveFaceProvider,
+    setSettingsOpen,
     providers,
   } = useStudioStore()
   const fs = useFaceSwap()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Auto-select a faceswap-type provider if no active face provider
-  const faceProvider = activeFaceProvider || providers.find(p => p.type === 'faceswap') || null
+  // Find any faceswap-type provider in the list
+  const faceswapProvider = providers.find(p => p.type === 'faceswap') || null
+  // Use the active one, or fall back to any faceswap provider found
+  const faceProvider = activeFaceProvider || faceswapProvider
+
+  // Derive a clear status label for the UI
+  const pipelineLabel =
+    faceSwap.status === 'active'
+      ? 'swapping'
+      : fs.connectionStatus === 'connecting'
+        ? 'connecting...'
+        : fs.connectionStatus === 'connected'
+          ? 'connected'
+          : fs.connectionStatus === 'error'
+            ? 'error'
+            : 'off'
+
+  // No faceswap provider configured at all
+  const noProviderConfigured = !faceswapProvider && !activeFaceProvider
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -51,6 +70,28 @@ export default function FaceSwapTab() {
           exit={{ opacity: 0, height: 0 }}
           className="space-y-4"
         >
+          {/* No Provider Warning */}
+          {noProviderConfigured && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-studio-warning/10 border border-studio-warning/20">
+              <AlertCircle className="w-4 h-4 text-studio-warning mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-studio-warning">No ComfyUI provider</p>
+                <p className="text-[10px] text-studio-muted-foreground/60">
+                  Add a Face Swap (ComfyUI ReActor) provider in Settings first.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 mt-1 border-studio-warning/30 text-studio-warning"
+                  onClick={() => setSettingsOpen(true)}
+                >
+                  <Settings className="w-3 h-3 mr-1" />
+                  Open Settings
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Reference Face Section */}
           <div className="space-y-2">
             <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
@@ -126,93 +167,127 @@ export default function FaceSwapTab() {
           </div>
 
           {/* Connect / Swap Controls */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
-                ComfyUI Pipeline
-              </p>
-              <span className="text-[10px] text-studio-muted-foreground/50">
-                {faceSwap.status}
-              </span>
+          {!noProviderConfigured && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+                  ComfyUI Pipeline
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <div className={cn(
+                    'w-1.5 h-1.5 rounded-full',
+                    pipelineLabel === 'connected' || pipelineLabel === 'swapping'
+                      ? 'bg-studio-success'
+                      : pipelineLabel === 'error'
+                        ? 'bg-studio-danger'
+                        : pipelineLabel === 'connecting...'
+                          ? 'bg-studio-warning animate-pulse'
+                          : 'bg-studio-muted-foreground/30'
+                  )} />
+                  <span className="text-[10px] text-studio-muted-foreground/50">
+                    {pipelineLabel}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {fs.connectionStatus !== 'connected' && fs.connectionStatus !== 'connecting' && (
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    onClick={async () => {
+                      // Auto-assign as active face provider if not already
+                      if (!activeFaceProvider && faceProvider) {
+                        setActiveFaceProvider(faceProvider)
+                      }
+                      // Small delay so the store update propagates to the hook
+                      setTimeout(() => fs.connect(), 50)
+                    }}
+                  >
+                    <Link2 className="w-3.5 h-3.5 mr-1.5" />
+                    {fs.connectionStatus === 'error' ? 'Retry Connect' : 'Connect'}
+                  </Button>
+                )}
+                {fs.connectionStatus === 'connecting' && (
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    disabled
+                  >
+                    <Link2 className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
+                    Connecting...
+                  </Button>
+                )}
+                {fs.connectionStatus === 'connected' && faceSwap.status !== 'active' && (
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
+                    disabled={!fs.hasReferenceFace}
+                    onClick={() => {
+                      const video = document.querySelector('video') as HTMLVideoElement | null
+                      const canvas = document.querySelector('canvas') as HTMLCanvasElement | null
+                      if (video && canvas) {
+                        fs.startSwap(video, canvas)
+                      }
+                    }}
+                  >
+                    <Play className="w-3.5 h-3.5 mr-1.5" />
+                    Start Swap
+                  </Button>
+                )}
+                {faceSwap.status === 'active' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 border-studio-danger/50 text-studio-danger"
+                    onClick={() => fs.stopSwap()}
+                  >
+                    <Square className="w-3.5 h-3.5 mr-1.5" />
+                    Stop Swap
+                  </Button>
+                )}
+                {fs.connectionStatus === 'connected' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-studio-border/50 text-studio-muted-foreground/70"
+                    onClick={() => fs.disconnect()}
+                  >
+                    <Unplug className="w-3.5 h-3.5 mr-1.5" />
+                  </Button>
+                )}
+              </div>
+              {fs.errorMessage && (
+                <p className="text-[10px] text-studio-danger p-2 rounded bg-studio-danger/10">
+                  {fs.errorMessage}
+                </p>
+              )}
             </div>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                className="flex-1"
-                onClick={() => fs.connect()}
-                disabled={!faceProvider?.endpoint}
-              >
-                <Link2 className="w-3.5 h-3.5 mr-1.5" />
-                Connect
-              </Button>
-              {fs.connectionStatus === 'connected' && faceSwap.status !== 'active' && (
-                <Button
-                  size="sm"
-                  className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
-                  disabled={!fs.hasReferenceFace}
-                  onClick={() => {
-                    const video = document.querySelector('video') as HTMLVideoElement | null
-                    const canvas = document.querySelector('canvas') as HTMLCanvasElement | null
-                    if (video && canvas) {
-                      fs.startSwap(video, canvas)
-                    }
-                  }}
-                >
-                  <Play className="w-3.5 h-3.5 mr-1.5" />
-                  Start Swap
-                </Button>
-              )}
-              {faceSwap.status === 'active' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 border-studio-danger/50 text-studio-danger"
-                  onClick={() => fs.stopSwap()}
-                >
-                  <Square className="w-3.5 h-3.5 mr-1.5" />
-                  Stop Swap
-                </Button>
-              )}
-              {fs.connectionStatus === 'connected' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-studio-border/50 text-studio-muted-foreground/70"
-                  onClick={() => fs.disconnect()}
-                >
-                  <Unplug className="w-3.5 h-3.5 mr-1.5" />
-                </Button>
-              )}
-            </div>
-            {fs.errorMessage && (
-              <p className="text-[10px] text-studio-danger p-2 rounded bg-studio-danger/10">
-                {fs.errorMessage}
-              </p>
-            )}
-          </div>
+          )}
 
           {/* FPS Selector */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
-                Target FPS
-              </p>
+          {!noProviderConfigured && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+                  Target FPS
+                </p>
+              </div>
+              <Select
+                value={String(faceSwap.fps)}
+                onValueChange={(v) => setFaceSwapFps(Number(v) as FaceSwapFps)}
+              >
+                <SelectTrigger className="h-9 text-sm border-studio-border/50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 FPS (low power)</SelectItem>
+                  <SelectItem value="2">2 FPS</SelectItem>
+                  <SelectItem value="3">3 FPS (balanced)</SelectItem>
+                  <SelectItem value="5">5 FPS (high quality GPU)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select
-              value={String(faceSwap.fps)}
-              onValueChange={(v) => setFaceSwapFps(Number(v) as FaceSwapFps)}
-            >
-              <SelectTrigger className="h-9 text-sm border-studio-border/50">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 FPS (low power)</SelectItem>
-                <SelectItem value="2">2 FPS</SelectItem>
-                <SelectItem value="3">3 FPS (balanced)</SelectItem>
-                <SelectItem value="5">5 FPS (high quality GPU)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          )}
 
           {/* Stats Grid */}
           {faceSwap.status === 'active' && (
