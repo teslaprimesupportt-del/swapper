@@ -1,0 +1,8 @@
+# Railway / Nixpacks configuration for Next.js standalone + bun
+
+[phases.build]
+# Nixpacks detects bun.lock and uses bun for install automatically
+NIXPACKS_BUILD_CMD = "bun run build"
+
+[start]
+cmd = ".nixpacks/start.sh"
