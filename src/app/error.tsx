@@ -1,6 +1,6 @@
-'use client' 
+'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Error({
   error,
@@ -9,13 +9,17 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const [showStack, setShowStack] = useState(false)
+
   useEffect(() => {
     console.error('[Studio Error Boundary]', error)
   }, [error])
 
+  const stack = error.stack || ''
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="text-center space-y-4 max-w-sm">
+      <div className="text-center space-y-4 max-w-md w-full">
         <div
           className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center"
           style={{ background: 'linear-gradient(135deg, oklch(0.65 0.22 25), oklch(0.5 0.15 25))' }}
@@ -25,11 +29,26 @@ export default function Error({
           </svg>
         </div>
         <h2 className="text-xl font-bold">Something went wrong</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground break-all">
           {error.message || 'An unexpected error occurred in the studio.'}
         </p>
         {error.digest && (
           <p className="text-xs text-muted-foreground/50 font-mono">Error ID: {error.digest}</p>
+        )}
+        {stack && (
+          <div className="text-left">
+            <button
+              onClick={() => setShowStack(!showStack)}
+              className="text-xs text-muted-foreground/50 underline"
+            >
+              {showStack ? 'Hide' : 'Show'} stack trace
+            </button>
+            {showStack && (
+              <pre className="mt-2 p-3 rounded-lg bg-secondary/50 text-[10px] text-muted-foreground/70 overflow-auto max-h-60 whitespace-pre-wrap break-all font-mono">
+                {stack}
+              </pre>
+            )}
+          </div>
         )}
         <button
           onClick={reset}
