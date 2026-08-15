@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mic, Upload, Volume2, Link2, Unplug, Play } from 'lucide-react'
+import { Mic, Upload, Volume2, Link2, Unplug, Play, Settings, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -89,14 +89,19 @@ function VoicePresetCard({
 export default function VoiceTab() {
   const {
     activeVoicePreset, voicePresets, voicePitch, voiceConversionEnabled,
-    activeProvider,
+    activeProvider, audioStatus,
     setActiveVoicePreset, setVoicePitch, setVoiceConversionEnabled,
+    setSettingsOpen,
   } = useStudioStore()
   const vc = useVoiceConversion()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingTimer, setRecordingTimer] = useState(0)
   const recordingTimerRef = useRef<ReturnType<typeof setInterval>>(null)
+
+  // Only consider user-configured voice providers (not faceswap)
+  const voiceProviders = useStudioStore(s => s.providers.filter(p => p.type !== 'faceswap'))
+  const hasVoiceProvider = activeProvider || voiceProviders.length > 0
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -119,6 +124,28 @@ export default function VoiceTab() {
           exit={{ opacity: 0, height: 0 }}
           className="space-y-4"
         >
+          {/* No Voice Provider Warning */}
+          {!hasVoiceProvider && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-studio-warning/10 border border-studio-warning/20">
+              <AlertCircle className="w-4 h-4 text-studio-warning mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-studio-warning">No voice provider</p>
+                <p className="text-[10px] text-studio-muted-foreground/60">
+                  Add a Seed-VC provider in Settings first. Use the Colab notebook for a free GPU instance.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 mt-1 border-studio-warning/30 text-studio-warning"
+                  onClick={() => setSettingsOpen(true)}
+                >
+                  <Settings className="w-3 h-3 mr-1" />
+                  Open Settings
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Voice Presets */}
           <div className="space-y-2">
             <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
@@ -211,7 +238,7 @@ export default function VoiceTab() {
                         return t - 1
                       })
                     }, 1000)
-                    const blob = await vc.recordReference(stream, 5000)
+                    await vc.recordReference(stream, 5000)
                     stream.getTracks().forEach(t => t.stop())
                     setIsRecording(false)
                   } catch (err) {
@@ -233,54 +260,102 @@ export default function VoiceTab() {
           </div>
 
           {/* Connect / Stream Controls */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
-                Seed-VC Pipeline
-              </p>
-              <span className="text-[10px] text-studio-muted-foreground/50">{vc.status}</span>
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" className="flex-1" onClick={() => vc.connect()} disabled={!activeProvider?.endpoint}>
-                <Link2 className="w-3.5 h-3.5 mr-1.5" />
-                Connect
-              </Button>
-              {vc.status === 'connected' && (
-                <Button size="sm" className="flex-1 bg-studio-accent hover:bg-studio-accent/80" disabled={!vc.hasReferenceAudio} onClick={async () => {
-                  try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 48000, echoCancellation: true } })
-                    await vc.startConversion(stream)
-                  } catch (err) {
-                    console.error('Failed to start streaming:', err)
-                  }
-                }}>
-                  <Play className="w-3.5 h-3.5 mr-1.5" />
-                  Start Streaming
-                </Button>
-              )}
-              {vc.status === 'streaming' && (
-                <Button size="sm" variant="outline" className="flex-1 border-studio-danger/50 text-studio-danger" onClick={() => vc.stopConversion()}>
-                  <Unplug className="w-3.5 h-3.5 mr-1.5" />
-                  Stop
-                </Button>
-              )}
-            </div>
-            {vc.errorMessage && (
-              <p className="text-[10px] text-studio-danger p-2 rounded bg-studio-danger/10">{vc.errorMessage}</p>
-            )}
-            {vc.isStreaming && (
-              <div className="grid grid-cols-2 gap-2 text-center">
-                <div className="p-2 rounded-lg bg-secondary/50">
-                  <p className="text-lg font-mono text-studio-accent">{vc.latencyMs}</p>
-                  <p className="text-[10px] text-studio-muted-foreground/50">Latency (ms)</p>
-                </div>
-                <div className="p-2 rounded-lg bg-secondary/50">
-                  <p className="text-lg font-mono text-studio-accent">{vc.chunksProcessed}</p>
-                  <p className="text-[10px] text-studio-muted-foreground/50">Chunks</p>
-                </div>
+          {hasVoiceProvider && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+                  Seed-VC Pipeline
+                </p>
+                <span className="text-[10px] text-studio-muted-foreground/50">{vc.status}</span>
               </div>
-            )}
-          </div>
+              <div className="flex gap-2">
+                {vc.status !== 'connected' && vc.status !== 'connecting' && vc.status !== 'streaming' && (
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => vc.connect()}
+                    disabled={!activeProvider?.endpoint}
+                  >
+                    <Link2 className="w-3.5 h-3.5 mr-1.5" />
+                    {vc.status === 'error' ? 'Retry Connect' : 'Connect'}
+                  </Button>
+                )}
+                {vc.status === 'connecting' && (
+                  <Button
+                    size="sm"
+                    className="flex-1"
+                    disabled
+                  >
+                    <Link2 className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
+                    Connecting...
+                  </Button>
+                )}
+                {vc.status === 'connected' && !vc.isStreaming && (
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
+                    disabled={!vc.hasReferenceAudio || audioStatus !== 'active'}
+                    onClick={async () => {
+                      try {
+                        // Use the session's existing mic stream
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+                        })
+                        await vc.startConversion(stream)
+                      } catch (err) {
+                        console.error('Failed to start streaming:', err)
+                      }
+                    }}
+                  >
+                    <Play className="w-3.5 h-3.5 mr-1.5" />
+                    Start Streaming
+                    {audioStatus !== 'active' && ' (start session first)'}
+                  </Button>
+                )}
+                {vc.isStreaming && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 border-studio-danger/50 text-studio-danger"
+                    onClick={() => vc.stopConversion()}
+                  >
+                    <Unplug className="w-3.5 h-3.5 mr-1.5" />
+                    Stop
+                  </Button>
+                )}
+                {(vc.status === 'connected' || vc.status === 'streaming') && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-studio-border/50 text-studio-muted-foreground/70"
+                    onClick={() => vc.disconnect()}
+                  >
+                    <Unplug className="w-3.5 h-3.5 mr-1.5" />
+                  </Button>
+                )}
+              </div>
+              {!activeProvider?.endpoint && hasVoiceProvider && (
+                <p className="text-[10px] text-studio-warning p-2 rounded bg-studio-warning/10">
+                  Select a voice provider in Settings and click "Use" first.
+                </p>
+              )}
+              {vc.errorMessage && (
+                <p className="text-[10px] text-studio-danger p-2 rounded bg-studio-danger/10">{vc.errorMessage}</p>
+              )}
+              {vc.isStreaming && (
+                <div className="grid grid-cols-2 gap-2 text-center">
+                  <div className="p-2 rounded-lg bg-secondary/50">
+                    <p className="text-lg font-mono text-studio-accent">{vc.latencyMs}</p>
+                    <p className="text-[10px] text-studio-muted-foreground/50">Latency (ms)</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-secondary/50">
+                    <p className="text-lg font-mono text-studio-accent">{vc.chunksProcessed}</p>
+                    <p className="text-[10px] text-studio-muted-foreground/50">Chunks</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </motion.div>
       )}
     </div>

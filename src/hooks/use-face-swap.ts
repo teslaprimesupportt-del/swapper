@@ -304,12 +304,16 @@ export function useFaceSwap(): UseFaceSwapReturn {
         try {
           const resultBlob = await adapter.swapFrame(videoRef.current)
 
-          // Draw the result onto the canvas
+          // Draw the result onto the canvas (mirrored to match the CSS-mirrored video)
           const img = new Image()
           img.onload = () => {
             const canvas = canvasRef.current!
             const ctx = canvas.getContext('2d')!
             ctx.clearRect(0, 0, canvas.width, canvas.height)
+            // Mirror horizontally to match the video's scaleX(-1)
+            ctx.save()
+            ctx.translate(canvas.width, 0)
+            ctx.scale(-1, 1)
             const scale = Math.min(
               canvas.width / img.width,
               canvas.height / img.height
@@ -317,6 +321,7 @@ export function useFaceSwap(): UseFaceSwapReturn {
             const x = (canvas.width - img.width * scale) / 2
             const y = (canvas.height - img.height * scale) / 2
             ctx.drawImage(img, x, y, img.width * scale, img.height * scale)
+            ctx.restore()
             URL.revokeObjectURL(img.src)
           }
           img.src = URL.createObjectURL(resultBlob)

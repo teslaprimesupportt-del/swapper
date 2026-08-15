@@ -11,6 +11,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select'
 import { useFaceSwap } from '@/hooks/use-face-swap'
+import { useStudioRefs } from '@/contexts/studio-refs-context'
 import { useStudioStore, type FaceSwapFps } from '@/stores/studio-store'
 import { cn } from '@/lib/utils'
 
@@ -26,10 +27,11 @@ export default function FaceSwapTab() {
   } = useStudioStore()
   const fs = useFaceSwap()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { videoRef, faceSwapCanvasRef } = useStudioRefs()
 
-  // Find any faceswap-type provider in the list
-  const faceswapProvider = providers.find(p => p.type === 'faceswap') || null
-  // Use the active one, or fall back to any faceswap provider found
+  // Only consider REAL user-configured faceswap providers (not sandbox)
+  const userFaceswapProviders = providers.filter(p => p.type === 'faceswap' && p.id !== 'sandbox-faceswap')
+  const faceswapProvider = userFaceswapProviders[0] || null
   const faceProvider = activeFaceProvider || faceswapProvider
 
   // Derive a clear status label for the UI
@@ -44,7 +46,6 @@ export default function FaceSwapTab() {
             ? 'error'
             : 'off'
 
-  // No faceswap provider configured at all
   const noProviderConfigured = !faceswapProvider && !activeFaceProvider
 
   return (
@@ -125,8 +126,8 @@ export default function FaceSwapTab() {
                 size="sm"
                 className="flex-1 border-studio-border/50"
                 onClick={() => {
-                  const video = document.querySelector('video') as HTMLVideoElement | null
-                  if (video) fs.setReferenceFromVideo(video)
+                  const video = videoRef.current
+                  if (video && video.readyState >= 2) fs.setReferenceFromVideo(video)
                 }}
               >
                 <Camera className="w-3.5 h-3.5 mr-1.5" />
@@ -195,11 +196,9 @@ export default function FaceSwapTab() {
                     size="sm"
                     className="flex-1"
                     onClick={async () => {
-                      // Auto-assign as active face provider if not already
                       if (!activeFaceProvider && faceProvider) {
                         setActiveFaceProvider(faceProvider)
                       }
-                      // Small delay so the store update propagates to the hook
                       setTimeout(() => fs.connect(), 50)
                     }}
                   >
@@ -223,8 +222,8 @@ export default function FaceSwapTab() {
                     className="flex-1 bg-studio-accent hover:bg-studio-accent/80"
                     disabled={!fs.hasReferenceFace}
                     onClick={() => {
-                      const video = document.querySelector('video') as HTMLVideoElement | null
-                      const canvas = document.querySelector('canvas') as HTMLCanvasElement | null
+                      const video = videoRef.current
+                      const canvas = faceSwapCanvasRef.current
                       if (video && canvas) {
                         fs.startSwap(video, canvas)
                       }

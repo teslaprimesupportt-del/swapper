@@ -31,6 +31,7 @@ import VoiceTab from '@/components/studio/tabs/VoiceTab'
 import AudioTab from '@/components/studio/tabs/AudioTab'
 import FaceSwapTab from '@/components/studio/tabs/FaceSwapTab'
 import ModelsTab from '@/components/studio/tabs/ModelsTab'
+import { StudioRefsContext } from '@/contexts/studio-refs-context'
 
 function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600)
@@ -199,7 +200,10 @@ export default function StudioShell() {
   }
 
   // ─── ACTIVE STUDIO ───────────────────────────
+  const refsValue = { videoRef, faceSwapCanvasRef }
+
   return (
+    <StudioRefsContext.Provider value={refsValue}>
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Bar */}
       <header className="h-12 border-b border-studio-border/50 flex items-center justify-between px-3 md:px-4 bg-card/50 backdrop-blur-sm shrink-0 z-50">
@@ -285,7 +289,6 @@ export default function StudioShell() {
                     ? 'opacity-100 z-10'
                     : 'opacity-0 z-0 pointer-events-none'
                 )}
-                style={{ transform: 'scaleX(-1)' }}
               />
             </>
           ) : cameraStatus === 'requesting' ? (
@@ -496,6 +499,7 @@ export default function StudioShell() {
         </AnimatePresence>
       </main>
     </div>
+    </StudioRefsContext.Provider>
   )
 }
 
@@ -543,23 +547,54 @@ function SidePanelContent() {
 }
 
 function SettingsDialog() {
-  const { providers, setProviders, activeProvider, activeFaceProvider, setActiveProvider, setActiveFaceProvider, updateProviderStatus } = useStudioStore()
+  const { providers, setProviders, activeProvider, activeFaceProvider, setActiveProvider, setActiveFaceProvider, updateProviderStatus, isSettingsOpen, setSettingsOpen } = useStudioStore()
   const [name, setName] = useState('')
   const [type, setType] = useState<ProviderType>('seed-vc')
   const [endpoint, setEndpoint] = useState('')
   const [apiKey, setApiKey] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
 
-  const addProvider = () => {
-    if (!name || !endpoint) return
-    const newProvider = {
-      id: crypto.randomUUID(),
-      name, type, endpoint, apiKey,
-      status: 'disconnected' as const,
-    }
-    setProviders([...providers, newProvider])
+  const resetForm = () => {
     setName('')
+    setType('seed-vc')
     setEndpoint('')
     setApiKey('')
+    setEditingId(null)
+  }
+
+  const addOrUpdateProvider = () => {
+    if (!name || !endpoint) return
+    if (editingId) {
+      // Update existing
+      setProviders(providers.map(p =>
+        p.id === editingId ? { ...p, name, type, endpoint, apiKey } : p
+      ))
+    } else {
+      // Add new
+      const newProvider = {
+        id: crypto.randomUUID(),
+        name, type, endpoint, apiKey,
+        status: 'disconnected' as const,
+      }
+      setProviders([...providers, newProvider])
+    }
+    resetForm()
+  }
+
+  const editProvider = (id: string) => {
+    const p = providers.find(x => x.id === id)
+    if (!p) return
+    setEditingId(id)
+    setName(p.name)
+    setType(p.type)
+    setEndpoint(p.endpoint)
+    setApiKey(p.apiKey)
+  }
+
+  const deleteProvider = (id: string) => {
+    setProviders(providers.filter(p => p.id !== id))
+    if (activeProvider?.id === id) setActiveProvider(null)
+    if (activeFaceProvider?.id === id) setActiveFaceProvider(null)
   }
 
   const testProvider = async (id: string) => {
@@ -581,8 +616,14 @@ function SettingsDialog() {
     }
   }
 
+  const typeHint = type === 'faceswap'
+    ? 'Point to a ComfyUI instance with ReActor installed (e.g. https://xxx.trycloudflare.com or http://127.0.0.1:8188)'
+    : type === 'seed-vc'
+      ? 'Point to a Seed-VC Gradio instance (e.g. https://xxxxx.gradio.live)'
+      : 'Enter the API endpoint URL for this provider'
+
   return (
-    <Dialog>
+    <Dialog open={isSettingsOpen} onOpenChange={(open) => setSettingsOpen(open)}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="w-8 h-8">
           <Settings className="w-4 h-4" />
@@ -597,10 +638,10 @@ function SettingsDialog() {
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
-          {/* Add Provider Form */}
+          {/* Add / Edit Provider Form */}
           <div className="space-y-3 p-3 rounded-lg border border-studio-border/30 bg-secondary/30">
             <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
-              Add Provider
+              {editingId ? 'Edit Provider' : 'Add Provider'}
             </p>
             <div className="grid gap-2">
               <Input
@@ -614,17 +655,17 @@ function SettingsDialog() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="seed-vc">Seed-VC (Zero-Shot VC) - Recommended</SelectItem>
+                  <SelectItem value="seed-vc">Seed-VC (Zero-Shot VC) - Voice</SelectItem>
                   <SelectItem value="rvc">RVC (Voice Conversion)</SelectItem>
                   <SelectItem value="openvoice">OpenVoice (Voice Clone)</SelectItem>
                   <SelectItem value="liveportrait">LivePortrait (Face)</SelectItem>
-                  <SelectItem value="faceswap">Face Swap (ComfyUI ReActor)</SelectItem>
+                  <SelectItem value="faceswap">Face Swap (ComfyUI ReActor) - Face</SelectItem>
                   <SelectItem value="wav2lip">Wav2Lip (Lip Sync)</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
               <Input
-                placeholder="e.g. https://xxxxx.gradio.live or http://127.0.0.1:8188"
+                placeholder={typeHint}
                 value={endpoint}
                 onChange={(e) => setEndpoint(e.target.value)}
                 className="h-9 text-sm"
@@ -637,14 +678,35 @@ function SettingsDialog() {
                 className="h-9 text-sm"
               />
               {type === 'faceswap' && (
-                <p className="text-[10px] text-studio-muted-foreground/60">
-                  Face Swap providers should point to a ComfyUI instance with ReActor installed
-                  (e.g. http://127.0.0.1:8188). Clone the HuggingFace space and run locally.
-                </p>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-studio-muted-foreground/60">
+                    ComfyUI with ReActor node. Use the Colab notebook to set up a free GPU instance.
+                  </p>
+                  <p className="text-[10px] text-studio-muted-foreground/50">
+                    Workflow: POST /prompt → GET /history/:id → GET /view?filename=X
+                  </p>
+                </div>
               )}
-              <Button onClick={addProvider} size="sm" className="w-full" disabled={!name || !endpoint}>
-                Add Provider
-              </Button>
+              {type === 'seed-vc' && (
+                <div className="space-y-1">
+                  <p className="text-[10px] text-studio-muted-foreground/60">
+                    Seed-VC zero-shot voice conversion. No training needed — upload a 1-30s reference clip.
+                  </p>
+                  <p className="text-[10px] text-studio-muted-foreground/50">
+                    API: GET /info → POST /call/{fn} → GET /call/{fn}/{event_id}
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Button onClick={addOrUpdateProvider} size="sm" className="flex-1" disabled={!name || !endpoint}>
+                  {editingId ? 'Save Changes' : 'Add Provider'}
+                </Button>
+                {editingId && (
+                  <Button onClick={resetForm} variant="outline" size="sm" className="border-studio-border/50">
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -659,7 +721,7 @@ function SettingsDialog() {
                   key={p.id}
                   className={cn(
                     'flex items-center justify-between p-3 rounded-lg border transition-colors',
-                    activeProvider?.id === p.id
+                    (activeProvider?.id === p.id || activeFaceProvider?.id === p.id)
                       ? 'border-studio-accent/50 bg-studio-accent/5'
                       : 'border-studio-border/30 bg-secondary/30'
                   )}
@@ -673,11 +735,15 @@ function SettingsDialog() {
                       'bg-studio-muted-foreground/30'
                     )} />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{p.name}</p>
-                      <p className="text-[10px] text-studio-muted-foreground/50 truncate">{p.type} · {p.endpoint}</p>
+                      <p className="text-sm font-medium truncate">
+                        {p.name}
+                        {p.type === 'faceswap' && ' (Face)'}
+                        {p.type === 'seed-vc' && ' (Voice)'}
+                      </p>
+                      <p className="text-[10px] text-studio-muted-foreground/50 truncate">{p.endpoint}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -686,6 +752,14 @@ function SettingsDialog() {
                       disabled={p.status === 'connecting'}
                     >
                       Test
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => p.id && editProvider(p.id)}
+                    >
+                      Edit
                     </Button>
                     {p.type === 'faceswap' ? (
                       <Button
@@ -712,6 +786,14 @@ function SettingsDialog() {
                         {activeProvider?.id === p.id ? 'Active' : 'Use'}
                       </Button>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-studio-danger hover:text-studio-danger"
+                      onClick={() => p.id && deleteProvider(p.id)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
                   </div>
                 </div>
               ))}

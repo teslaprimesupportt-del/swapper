@@ -1,5 +1,63 @@
 import { create } from 'zustand'
 
+// ─── localStorage persistence helpers (safe for SSR) ───
+const STORAGE_KEY_PROVIDERS = 'studio-providers'
+const STORAGE_KEY_ACTIVE_PROVIDER = 'studio-active-provider'
+const STORAGE_KEY_ACTIVE_FACE_PROVIDER = 'studio-active-face-provider'
+
+function loadProviders(): AIProviderConfig[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PROVIDERS)
+    return raw ? JSON.parse(raw) : []
+  } catch {
+    return []
+  }
+}
+
+function persistProviders(providers: AIProviderConfig[]) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY_PROVIDERS, JSON.stringify(providers))
+  } catch { /* quota exceeded, ignore */ }
+}
+
+function loadActiveProvider(): AIProviderConfig | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_ACTIVE_PROVIDER)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function persistActiveProvider(p: AIProviderConfig | null) {
+  if (typeof window === 'undefined') return
+  try {
+    if (p) localStorage.setItem(STORAGE_KEY_ACTIVE_PROVIDER, JSON.stringify(p))
+    else localStorage.removeItem(STORAGE_KEY_ACTIVE_PROVIDER)
+  } catch { /* ignore */ }
+}
+
+function loadActiveFaceProvider(): AIProviderConfig | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_ACTIVE_FACE_PROVIDER)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function persistActiveFaceProvider(p: AIProviderConfig | null) {
+  if (typeof window === 'undefined') return
+  try {
+    if (p) localStorage.setItem(STORAGE_KEY_ACTIVE_FACE_PROVIDER, JSON.stringify(p))
+    else localStorage.removeItem(STORAGE_KEY_ACTIVE_FACE_PROVIDER)
+  } catch { /* ignore */ }
+}
+
 export type SessionStatus = 'idle' | 'connecting' | 'active' | 'paused' | 'ended' | 'error'
 export type RecordingStatus = 'idle' | 'recording' | 'paused' | 'stopped'
 export type CameraStatus = 'off' | 'requesting' | 'active' | 'error'
@@ -185,8 +243,8 @@ export const useStudioStore = create<StudioState>((set) => ({
     hasReferenceFace: false,
     faceSwapEnabled: false,
   },
-  activeFaceProvider: null,
-  setActiveFaceProvider: (p) => set({ activeFaceProvider: p }),
+  activeFaceProvider: loadActiveFaceProvider(),
+  setActiveFaceProvider: (p) => { set({ activeFaceProvider: p }); persistActiveFaceProvider(p) },
   setFaceSwapEnabled: (e) => set((s) => ({
     faceSwap: { ...s.faceSwap, faceSwapEnabled: e },
   })),
@@ -209,26 +267,18 @@ export const useStudioStore = create<StudioState>((set) => ({
     faceSwap: { ...s.faceSwap, hasReferenceFace: has },
   })),
 
-  // AI Provider
-  providers: [
-    // Pre-configured sandbox face swap provider (relative to preview URL)
-    {
-      id: 'sandbox-faceswap',
-      name: 'Sandbox Face Swap (CPU)',
-      type: 'faceswap',
-      endpoint: '/api/comfyui',
-      apiKey: '',
-      status: 'disconnected',
-    },
-  ],
-  activeProvider: null,
-  setProviders: (p) => set({ providers: p }),
-  setActiveProvider: (p) => set({ activeProvider: p }),
-  updateProviderStatus: (id, status) => set((state) => ({
-    providers: state.providers.map((p) =>
+  // AI Provider (BYOK)
+  providers: loadProviders(),
+  activeProvider: loadActiveProvider(),
+  setProviders: (p) => { set({ providers: p }); persistProviders(p) },
+  setActiveProvider: (p) => { set({ activeProvider: p }); persistActiveProvider(p) },
+  updateProviderStatus: (id, status) => set((state) => {
+    const updated = state.providers.map((p) =>
       p.id === id ? { ...p, status, lastTested: new Date().toISOString() } : p
-    ),
-  })),
+    )
+    persistProviders(updated)
+    return { providers: updated }
+  }),
 
   // UI
   isMobileControlsOpen: false,
