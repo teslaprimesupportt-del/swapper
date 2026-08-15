@@ -1,0 +1,470 @@
+    80→  3579→
+    81→  3580→---
+    82→  3581→
+    83→  3582→# 97. RESEARCH APPENDIX — INITIAL VERIFIED RESOURCE MAP
+    84→  3583→
+    85→  3584→The following sources were reviewed while preparing this specification. The coding agent should re-check them at implementation time because APIs, pricing, browser support, and product capabilities change.
+    86→  3585→
+    87→  3586→## Browser/media
+    88→  3587→
+    89→  3588→- WebRTC API:
+    90→  3589→  https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+    91→  3590→- Web Audio API:
+    92→  3591→  https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+    93→  3592→- WebCodecs:
+    94→  3593→  https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API
+    95→  3594→- WebRTC codecs:
+    96→  3595→  https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/WebRTC_codecs
+    97→  3596→
+    98→  3597→WebCodecs exposes low-level browser video/audio encode/decode primitives and can be useful for advanced media processing; support must still be verified per target browser/device. WebRTC browser interoperability should be based on documented codec support and fallback behavior rather than assumptions.
+    99→  3598→
+   100→  3599→## UI
+   101→  3600→
+   102→  3601→- shadcn/ui:
+   103→  3602→  https://ui.shadcn.com/docs
+   104→  3603→- shadcn Vite:
+   105→  3604→  https://ui.shadcn.com/docs/installation/vite
+   106→  3605→- shadcn registry:
+   107→  3606→  https://ui.shadcn.com/docs/registry
+   108→  3607→- Lucide:
+   109→  3608→  https://lucide.dev/
+   110→  3609→- Iconify:
+   111→  3610→  https://iconify.design/
+   112→  3611→
+   113→  3612→## Animation / 3D
+   114→  3613→
+   115→  3614→- Motion:
+   116→  3615→  https://motion.dev/docs/react
+   117→  3616→- Three.js:
+   118→  3617→  https://threejs.org/manual/
+   119→  3618→- React Three Fiber:
+   120→  3619→  https://r3f.docs.pmnd.rs/
+   121→  3620→
+   122→  3621→## Fonts
+   123→  3622→
+   124→  3623→- Google Fonts:
+   125→  3624→  https://fonts.google.com/
+   126→  3625→- Google Fonts developer documentation:
+   127→  3626→  https://developers.google.com/fonts
+   128→  3627→- Google Fonts repository:
+   129→  3628→  https://github.com/google/fonts
+   130→  3629→- Fontsource:
+   131→  3630→  https://fontsource.org/
+   132→  3631→- Fontsource API:
+   133→  3632→  https://fontsource.org/docs/api/fonts
+   134→  3633→
+   135→  3634→Google states that its fonts are released under open-source licenses, while the repository notes that individual font directories contain their applicable licensing metadata. Always verify the exact selected family's license.
+   136→  3635→
+   137→  3636→## Media APIs
+   138→  3637→
+   139→  3638→- Pexels:
+   140→  3639→  https://www.pexels.com/api/documentation/
+   141→  3640→- Pexels API help:
+   142→  3641→  https://help.pexels.com/hc/en-us/categories/900001326143-API
+   143→  3642→- Unsplash:
+   144→  3643→  https://unsplash.com/developers
+   145→  3644→- Unsplash documentation:
+   146→  3645→  https://unsplash.com/documentation
+   147→  3646→- Unsplash API guidelines:
+   148→  3647→  https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines
+   149→  3648→- Pixabay:
+   150→  3649→  https://pixabay.com/api/docs/
+   151→  3650→
+   152→  3651→## Free API discovery
+   153→  3652→
+   154→  3653→- Public APIs:
+   155→  3654→  https://github.com/public-apis/public-apis
+   156→  3655→- Free Public APIs:
+   157→  3656→  https://github.com/free-public-apis/apis
+   158→  3657→
+   159→  3658→## Realtime infrastructure candidate
+   160→  3659→
+   161→  3660→- LiveKit:
+   162→  3661→  https://livekit.io/
+   163→  3662→- LiveKit documentation:
+   164→  3663→  https://docs.livekit.io/
+   165→  3664→
+   166→  3665→LiveKit is one candidate for realtime transport/session infrastructure. It must be compared with alternatives before the architecture is locked.
+   167→  3666→
+   168→  3667→---
+   169→  3668→
+   170→  3669→# 98. RESEARCH TASK QUEUE
+   171→  3670→
+   172→  3671→Before architecture lock, the agent must investigate and report on:
+   173→  3672→
+   174→  3673→### A. Realtime video
+   175→  3674→- Current realtime video transformation providers
+   176→  3675→- Current reference-image support
+   177→  3676→- Prompt-update behavior
+   178→  3677→- Latency/FPS characteristics
+   179→  3678→- Browser integration
+   180→  3679→- Provider pricing
+   181→  3680→- Terms/licensing
+   182→  3681→
+   183→  3682→### B. Voice conversion
+   184→  3683→- Current realtime voice-conversion providers
+   185→  3684→- Streaming protocols
+   186→  3685→- latency
+   187→  3686→- quality
+   188→  3687→- voice-preservation controls
+   189→  3688→- custom voice policies
+   190→  3689→- consent requirements
+   191→  3690→- pricing
+   192→  3691→- browser compatibility
+   193→  3692→
+   194→  3693→### C. Lip sync
+   195→  3694→- Current realtime lip-sync systems
+   196→  3695→- provider APIs
+   197→  3696→- self-hosted options
+   198→  3697→- latency
+   199→  3698→- quality
+   200→  3699→- licensing
+   201→  3700→
+   202→  3701→### D. WebRTC
+   203→  3702→- browser support
+   204→  3703→- iOS restrictions
+   205→  3704→- Android restrictions
+   206→  3705→- TURN
+   207→  3706→- codec strategy
+   208→  3707→- reconnect behavior
+   209→  3708→- network adaptation
+   210→  3709→
+   211→  3710→### E. Mobile
+   212→  3711→- iOS Safari
+   213→  3712→- Android Chrome
+   214→  3713→- camera APIs
+   215→  3714→- microphone APIs
+   216→  3715→- backgrounding
+   217→  3716→- Bluetooth
+   218→  3717→- thermal constraints
+   219→  3718→- WebCodecs support
+   220→  3719→
+   221→  3720→### F. UI
+   222→  3721→- current AI studio design patterns
+   223→  3722→- best open-source component systems
+   224→  3723→- typography
+   225→  3724→- icon systems
+   226→  3725→- motion
+   227→  3726→- accessibility
+   228→  3727→- mobile navigation patterns
+   229→  3728→
+   230→  3729→### G. Free resources
+   231→  3730→- open-source fonts
+   232→  3731→- free media APIs
+   233→  3732→- open-source icons
+   234→  3733→- free/low-cost infrastructure
+   235→  3734→- open-source AI models
+   236→  3735→- free developer APIs
+   237→  3736→
+   238→  3737→### H. Infrastructure
+   239→  3738→- GPU providers
+   240→  3739→- serverless limitations
+   241→  3740→- persistent GPU options
+   242→  3741→- managed WebRTC
+   243→  3742→- self-hosted WebRTC
+   244→  3743→- storage
+   245→  3744→- database
+   246→  3745→- Redis
+   247→  3746→- monitoring
+   248→  3747→
+   249→  3748→### I. Cost
+   250→  3749→Produce three architectures:
+   251→  3750→
+   252→  3751→```text
+   253→  3752→LEAN
+   254→  3753→BALANCED
+   255→  3754→PREMIUM
+   256→  3755→```
+   257→  3756→
+   258→  3757→For each estimate:
+   259→  3758→
+   260→  3759→- monthly infrastructure
+   261→  3760→- expected concurrency
+   262→  3761→- major bottlenecks
+   263→  3762→- provider costs
+   264→  3763→- scaling strategy
+   265→  3764→
+   266→  3765→Clearly label estimates.
+   267→  3766→
+   268→  3767→---
+   269→  3768→
+   270→  3769→# 99. ARCHITECTURE SELECTION SCORECARD
+   271→  3770→
+   272→  3771→Score candidate architectures from 1–10:
+   273→  3772→
+   274→  3773→| Criterion | Weight |
+   275→  3774→|---|---:|
+   276→  3775→| Realtime latency | 20% |
+   277→  3776→| Video quality | 15% |
+   278→  3777→| Voice quality | 10% |
+   279→  3778→| Mobile compatibility | 15% |
+   280→  3779→| Desktop compatibility | 10% |
+   281→  3780→| Cost | 10% |
+   282→  3781→| Scalability | 10% |
+   283→  3782→| Provider independence | 5% |
+   284→  3783→| Developer velocity | 5% |
+   285→  3784→
+   286→  3785→Weights may be changed after the product owner's priorities are known.
+   287→  3786→
+   288→  3787→The recommended architecture must show its score and explain the assumptions.
+   289→  3788→
+   290→  3789→---
+   291→  3790→
+   292→  3791→# 100. FINAL RULE
+   293→  3792→
+   294→  3793→**The product owner's intent is the source of truth.**
+   295→  3794→
+   296→  3795→Research informs recommendations.
+   297→  3796→
+   298→  3797→Recommendations do not override the product owner.
+   299→  3798→
+   300→  3799→Technical reality overrides impossible assumptions.
+   301→  3800→
+   302→  3801→Security and law override unsafe implementation requests.
+   303→  3802→
+   304→  3803→And when the agent does not know:
+   305→  3804→
+   306→  3805→**IT MUST SAY IT DOES NOT KNOW, RESEARCH IT, AND RETURN WITH EVIDENCE.**
+   307→  3806→
+   308→  3807→---
+   309→  3808→
+   310→  3809→# 101. CODE INTEGRITY AND CONTINUOUS EXECUTION PROTOCOL (CI-CEP)
+   311→  3810→
+   312→  3811→This section is binding on every phase defined in §50 and every acceptance gate defined in §51 and §52. It supersedes any earlier instruction that could be read as permission to produce shallow, generic, or unverified code, or to abandon a phase before its acceptance criteria are met. Where this section and an earlier section conflict on execution discipline, this section governs.
+   313→  3812→
+   314→  3813→Requirement IDs introduced here (`CI-xxx`) must be added to the Requirement Traceability Matrix in §80 like any other requirement.
+   315→  3814→
+   316→  3815→## 101.1 Definition: Generic/Sloppy Output (CI-001)
+   317→  3816→
+   318→  3817→Output is classified **NON-CONFORMANT** if any of the following are true. Non-conformant output cannot be reported as part of a completed phase under §51.
+   319→  3818→
+   320→  3819→| Class | Definition |
+   321→  3820→|---|---|
+   322→  3821→| Untraced boilerplate | Code copied from a generic pattern without being adapted to this repository's actual types, contracts, and provider-abstraction layers (§13, §70) |
+   323→  3822→| Unverified plausibility | Code that "looks correct" but was not checked against the real current state of the files it touches |
+   324→  3823→| Placeholder-as-final | TODOs, stubs, hardcoded fixtures, or fake success paths (violates Contract items 7–9 in §0) present in a path reported as complete |
+   325→  3824→| Silent scope narrowing | Code that satisfies the literal wording of a requirement while missing its functional intent |
+   326→  3825→| Orphaned change | Code with no traceable requirement ID (§80) or ADR (§81) justifying why it exists |
+   327→  3826→
+   328→  3827→Every artifact the agent writes must cite the requirement ID(s) and/or ADR ID(s) it implements. A change with no traceable justification is itself a defect.
+   329→  3828→
+   330→  3829→## 101.2 Verification Gate (CI-002)
+   331→  3830→
+   332→  3831→Every unit of work passes through two mandatory checkpoints. Neither may be skipped or merged into one.
+   333→  3832→
+   334→  3833→**Gate A — Pre-Implementation**
+   335→  3834→
+   336→  3835→| Step | Action |
+   337→  3836→|---|---|
+   338→  3837→| A1 | Inspect actual current repository state for every file to be touched (§0 item 2) |
+   339→  3838→| A2 | Reconcile intended change against real structure, types, and contracts — not memory of a similar system |
+   340→  3839→| A3 | Classify every non-trivial claim per the Zero-Guess Protocol (§101.3) before writing code that depends on it |
+   341→  3840→
+   342→  3841→**Gate B — Post-Implementation**
+   343→  3842→
+   344→  3843→| Step | Action |
+   345→  3844→|---|---|
+   346→  3845→| B1 | Re-read every changed file as written to disk, not as drafted |
+   347→  3846→| B2 | Check against the phase's stated `ACCEPTANCE CRITERIA` (§54) |
+   348→  3847→| B3 | Check against every PRD section the change implements |
+   349→  3848→| B4 | Verify integration points — types, imports, config keys, provider contracts — actually resolve |
+   350→  3849→| B5 | Verify no previously passing behavior regressed (§0 item 3) |
+   351→  3850→| B6 | Run the applicable tier of §38 tests before the phase may be reported complete |
+   352→  3851→| B7 | Produce a Gate B evidence log — commands run, raw output, files diffed, tests executed with results — and attach it to the phase report (§54). A self-report of "Gate B passed" with no attached evidence does not satisfy B7 (see §101.9). |
+   353→  3852→
+   354→  3853→Code is not "done" because it was generated. It is done only after passing Gate B. A phase report (§54) submitted without an attached Gate B evidence log is itself non-conformant and cannot satisfy Definition of Done item 12 (§51).
+   355→  3854→
+   356→  3855→## 101.3 Zero-Guess Protocol (CI-003)
+   357→  3856→
+   358→  3857→Every non-trivial factual claim underlying a piece of code must be classified before that code is written:
+   359→  3858→
+   360→  3859→| Label | Meaning | Permitted basis |
+   361→  3860→|---|---|---|
+   362→  3861→| `VERIFIED` | Confirmed against the actual repository, actual official documentation (§62), or an actual executed check | Direct inspection only |
+   363→  3862→| `ASSUMED` | Not yet confirmed; logged to the Assumption Register (§82) with confidence and impact-if-wrong | Explicit, tracked, reversible |
+   364→  3863→| `UNVERIFIED` | Flagged as such in the response; blocks phase completion until resolved | Never a basis for shipped code |
+   365→  3864→
+   366→  3865→Forbidden basis for writing code: pattern-matching to "what this API/library/file usually looks like" and presenting it as fact. This applies to API signatures, provider behavior, library interfaces, configuration keys, file paths, existing repository structure, and data shapes — no exceptions for "just one line." A single fabricated line is treated with the same severity as a fabricated subsystem, because the failure mode (undetected incorrect assumption in shipped code) is identical.
+   367→  3866→
+   368→  3867→**Fallout rule:** if an `ASSUMED` claim logged to the Assumption Register (§82) is later proven wrong, this is not a footnote-only correction. It automatically triggers a Non-Regressive Recovery Protocol re-derivation (§101.5) for the assumption itself and for every downstream artifact that was built depending on it, traced via the requirement/ADR IDs those artifacts cited under CI-001. An ADR update alone does not close the loop — the affected code must be re-verified against the corrected fact.
+   369→  3868→
+   370→  3869→## 101.4 Continuous Execution Guarantee (CI-004)
+   371→  3870→
+   372→  3871→Once a phase's scope is confirmed (§50, §54), the agent drives it to its stated acceptance criteria without discretionary interruption. The distinction that governs this section is **blocking condition** vs. **discretionary halt**:
+   373→  3872→
+   374→  3873→| Condition | Classification | Required response |
+   375→  3874→|---|---|---|
+   376→  3875→| Failing test, compile error, unexpected repo state | Expected operating condition | Diagnose and fix; continue (per §53's BREAK→FIX→VERIFY loop) |
+   377→  3876→| Ambiguous product decision with no safe default | Genuine blocker | Surface immediately per §77/§78; do not silently choose and do not silently stall |
+   378→  3877→| Missing credential/external dependency outside agent's control | Genuine blocker | Surface immediately, name exactly what is needed, continue on all unblocked work in parallel |
+   379→  3878→| Fatigue-style stopping, scope feels large, task feels tedious | Discretionary halt | **Prohibited.** Not a valid reason to pause, defer, or abandon a phase |
+   380→  3879→| Partial progress feels "good enough" | Discretionary halt | **Prohibited.** Only the stated acceptance criteria define done (§51) |
+   381→  3880→
+   382→  3881→Surfacing a genuine blocker is reporting, not stopping — the agent states what it needs and keeps working on everything not gated by that blocker. Silence, indefinite pausing, or unexplained abandonment mid-phase are not available responses under this protocol.
+   383→  3882→
+   384→  3883→## 101.5 Non-Regressive Recovery Protocol (CI-005)
+   385→  3884→
+   386→  3885→If a phase's acceptance criteria are not met by the end of an attempt, the failure is handled as data, not as a stopping point:
+   387→  3886→
+   388→  3887→1. **Report honestly** — state exactly what passed Gate B, what failed, and why, using the `KNOWN LIMITATIONS` field of §54's response format. Never mark a failed phase complete.
+   389→  3888→2. **Do not leave a half-verified state as the baseline** — an incomplete attempt must not be left implicit for a future attempt to inherit unexamined.
+   390→  3889→3. **Re-derive from ground truth on the next attempt** — re-run Gate A against the repository's actual current state rather than resuming from the previous attempt's assumptions. If the previous attempt's partial work is inconsistent with what Gate A now finds, treat it as unverified and rebuild the affected portion rather than patching over it.
+   391→  3890→4. **Do not repeat the same unverified work indefinitely** — each retry must be demonstrably different from the last: a new fact was verified, a blocker was resolved, an assumption was corrected. A retry that changes nothing about what was previously wrong is not a valid retry.
+   392→  3891→5. **Retry ceiling** — after **three** re-derivation attempts on the same requirement ID without meeting acceptance criteria, the requirement automatically escalates to a `BLOCKED — HUMAN DECISION REQUIRED` state rather than attempting a fourth retry. Escalation must state: what was tried across all three attempts, what changed each time, and the specific decision or resource needed to proceed. A subsystem-specific ADR (§81) may set a different ceiling with explicit justification; absent one, three is the default.
+   393→  3892→
+   394→  3893→The objective of CI-005 is that every attempt starts from verified ground truth rather than compounding an earlier, unverified mistake — not endless unmonitored looping, and not silent abandonment.
+   395→  3894→
+   396→  3895→## 101.6 Hallucinated-Dependency Check (CI-006)
+   397→  3896→
+   398→  3897→A distinct and common failure mode from general guessing (§101.3): inventing a dependency that does not exist. Before any import, package install, API endpoint, or config flag is used, the agent must confirm — not assume — that it is real:
+   399→  3898→
+   400→  3899→| Dependency type | Required confirmation |
+   401→  3900→|---|---|
+   402→  3901→| npm/pip/other package | Confirm the package name, version, and published API actually exist in the registry (§48's package boundaries apply) — not "a package like this probably exists" |
+   403→  3902→| External API endpoint | Confirm the endpoint exists in current official documentation (§62), not a remembered or inferred URL pattern |
+   404→  3903→| Config/environment flag | Confirm the flag is real for the specific library/service version in use, not a plausible-sounding name |
+   405→  3904→| Framework API/method | Confirm the method exists on the specific version pinned in this repository, not a version remembered from training |
+   406→  3905→
+   407→  3906→A hallucinated dependency is classified as an `UNVERIFIED` claim under §101.3 regardless of how confident the output sounds, and blocks Gate B until resolved.
+   408→  3907→
+   409→  3908→## 101.7 Severity-Scored Defect Log (CI-007)
+   410→  3909→
+   411→  3910→Not every issue found in Gate B halts a phase — but nothing found may be silently dropped. Every defect surfaced during Gate B is logged and scored:
+   412→  3911→
+   413→  3912→| Severity | Definition | Effect on phase completion |
+   414→  3913→|---|---|---|
+   415→  3914→| Blocker | Violates §0's non-negotiable contract, causes data loss, security exposure, or a non-functional critical path | Phase cannot be marked complete until resolved |
+   416→  3915→| Major | Functional gap against acceptance criteria, or a regression in previously working behavior | Must be resolved, or explicitly deferred with an owner sign-off recorded in the phase report |
+   417→  3916→| Minor | Cosmetic, non-blocking, or low-impact issue | Logged; does not block phase completion, but must not silently disappear from the record |
+   418→  3917→
+   419→  3918→This log feeds Definition of Done item 13 (§51) and the Production Readiness Checklist (§52) directly — a phase or a production launch cannot claim a clean bill of health while an open Blocker or unresolved Major sits outside this log.
+   420→  3919→
+   421→  3920→## 101.8 Cross-Phase Consistency Check (CI-008)
+   422→  3921→
+   423→  3922→Because phases in §50 build sequentially, an earlier "done" phase can silently drift out of true as later phases change shared contracts, types, or provider behavior. At a minimum every 3 phases, and always before the Production Launch Gate (§89):
+   424→  3923→
+   425→  3924→1. Re-run the applicable Gate B checks (§101.2) against every previously completed phase, not only the current one.
+   426→  3925→2. Confirm shared contracts (types, provider interfaces, API shapes) that earlier phases depended on have not silently changed underneath them.
+   427→  3926→3. Log any drift found as a defect under CI-007, scored by actual impact — a drifted contract that still functions correctly is not automatically a Blocker.
+   428→  3927→
+   429→  3928→## 101.9 Self-Report Audit Clause (CI-009)
+   430→  3929→
+   431→  3930→The agent's own claim that a gate passed is not self-verifying. A phase report claiming Gate B success must include enough raw evidence — per the Gate B evidence log (§101.2, step B7) — that a human or an independent process could check the claim without re-doing the work from scratch. An assertion of "tests pass" with no attached test output, or "verified against the repo" with no cited file state, does not meet this bar and is treated as an unverified self-report, not a completed phase.
+   432→  3931→
+   433→  3932→## 101.10 Retry Cost Accounting (CI-010)
+   434→  3933→
+   435→  3934→Re-derivation attempts under CI-005 are not free — GPU inference and provider API calls consumed during a failed attempt are real cost per §57. Each re-derivation attempt must log its incurred cost (video/voice/lip-sync/GPU/storage/bandwidth, as itemized in §57) against the requirement ID it was attempting. If a single requirement's cumulative retry cost becomes disproportionate to its scope before the three-attempt ceiling (§101.5) is reached, this is itself a signal to escalate early rather than continue spending toward the ceiling.
+   436→  3935→
+   437→  3936→## 101.11 Tamper-Evident Audit Trail (CI-011)
+   438→  3937→
+   439→  3938→The Gate B evidence log (§101.2) and the Severity-Scored Defect Log (§101.7) must be append-only, consistent with the structured-logging rules in §34. A phase must not be quietly re-marked complete, and a logged defect must not be quietly removed, without a visible corrective entry explaining the change. The audit trail exists so that "this was verified" is a checkable historical claim, not a mutable status field.
+   440→  3939→
+   441→  3940→## 101.12 Cross-Session Handoff Protocol (CI-012)
+   442→  3941→
+   443→  3942→If a different agent session or a different agent instance picks up a phase mid-stream, it must not trust the prior session's in-progress claims at face value. It must run Gate A (§101.2) fresh against the repository's actual current state before continuing — the same discipline CI-005 requires after a failed attempt applies here, with the session boundary itself as the trigger, not only an explicit failure.
+   444→  3943→
+   445→  3944→## 101.13 Definition of "Verified" for External Claims (CI-013)
+   446→  3945→
+   447→  3946→A claim about an external provider, API, model capability, or third-party service is only eligible for the `VERIFIED` label under §101.3 if the source URL and the date it was checked are both recorded, consistent with the research-recording format already required by §62. A claim with no citable source and date is `ASSUMED` at best, never `VERIFIED`, regardless of how standard or well-known the claim seems.
+   448→  3947→
+   449→  3948→## 101.14 PRD-Drift Check (CI-014)
+   450→  3949→
+   451→  3950→Across a long build, shipped code can silently diverge from this document without any single phase appearing to violate it. Before the Production Launch Gate (§89), and periodically per §101.8, the agent must reconcile the actual shipped system against this PRD section by section and report any divergence explicitly — whether the divergence is a regression that must be fixed, or a deliberate, approved deviation that should instead update this document via an ADR (§81). Silent divergence in either direction is not an acceptable end state.
+   452→  3951→
+   453→  3952→---
+   454→  3953→
+   455→  3954→# 102. CROSS-PLATFORM AND SOCIAL DISTRIBUTION COMPATIBILITY
+   456→  3955→
+   457→  3956→This section makes explicit a requirement that was previously implicit: the product must work reliably for real users on the surfaces they actually arrive from and share to — which for a camera/mic-based creative tool means both native desktop/mobile browsers **and** the in-app browsers embedded in major social apps, plus export formats that fit those platforms' actual current specs.
+   458→  3957→
+   459→  3958→Per §84 (Current-Documentation Rule), none of the platform-specific behaviors below may be hardcoded from memory. In-app browser permission handling, embed policies, RTMP ingest availability, and export specs all change without notice. Every claim in this section's tables must be classified `VERIFIED` / `ASSUMED` / `UNVERIFIED` per §101.3 and re-checked before Production Launch (§89), not assumed to still hold from whenever this document was written.
+   460→  3959→
+   461→  3960→## 102.1 In-App Browser Compatibility Requirement (SOC-001)
+   462→  3961→
+   463→  3962→Camera- and microphone-based web apps are frequently opened from links shared inside social/messaging apps, which render the page in a constrained in-app (embedded) browser rather than the user's default browser. This is a distinct environment from the standalone mobile browsers already covered in §71–§76 and must be tested separately, not assumed to behave the same.
+   464→  3963→
+   465→  3964→**Target platform scope for this build:** WhatsApp, Facebook, Zangi, Telegram, Signal. This replaces a broader initial draft list and is the authoritative scope for SOC-001 verification effort.
+   466→  3965→
+   467→  3966→### 102.1.1 Verified research findings (per CI-013, §101.13)
+   468→  3967→
+   469→  3968→These findings are `VERIFIED` per §101.3 — sourced, dated, and directly relevant to this product's target platform list:
+   470→  3969→
+   471→  3970→| Finding | Source | Date checked | Confidence |
+   472→  3971→|---|---|---|---|
+   473→  3972→| Signal has no in-app browser. Links tapped in Signal (iOS and Android) open in the device's external default browser, not an embedded WebView | Signal-iOS GitHub issue #4150 ("Links in Signal — Please give us choice of browser," discussing that links already open externally, just not in the user's preferred external browser) | 2026-08-15 | High — primary source (Signal's own issue tracker), corroborated by a second Signal-Android issue (#12347) discussing external link-opening behavior |
+   474→  3973→| On iOS, Telegram's Mini-App `openLink` method always opens links in the **external** browser, never Telegram's in-app browser — this is explicitly the opposite of Android, where the same call opens in-app by default | Telegram-iOS GitHub issue #1670 | 2026-08-15 | High — primary source (Telegram's own repository) |
+   475→  3974→| Separately, for an ordinary tapped link (not a Mini-App `openLink` call), Telegram on iOS generally uses `SFSafariViewController` rather than a raw `WKWebView` for its in-app browser view. `SFSafariViewController` is a materially different technical situation than the raw-`WKWebView` pattern documented in 102.1.1 below for Facebook — it runs as Safari's own view controller rather than an embedded web engine without Safari's privileges | Cross-referenced from Telegram browser-behavior documentation and the general SFSafariViewController vs. WKWebView distinction | 2026-08-15 | Medium — the general architectural distinction is well-established; this response did not find a primary source confirming `getUserMedia` parity specifically for Telegram's `SFSafariViewController` instance |
+   476→  3975→| `getUserMedia` in raw WKWebView-based in-app browsers (the pattern Facebook's in-app browser follows) has a long-documented history of failing or behaving inconsistently versus standalone Safari — including reports as recent as iOS 17.5/17.6 and 18 simulators, indicating this is an ongoing issue, not one that was fully resolved after the original 2019–2021-era reports | WebKit Bugzilla #208667; Apple Developer Forums threads 734363, 750254, 770737 | 2026-08-15 | High — primary sources, spanning multiple iOS versions over several years |
+   477→  3976→| Facebook deliberately keeps outbound links inside its own in-app browser rather than handing off to the system browser, as a retention mechanism — this is the default experience for a shared link, not an edge case | Apple Community discussion thread 742526; independent confirmation from a link-routing vendor's documentation | 2026-08-15 | Medium — consistent user/developer reports, not an official Meta statement |
+   478→  3977→
+   479→  3978→**What this response could not verify:**
+   480→  3979→
+   481→  3980→- **WhatsApp's specific in-app browser engine.** WhatsApp is widely believed in web-developer communities to use a WKWebView-based in-app browser on iOS, consistent with the general Meta-family pattern seen in Facebook — but this response did not find a primary source confirming that specifically for WhatsApp's current version. Treat as `ASSUMED`, not `VERIFIED`, until device-tested.
+   482→  3981→- **Zangi.** No usable information was found on Zangi's in-app browser behavior, engine, or WebRTC support at all — it is a smaller/less-documented app and this response found nothing authoritative. This is not evidence that it works or doesn't; it means it must be device-tested from a position of zero prior information, and should not be assumed to follow the Meta-family (Facebook/WhatsApp) pattern or the Signal/Telegram pattern.
+   483→  3982→
+   484→  3983→### 102.1.2 Risk tier and required build priority
+   485→  3984→
+   486→  3985→Given the above, the platforms in scope for this build fall into three distinct risk tiers rather than one uniform risk — this should directly inform build and test order:
+   487→  3986→
+   488→  3987→| Platform | Risk tier | Basis |
+   489→  3988→|---|---|---|
+   490→  3989→| Signal | Low | No in-app browser exists; behaves like a standalone browser visit (102.1.1, high confidence) |
+   491→  3990→| Telegram | Low–Medium, path-dependent | External browser for Mini-App `openLink` calls (high confidence); ordinary tapped links likely use `SFSafariViewController` on iOS, a materially safer engine than raw WKWebView, though not independently confirmed for `getUserMedia` specifically (medium confidence). Android in-app behavior is a separate case requiring its own test. |
+   492→  3991→| Facebook | High | Directly documented WKWebView-pattern history of `getUserMedia` failures; deliberately does not hand off to external browser by default |
+   493→  3992→| WhatsApp | High, `ASSUMED` | Believed to follow the same Meta-family WKWebView pattern as Facebook, but not independently confirmed this session — treat as high-risk until device-tested, not as an assumption resolved in the product's favor |
+   494→  3993→| Zangi | Unknown | No information found; requires ground-up device testing with no prior assumption in either direction |
+   495→  3994→
+   496→  3995→Minimum required test/verification matrix — extends the Mobile Device Capability Matrix in §72:
+   497→  3996→
+   498→  3997→| Surface | Risk tier | Must verify (current, per §62/§84) |
+   499→  3998→|---|---|---|
+   500→  3999→| WhatsApp in-app browser (iOS + Android) | High, `ASSUMED` engine | `getUserMedia` availability with combined audio+video, permission prompt behavior, whether an explicit escape to native Safari/Chrome exists |
+   501→  4000→| Facebook in-app browser (iOS + Android) | High | Same as above |
+   502→  4001→| Zangi in-app browser or link-handling behavior (iOS + Android) | Unknown | Same as above, plus first establish whether an in-app browser exists at all |
+   503→  4002→| Telegram — Mini-App `openLink` path (iOS) | Low (confirmed external) | Confirm current behavior still matches 102.1.1's finding |
+   504→  4003→| Telegram — ordinary tapped link (iOS) | Low–Medium | Confirm `SFSafariViewController` is actually in use and that `getUserMedia` with combined audio+video works in it |
+   505→  4004→| Telegram — in-app browser (Android) | Medium, untested | Android opens in-app by default per 102.1.1; verify `getUserMedia` behavior directly, do not assume parity with the iOS finding |
+   506→  4005→| Signal (iOS + Android) | Low | Confirm links still open externally in the current app version before relying on this |
+   507→  4006→
+   508→  4007→Required product behavior, regardless of what verification finds for each platform:
+   509→  4008→
+   510→  4009→1. **Detect** in-app browser context on load (a `VERIFIED`, tested detection method — not a guessed user-agent string). Since Signal and parts of the Telegram flow may not present an in-app-browser context at all, detection logic must not assume every referring app behaves the same way.
+   511→  4010→2. **Attempt** the native realtime flow first if camera/mic access is actually available in that context. Given 102.1.1–102.1.2, expect this to succeed by default for Signal and the Telegram `openLink` path, and to need the fallback more often for Facebook and (assumed) WhatsApp.
+   512→  4011→3. **Fail gracefully and specifically** if it is not — per the UX failure standard in §58, not a generic error: e.g. *"This app's built-in browser blocks camera access. Tap ⋯ and choose 'Open in Browser' to continue."* Never a frozen permission prompt or an unexplained black screen (§87).
+   513→  4012→4. **Never silently degrade to a fake/stub camera feed** to avoid the error state — this would violate Contract items 7 and 9 in §0.
+   514→  4013→
+   515→  4014→Findings above establish the general pattern and justify the risk-tier prioritization; they do not substitute for live, per-platform, per-version device testing, which remains mandatory before this requirement is marked satisfied — this is a live compatibility surface that changes without notice, not a one-time assumption. Findings for Zangi in particular start from zero and must be established from direct testing, not inferred from any other platform in this table.
+   516→  4015→
+   517→  4016→## 102.2 Social Export/Share Specification (SOC-002)
+   518→  4017→
+   519→  4018→Recordings (§21) intended for re-sharing to social platforms must support the aspect ratios, resolutions, and duration constraints those platforms actually currently accept. The agent must research and confirm current specs (per §62) rather than hardcode remembered values, since these change per platform over time. At minimum, verify and support:
+   520→  4019→
+   521→  4020→| Format class | Typical use | Verify before hardcoding |
+   522→  4021→|---|---|---|
+   523→  4022→| Vertical (9:16) | Reels/Shorts/Stories-style short-form | Current max resolution, max duration, codec/container accepted |
+   524→  4023→| Square (1:1) | Feed posts | Same |
+   525→  4024→| Horizontal (16:9) | Traditional feed/YouTube-style | Same |
+   526→  4025→
+   527→  4026→Requirements:
+   528→  4027→
+   529→  4028→- The Recording Engine (§21) must support exporting the same captured session at multiple target aspect ratios without re-running AI inference — a crop/reframe/export step, not a re-transformation.
+   530→  4029→- Export presets are configuration data, not hardcoded constants buried in UI code, so they can be updated as platform specs change without a full redeploy (consistent with the Feature Flags philosophy in §42).
+   531→  4030→- Never claim an export is "optimized for [Platform]" without the underlying spec being `VERIFIED` per §101.13.
+   532→  4031→
+   533→  4032→## 102.3 Social Streaming Destination Presets (SOC-003)
+   534→  4033→
+   535→  4034→Extends the Streaming Engine (§22) with named destination presets for major live platforms, subject to the same verification discipline as §98's provider research:
+   536→  4035→
+   537→  4036→- For each candidate destination (e.g. common RTMP-ingest platforms), verify current: RTMP/SRT ingest availability, authentication method, terms of service around third-party client tools, and any rate/quality limits — per the API research template in §68.
+   538→  4037→- Store destination credentials encrypted per §22 and §26; never hardcode a platform's ingest URL without verifying it is still current.
+   539→  4038→- A destination preset that cannot be verified is marked `UNVERIFIED` and shipped behind a feature flag (§42) until confirmed, not enabled by default on assumption.
+   540→  4039→
+   541→  4040→## 102.4 Desktop + Mobile Parity Reaffirmation (SOC-004)
+   542→  4041→
+   543→  4042→This section adds social/in-app-browser coverage on top of — and never as a replacement for — the Mobile-First Engineering Requirement already defined in §71–§76. To be explicit:
+   544→  4043→
+   545→  4044→- Every capability in the Feature Matrix (§5) must have a defined behavior on desktop, standalone mobile browser, and in-app/embedded mobile browser — three states, not two.
+   546→  4045→- Where in-app browser constraints make a full realtime capability impossible (e.g. no `getUserMedia`), the required response is the graceful degradation and clear redirect defined in §102.1 — not silently shipping a desktop-only product and calling it cross-platform.
+   547→  4046→- The Responsive Design breakpoints (§74) and Touch Interaction requirements (§75) apply identically whether the surface is a standalone browser or an in-app browser tab.
+   548→  4047→- This requirement is added to the Requirement Traceability Matrix (§80) and the Production Readiness Checklist (§52) as below.
+   549→  4048→

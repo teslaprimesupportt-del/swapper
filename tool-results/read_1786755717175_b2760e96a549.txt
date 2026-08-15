@@ -1,0 +1,2002 @@
+     1→     1→# MASTER PRD + TECHNICAL SPECIFICATION
+     2→     2→# Project: Original Realtime AI Video + Voice Transformation Studio
+     3→     3→## Version 1.0 — Production Architecture & Autonomous Development Contract
+     4→     4→
+     5→     5→> **Purpose**
+     6→     6→>
+     7→     7→> Build an original, production-grade realtime AI media platform with the capability class of modern realtime AI video studios: webcam transformation, reference-driven character transformation, realtime visual effects, realtime voice conversion, lip synchronization, recording, live streaming, projects, presets, usage metering, administration, observability, and resilient infrastructure.
+     8→     8→>
+     9→     9→> This document is the product requirements document, system architecture, engineering contract, QA specification, deployment specification, and phased execution plan for the coding AI.
+    10→    10→>
+    11→    11→> **Do not copy proprietary source code, model weights, private APIs, undocumented endpoints, branding, assets, or implementation details from any competitor.** Use only public behavior and public documentation as high-level inspiration. All product code, UI, orchestration, schemas, and branding must be independently implemented.
+    12→    12→
+    13→    13→---
+    14→    14→
+    15→    15→# 0. NON-NEGOTIABLE DEVELOPMENT CONTRACT
+    16→    16→
+    17→    17→The coding AI MUST:
+    18→    18→
+    19→    19→1. Read this entire document before modifying the repository.
+    20→    20→2. Inspect the existing repository before creating files.
+    21→    21→3. Never destroy working functionality without an explicit migration plan.
+    22→    22→4. Never fabricate API responses, model capabilities, latency, FPS, uptime, test results, or provider availability.
+    23→    23→5. Never put secrets/API keys in browser code.
+    24→    24→6. Never use localStorage as the production source of truth.
+    25→    25→7. Never create fake "AI processing" that merely changes a UI status.
+    26→    26→8. Never claim a feature works until it has been exercised by an automated or manual verification path.
+    27→    27→9. Never silently substitute a mock for a production provider.
+    28→    28→10. Clearly mark every external dependency.
+    29→    29→11. Build provider abstractions so AI vendors/models can be replaced without rewriting the product.
+    30→    30→12. Prefer real implementations over placeholders.
+    31→    31→13. Use feature flags for incomplete capabilities.
+    32→    32→14. Use typed contracts between every subsystem.
+    33→    33→15. Preserve backwards compatibility during migrations whenever practical.
+    34→    34→16. Add tests for every critical path.
+    35→    35→17. Treat realtime media, synchronization, security, recovery, observability, and graceful degradation as first-class product requirements.
+    36→    36→18. Do not promise literal zero downtime. Engineer measurable high availability and automatic recovery.
+    37→    37→19. Do not build functionality intended for impersonation, fraud, deception, or unauthorized voice/face cloning. Support fictional, user-owned, licensed, or explicitly consented identities.
+    38→    38→20. Do not begin the entire implementation in one uncontrolled generation.
+    39→    39→
+    40→    40→---
+    41→    41→
+    42→    42→# 1. EXECUTIVE PRODUCT DEFINITION
+    43→    43→
+    44→    44→## 1.1 Product
+    45→    45→
+    46→    46→A browser-first realtime AI media studio where a user can open a camera and microphone, choose a visual transformation and voice transformation, and see/hear the transformed result continuously with low latency.
+    47→    47→
+    48→    48→The product is not a conventional video generator.
+    49→    49→
+    50→    50→It is a **realtime interactive media system**.
+    51→    51→
+    52→    52→Primary pipeline:
+    53→    53→
+    54→    54→```text
+    55→    55→Camera ─┐
+    56→    56→        ├──> Capture ──> Realtime Media Transport ──> Session Gateway
+    57→    57→Mic ────┘                                      │
+    58→    58→                                               ├──> Video AI Pipeline
+    59→    59→                                               ├──> Voice AI Pipeline
+    60→    60→                                               ├──> Lip-Sync Pipeline
+    61→    61→                                               └──> Control/Prompt Pipeline
+    62→    62→                                                        │
+    63→    63→                                                        ▼
+    64→    64→                                                Synchronization Engine
+    65→    65→                                                        │
+    66→    66→                                                        ▼
+    67→    67→                                               Output Media Stream
+    68→    68→                                              /        |         \
+    69→    69→                                         Browser   Recorder    Streaming
+    70→    70→```
+    71→    71→
+    72→    72→## 1.2 Product goals
+    73→    73→
+    74→    74→The platform must provide:
+    75→    75→
+    76→    76→- realtime webcam transformation
+    77→    77→- realtime voice transformation
+    78→    78→- prompt-driven transformations
+    79→    79→- reference-image transformations
+    80→    80→- character/appearance transformation
+    81→    81→- background/environment transformation
+    82→    82→- object transformation
+    83→    83→- visual effects
+    84→    84→- style transformation
+    85→    85→- realtime lip synchronization
+    86→    86→- voice presets
+    87→    87→- custom voice configurations where permitted
+    88→    88→- recording
+    89→    89→- live streaming
+    90→    90→- projects
+    91→    91→- presets
+    92→    92→- session recovery
+    93→    93→- provider failover
+    94→    94→- usage tracking
+    95→    95→- administration
+    96→    96→- observability
+    97→    97→- secure media handling
+    98→    98→- scalable GPU infrastructure
+    99→    99→
+   100→   100→## 1.3 Non-goals for initial release
+   101→   101→
+   102→   102→Do not initially build:
+   103→   103→
+   104→   104→- proprietary foundation video model training
+   105→   105→- proprietary foundation voice model training
+   106→   106→- custom global CDN
+   107→   107→- custom browser engine
+   108→   108→- custom codec implementation
+   109→   109→- custom operating system
+   110→   110→- unlimited free inference
+   111→   111→
+   112→   112→The architecture must remain capable of supporting those later.
+   113→   113→
+   114→   114→---
+   115→   115→
+   116→   116→# 2. PRODUCT PRINCIPLES
+   117→   117→
+   118→   118→## 2.1 Realtime first
+   119→   119→
+   120→   120→Every major decision must preserve interactive latency.
+   121→   121→
+   122→   122→Avoid:
+   123→   123→
+   124→   124→```text
+   125→   125→record entire clip
+   126→   126→→ upload
+   127→   127→→ generate
+   128→   128→→ download
+   129→   129→```
+   130→   130→
+   131→   131→Prefer:
+   132→   132→
+   133→   133→```text
+   134→   134→capture
+   135→   135→→ stream
+   136→   136→→ transform incrementally
+   137→   137→→ synchronize
+   138→   138→→ stream output
+   139→   139→```
+   140→   140→
+   141→   141→## 2.2 Provider agnostic
+   142→   142→
+   143→   143→The product must not become a thin wrapper around one AI vendor.
+   144→   144→
+   145→   145→Use:
+   146→   146→
+   147→   147→```text
+   148→   148→Application
+   149→   149→    ↓
+   150→   150→AI Orchestration Layer
+   151→   151→    ↓
+   152→   152→Provider Interfaces
+   153→   153→    ↓
+   154→   154→Provider Adapters
+   155→   155→    ↓
+   156→   156→External or Self-hosted Models
+   157→   157→```
+   158→   158→
+   159→   159→## 2.3 Measured performance
+   160→   160→
+   161→   161→Never display fabricated FPS or latency.
+   162→   162→
+   163→   163→All metrics must originate from actual measurements.
+   164→   164→
+   165→   165→## 2.4 Failure is normal
+   166→   166→
+   167→   167→Network loss, GPU exhaustion, provider timeout, browser suspension, device removal, packet loss, and model failure are expected operating conditions.
+   168→   168→
+   169→   169→The product must recover gracefully.
+   170→   170→
+   171→   171→---
+   172→   172→
+   173→   173→# 3. USER PERSONAS
+   174→   174→
+   175→   175→## 3.1 Creator
+   176→   176→
+   177→   177→Wants to transform themselves during livestreams.
+   178→   178→
+   179→   179→Needs:
+   180→   180→
+   181→   181→- low latency
+   182→   182→- simple controls
+   183→   183→- presets
+   184→   184→- recording
+   185→   185→- streaming
+   186→   186→- reliable camera/audio
+   187→   187→
+   188→   188→## 3.2 Content producer
+   189→   189→
+   190→   190→Needs:
+   191→   191→
+   192→   192→- reusable projects
+   193→   193→- reference images
+   194→   194→- scenes
+   195→   195→- recordings
+   196→   196→- presets
+   197→   197→- high-quality output
+   198→   198→
+   199→   199→## 3.3 Developer/power user
+   200→   200→
+   201→   201→Needs:
+   202→   202→
+   203→   203→- advanced controls
+   204→   204→- diagnostics
+   205→   205→- model/provider selection
+   206→   206→- performance statistics
+   207→   207→- API access later
+   208→   208→
+   209→   209→## 3.4 Administrator
+   210→   210→
+   211→   211→Needs:
+   212→   212→
+   213→   213→- user management
+   214→   214→- session visibility
+   215→   215→- provider health
+   216→   216→- GPU health
+   217→   217→- billing
+   218→   218→- incidents
+   219→   219→- logs
+   220→   220→- feature flags
+   221→   221→
+   222→   222→---
+   223→   223→
+   224→   224→# 4. CORE USER JOURNEYS
+   225→   225→
+   226→   226→## Journey A — First realtime session
+   227→   227→
+   228→   228→1. User opens Studio.
+   229→   229→2. Browser requests camera/microphone permissions.
+   230→   230→3. Device selection appears.
+   231→   231→4. Local preview starts immediately.
+   232→   232→5. User selects a transformation.
+   233→   233→6. Backend creates a short-lived realtime session token.
+   234→   234→7. WebRTC session establishes.
+   235→   235→8. AI provider connection establishes.
+   236→   236→9. Output begins.
+   237→   237→10. Metrics appear.
+   238→   238→11. User can change transformation without leaving the session.
+   239→   239→
+   240→   240→## Journey B — Voice changer
+   241→   241→
+   242→   242→1. User enables microphone.
+   243→   243→2. Audio capture begins.
+   244→   244→3. Noise suppression and preprocessing run.
+   245→   245→4. Audio is streamed.
+   246→   246→5. Voice conversion processes the stream.
+   247→   247→6. Converted audio returns.
+   248→   248→7. Output is synchronized with video.
+   249→   249→8. User can switch voice presets during the session.
+   250→   250→
+   251→   251→## Journey C — Reference transformation
+   252→   252→
+   253→   253→1. User uploads reference image.
+   254→   254→2. Backend validates and stores it temporarily.
+   255→   255→3. Reference is converted to a secure temporary URL/provider asset.
+   256→   256→4. User enters prompt.
+   257→   257→5. Transformation request is compiled.
+   258→   258→6. Realtime session receives the update.
+   259→   259→7. Output changes without restarting unnecessarily.
+   260→   260→
+   261→   261→## Journey D — Network failure
+   262→   262→
+   263→   263→1. WebRTC connection degrades.
+   264→   264→2. Client detects quality degradation.
+   265→   265→3. UI displays reconnecting state.
+   266→   266→4. Session coordinator attempts bounded reconnection.
+   267→   267→5. Existing session state is restored if possible.
+   268→   268→6. If unavailable, provider failover/degraded mode activates.
+   269→   269→7. User receives a clear status.
+   270→   270→
+   271→   271→---
+   272→   272→
+   273→   273→# 5. FEATURE MATRIX
+   274→   274→
+   275→   275→| Feature | MVP | Production |
+   276→   276→|---|---:|---:|
+   277→   277→| Camera capture | YES | YES |
+   278→   278→| Mic capture | YES | YES |
+   279→   279→| Device switching | YES | YES |
+   280→   280→| WebRTC | YES | YES |
+   281→   281→| Realtime video provider | YES | YES |
+   282→   282→| Prompt transformations | YES | YES |
+   283→   283→| Reference images | YES | YES |
+   284→   284→| Voice conversion | YES | YES |
+   285→   285→| Lip sync | YES | YES |
+   286→   286→| Recording | YES | YES |
+   287→   287→| Streaming | NO/PHASE 2 | YES |
+   288→   288→| Projects | YES | YES |
+   289→   289→| Presets | YES | YES |
+   290→   290→| Usage metering | YES | YES |
+   291→   291→| Billing | PHASE 2 | YES |
+   292→   292→| Admin | YES | YES |
+   293→   293→| Observability | YES | YES |
+   294→   294→| Provider failover | PHASE 2 | YES |
+   295→   295→| Multi-region GPU | PHASE 3 | YES |
+   296→   296→| Self-hosted models | PHASE 3 | YES |
+   297→   297→| Mobile optimization | PHASE 3 | YES |
+   298→   298→
+   299→   299→---
+   300→   300→
+   301→   301→# 6. SYSTEM ARCHITECTURE
+   302→   302→
+   303→   303→## 6.1 Logical architecture
+   304→   304→
+   305→   305→```text
+   306→   306→                         ┌─────────────────────┐
+   307→   307→                         │      Browser        │
+   308→   308→                         │ React + WebRTC      │
+   309→   309→                         └──────────┬──────────┘
+   310→   310→                                    │
+   311→   311→                             HTTPS / WSS / WebRTC
+   312→   312→                                    │
+   313→   313→                    ┌───────────────▼───────────────┐
+   314→   314→                    │       Edge / Load Balancer    │
+   315→   315→                    └───────────────┬───────────────┘
+   316→   316→                                    │
+   317→   317→             ┌──────────────────────┼─────────────────────┐
+   318→   318→             │                      │                     │
+   319→   319→             ▼                      ▼                     ▼
+   320→   320→       API Service          Realtime Gateway       Signaling Service
+   321→   321→             │                      │                     │
+   322→   322→             └──────────────┬───────┴─────────────────────┘
+   323→   323→                            ▼
+   324→   324→                    Session Orchestrator
+   325→   325→                            │
+   326→   326→            ┌───────────────┼────────────────┐
+   327→   327→            ▼               ▼                ▼
+   328→   328→       Video Service   Audio Service    LipSync Service
+   329→   329→            │               │                │
+   330→   330→            ▼               ▼                ▼
+   331→   331→       Video Providers  Voice Providers  Sync/Providers
+   332→   332→            │               │                │
+   333→   333→            └───────────────┼────────────────┘
+   334→   334→                            ▼
+   335→   335→                     Media Output Gateway
+   336→   336→                     /       |          \
+   337→   337→                    /        |           \
+   338→   338→               Browser    Recorder      RTMP/SRT
+   339→   339→
+   340→   340→             ┌──────────────────────────────────┐
+   341→   341→             │ PostgreSQL / Redis / ObjectStore │
+   342→   342→             └──────────────────────────────────┘
+   343→   343→
+   344→   344→             ┌──────────────────────────────────┐
+   345→   345→             │ Observability / Metrics / Logs   │
+   346→   346→             └──────────────────────────────────┘
+   347→   347→```
+   348→   348→
+   349→   349→---
+   350→   350→
+   351→   351→# 7. RECOMMENDED TECHNOLOGY STACK
+   352→   352→
+   353→   353→## Frontend
+   354→   354→
+   355→   355→- React
+   356→   356→- TypeScript
+   357→   357→- Vite
+   358→   358→- Tailwind CSS
+   359→   359→- Framer Motion
+   360→   360→- Zustand
+   361→   361→- WebRTC
+   362→   362→- Web Audio API
+   363→   363→- MediaDevices API
+   364→   364→- WebCodecs where beneficial
+   365→   365→
+   366→   366→## Backend
+   367→   367→
+   368→   368→Preferred:
+   369→   369→
+   370→   370→- Node.js
+   371→   371→- TypeScript
+   372→   372→- Fastify or NestJS
+   373→   373→- WebSocket/WebRTC signaling
+   374→   374→- OpenAPI
+   375→   375→- Zod or equivalent runtime validation
+   376→   376→
+   377→   377→AI/media workers may use Python where model/runtime requirements make it appropriate.
+   378→   378→
+   379→   379→## Data
+   380→   380→
+   381→   381→- PostgreSQL
+   382→   382→- Redis
+   383→   383→- S3-compatible object storage
+   384→   384→
+   385→   385→## Infrastructure
+   386→   386→
+   387→   387→- Docker
+   388→   388→- Kubernetes or managed container orchestration
+   389→   389→- GPU node pools
+   390→   390→- TURN server
+   391→   391→- CDN
+   392→   392→- Load balancer
+   393→   393→- Secrets manager
+   394→   394→
+   395→   395→## Observability
+   396→   396→
+   397→   397→- OpenTelemetry
+   398→   398→- Prometheus-compatible metrics
+   399→   399→- Grafana-compatible dashboards
+   400→   400→- centralized structured logging
+   401→   401→- error tracking
+   402→   402→
+   403→   403→---
+   404→   404→
+   405→   405→# 8. REPOSITORY STRUCTURE
+   406→   406→
+   407→   407→Use a monorepo.
+   408→   408→
+   409→   409→```text
+   410→   410→/
+   411→   411→├── apps/
+   412→   412→│   ├── studio/
+   413→   413→│   ├── admin/
+   414→   414→│   └── api/
+   415→   415→│
+   416→   416→├── packages/
+   417→   417→│   ├── ui/
+   418→   418→│   ├── types/
+   419→   419→│   ├── config/
+   420→   420→│   ├── realtime/
+   421→   421→│   ├── media/
+   422→   422→│   ├── prompts/
+   423→   423→│   ├── providers/
+   424→   424→│   ├── telemetry/
+   425→   425→│   └── validation/
+   426→   426→│
+   427→   427→├── services/
+   428→   428→│   ├── session-orchestrator/
+   429→   429→│   ├── video-worker/
+   430→   430→│   ├── audio-worker/
+   431→   431→│   ├── lipsync-worker/
+   432→   432→│   ├── media-gateway/
+   433→   433→│   └── recording-worker/
+   434→   434→│
+   435→   435→├── infra/
+   436→   436→│   ├── docker/
+   437→   437→│   ├── k8s/
+   438→   438→│   ├── terraform/
+   439→   439→│   ├── monitoring/
+   440→   440→│   └── turn/
+   441→   441→│
+   442→   442→├── database/
+   443→   443→│   ├── migrations/
+   444→   444→│   └── seeds/
+   445→   445→│
+   446→   446→├── tests/
+   447→   447→│   ├── unit/
+   448→   448→│   ├── integration/
+   449→   449→│   ├── e2e/
+   450→   450→│   ├── load/
+   451→   451→│   └── chaos/
+   452→   452→│
+   453→   453→└── docs/
+   454→   454→    ├── architecture/
+   455→   455→    ├── api/
+   456→   456→    ├── runbooks/
+   457→   457→    └── operations/
+   458→   458→```
+   459→   459→
+   460→   460→If the chosen framework requires a different structure, document the deviation before implementing it.
+   461→   461→
+   462→   462→---
+   463→   463→
+   464→   464→# 9. FRONTEND UX SPECIFICATION
+   465→   465→
+   466→   466→## 9.1 Studio shell
+   467→   467→
+   468→   468→The Studio must feel like professional realtime creative software.
+   469→   469→
+   470→   470→Required areas:
+   471→   471→
+   472→   472→### Top bar
+   473→   473→
+   474→   474→- project name
+   475→   475→- session status
+   476→   476→- connection quality
+   477→   477→- FPS
+   478→   478→- latency
+   479→   479→- account
+   480→   480→- settings
+   481→   481→
+   482→   482→### Main canvas
+   483→   483→
+   484→   484→- transformed output
+   485→   485→- fullscreen
+   486→   486→- fit/fill
+   487→   487→- mirror
+   488→   488→- quality selector
+   489→   489→
+   490→   490→### Transformation panel
+   491→   491→
+   492→   492→- prompt
+   493→   493→- mode
+   494→   494→- intensity
+   495→   495→- reference image
+   496→   496→- preset
+   497→   497→- reset
+   498→   498→
+   499→   499→### Voice panel
+   500→   500→
+   501→   501→- enable/disable
+   502→   502→- preset
+   503→   503→- pitch
+   504→   504→- formant
+   505→   505→- tone
+   506→   506→- clarity
+   507→   507→- intensity
+   508→   508→- advanced controls
+   509→   509→
+   510→   510→### Bottom transport
+   511→   511→
+   512→   512→- camera
+   513→   513→- microphone
+   514→   514→- mute
+   515→   515→- record
+   516→   516→- stream
+   517→   517→- snapshot
+   518→   518→- effects
+   519→   519→- settings
+   520→   520→
+   521→   521→## 9.2 UX state model
+   522→   522→
+   523→   523→Every realtime state must have visual feedback:
+   524→   524→
+   525→   525→- Initializing
+   526→   526→- Connecting
+   527→   527→- Connected
+   528→   528→- Processing
+   529→   529→- Reconnecting
+   530→   530→- Degraded
+   531→   531→- Recovering
+   532→   532→- Failed
+   533→   533→- Stopped
+   534→   534→
+   535→   535→Never leave the user staring at an ambiguous spinner.
+   536→   536→
+   537→   537→---
+   538→   538→
+   539→   539→# 10. MEDIA CAPTURE ENGINE
+   540→   540→
+   541→   541→Implement a dedicated media capture abstraction.
+   542→   542→
+   543→   543→```ts
+   544→   544→interface MediaCaptureManager {
+   545→   545→  enumerateDevices(): Promise<MediaDeviceInfo[]>;
+   546→   546→  startCamera(config: CameraConfig): Promise<MediaStream>;
+   547→   547→  startMicrophone(config: MicrophoneConfig): Promise<MediaStream>;
+   548→   548→  switchCamera(deviceId: string): Promise<void>;
+   549→   549→  switchMicrophone(deviceId: string): Promise<void>;
+   550→   550→  stop(): Promise<void>;
+   551→   551→  getStats(): CaptureStats;
+   552→   552→}
+   553→   553→```
+   554→   554→
+   555→   555→Requirements:
+   556→   556→
+   557→   557→- permission handling
+   558→   558→- device enumeration
+   559→   559→- hot switching
+   560→   560→- unavailable-device handling
+   561→   561→- browser compatibility
+   562→   562→- mobile constraints
+   563→   563→- resolution adaptation
+   564→   564→- frame-rate adaptation
+   565→   565→
+   566→   566→---
+   567→   567→
+   568→   568→# 11. WEBRTC ENGINE
+   569→   569→
+   570→   570→Create a dedicated package:
+   571→   571→
+   572→   572→`packages/realtime`
+   573→   573→
+   574→   574→Responsibilities:
+   575→   575→
+   576→   576→- peer connection lifecycle
+   577→   577→- ICE handling
+   578→   578→- STUN/TURN
+   579→   579→- track management
+   580→   580→- data channels
+   581→   581→- statistics
+   582→   582→- reconnection
+   583→   583→- network quality
+   584→   584→- synchronization metadata
+   585→   585→
+   586→   586→Never spread WebRTC state across React components.
+   587→   587→
+   588→   588→The React application should consume a stable realtime-session API.
+   589→   589→
+   590→   590→---
+   591→   591→
+   592→   592→# 12. SESSION ORCHESTRATOR
+   593→   593→
+   594→   594→The Session Orchestrator is the central brain of the platform.
+   595→   595→
+   596→   596→Responsibilities:
+   597→   597→
+   598→   598→- create sessions
+   599→   599→- authorize sessions
+   600→   600→- select providers
+   601→   601→- reserve resources
+   602→   602→- maintain session state
+   603→   603→- coordinate video/audio
+   604→   604→- apply prompt changes
+   605→   605→- coordinate failover
+   606→   606→- collect metrics
+   607→   607→- terminate sessions
+   608→   608→- recover sessions
+   609→   609→
+   610→   610→Session state:
+   611→   611→
+   612→   612→```ts
+   613→   613→type SessionState =
+   614→   614→  | "IDLE"
+   615→   615→  | "CREATING"
+   616→   616→  | "CONNECTING"
+   617→   617→  | "CONNECTED"
+   618→   618→  | "DEGRADED"
+   619→   619→  | "RECONNECTING"
+   620→   620→  | "RECOVERING"
+   621→   621→  | "STOPPING"
+   622→   622→  | "STOPPED"
+   623→   623→  | "FAILED";
+   624→   624→```
+   625→   625→
+   626→   626→---
+   627→   627→
+   628→   628→# 13. AI PROVIDER ABSTRACTION
+   629→   629→
+   630→   630→Create:
+   631→   631→
+   632→   632→```ts
+   633→   633→interface VideoAIProvider {
+   634→   634→  capabilities(): Promise<VideoCapabilities>;
+   635→   635→  createSession(config: VideoSessionConfig): Promise<ProviderSession>;
+   636→   636→  updateTransformation(
+   637→   637→    sessionId: string,
+   638→   638→    request: TransformationRequest
+   639→   639→  ): Promise<void>;
+   640→   640→  closeSession(sessionId: string): Promise<void>;
+   641→   641→  health(): Promise<ProviderHealth>;
+   642→   642→}
+   643→   643→```
+   644→   644→
+   645→   645→Voice:
+   646→   646→
+   647→   647→```ts
+   648→   648→interface VoiceAIProvider {
+   649→   649→  capabilities(): Promise<VoiceCapabilities>;
+   650→   650→  createSession(config: VoiceSessionConfig): Promise<ProviderSession>;
+   651→   651→  updateVoice(
+   652→   652→    sessionId: string,
+   653→   653→    request: VoiceTransformationRequest
+   654→   654→  ): Promise<void>;
+   655→   655→  closeSession(sessionId: string): Promise<void>;
+   656→   656→  health(): Promise<ProviderHealth>;
+   657→   657→}
+   658→   658→```
+   659→   659→
+   660→   660→Lip sync:
+   661→   661→
+   662→   662→```ts
+   663→   663→interface LipSyncProvider {
+   664→   664→  synchronize(
+   665→   665→    video: MediaStream,
+   666→   666→    audio: MediaStream
+   667→   667→  ): Promise<MediaStream>;
+   668→   668→}
+   669→   669→```
+   670→   670→
+   671→   671→---
+   672→   672→
+   673→   673→# 14. PROVIDER REGISTRY
+   674→   674→
+   675→   675→Create a provider registry.
+   676→   676→
+   677→   677→```text
+   678→   678→ProviderRegistry
+   679→   679→├── Video
+   680→   680→│   ├── Provider A
+   681→   681→│   ├── Provider B
+   682→   682→│   └── Self Hosted
+   683→   683→├── Voice
+   684→   684→│   ├── Provider A
+   685→   685→│   ├── Provider B
+   686→   686→│   └── Self Hosted
+   687→   687→└── LipSync
+   688→   688→    ├── Provider A
+   689→   689→    └── Self Hosted
+   690→   690→```
+   691→   691→
+   692→   692→Provider selection must consider:
+   693→   693→
+   694→   694→- health
+   695→   695→- latency
+   696→   696→- region
+   697→   697→- cost
+   698→   698→- capacity
+   699→   699→- feature support
+   700→   700→- current error rate
+   701→   701→
+   702→   702→---
+   703→   703→
+   704→   704→# 15. VIDEO TRANSFORMATION MODEL
+   705→   705→
+   706→   706→Define a provider-neutral request:
+   707→   707→
+   708→   708→```ts
+   709→   709→interface TransformationRequest {
+   710→   710→  prompt: string;
+   711→   711→  mode: TransformationMode;
+   712→   712→  referenceImageId?: string;
+   713→   713→  intensity?: number;
+   714→   714→  preserveIdentity?: boolean;
+   715→   715→  preserveMotion?: boolean;
+   716→   716→  preserveExpression?: boolean;
+   717→   717→  quality?: "balanced" | "quality" | "performance";
+   718→   718→}
+   719→   719→```
+   720→   720→
+   721→   721→Modes:
+   722→   722→
+   723→   723→```text
+   724→   724→character
+   725→   725→appearance
+   726→   726→clothing
+   727→   727→background
+   728→   728→environment
+   729→   729→object
+   730→   730→style
+   731→   731→vfx
+   732→   732→custom
+   733→   733→```
+   734→   734→
+   735→   735→---
+   736→   736→
+   737→   737→# 16. PROMPT COMPILER
+   738→   738→
+   739→   739→The prompt system must be a real subsystem.
+   740→   740→
+   741→   741→Pipeline:
+   742→   742→
+   743→   743→```text
+   744→   744→User Prompt
+   745→   745→   ↓
+   746→   746→Validation
+   747→   747→   ↓
+   748→   748→Intent Extraction
+   749→   749→   ↓
+   750→   750→Transformation Schema
+   751→   751→   ↓
+   752→   752→Safety/Policy Check
+   753→   753→   ↓
+   754→   754→Provider Prompt Compiler
+   755→   755→   ↓
+   756→   756→Provider Adapter
+   757→   757→```
+   758→   758→
+   759→   759→Example:
+   760→   760→
+   761→   761→User:
+   762→   762→
+   763→   763→> "Make me look like a futuristic armored explorer standing on Mars."
+   764→   764→
+   765→   765→Internal semantic representation:
+   766→   766→
+   767→   767→```json
+   768→   768→{
+   769→   769→  "subject": "person",
+   770→   770→  "appearance": {
+   771→   771→    "wardrobe": "futuristic armored explorer"
+   772→   772→  },
+   773→   773→  "environment": {
+   774→   774→    "location": "Mars"
+   775→   775→  },
+   776→   776→  "style": "cinematic realistic",
+   777→   777→  "preserve": [
+   778→   778→    "body movement",
+   779→   779→    "facial expression",
+   780→   780→    "camera movement"
+   781→   781→  ]
+   782→   782→}
+   783→   783→```
+   784→   784→
+   785→   785→Do not depend on an LLM for every tiny UI operation.
+   786→   786→
+   787→   787→Use deterministic transformations for structured controls.
+   788→   788→
+   789→   789→---
+   790→   790→
+   791→   791→# 17. REFERENCE IMAGE PIPELINE
+   792→   792→
+   793→   793→Requirements:
+   794→   794→
+   795→   795→- file type validation
+   796→   796→- MIME validation
+   797→   797→- dimension limits
+   798→   798→- malware/security scanning where applicable
+   799→   799→- size limits
+   800→   800→- private object storage
+   801→   801→- signed URLs
+   802→   802→- automatic expiration
+   803→   803→- deletion
+   804→   804→- audit record
+   805→   805→
+   806→   806→Never expose raw storage credentials.
+   807→   807→
+   808→   808→---
+   809→   809→
+   810→   810→# 18. REALTIME VOICE ENGINE
+   811→   811→
+   812→   812→Architecture:
+   813→   813→
+   814→   814→```text
+   815→   815→Microphone
+   816→   816→   ↓
+   817→   817→Audio Capture
+   818→   818→   ↓
+   819→   819→Echo Cancellation
+   820→   820→   ↓
+   821→   821→Noise Suppression
+   822→   822→   ↓
+   823→   823→Voice Activity Detection
+   824→   824→   ↓
+   825→   825→Resampling / Normalization
+   826→   826→   ↓
+   827→   827→Realtime Voice Conversion
+   828→   828→   ↓
+   829→   829→Post Processing
+   830→   830→   ↓
+   831→   831→Limiter / Gain
+   832→   832→   ↓
+   833→   833→Output
+   834→   834→```
+   835→   835→
+   836→   836→The voice engine must not require uploading complete recordings for normal realtime operation.
+   837→   837→
+   838→   838→Track:
+   839→   839→
+   840→   840→- input RMS
+   841→   841→- output RMS
+   842→   842→- processing latency
+   843→   843→- packet loss
+   844→   844→- jitter
+   845→   845→- conversion errors
+   846→   846→- dropped audio frames
+   847→   847→
+   848→   848→---
+   849→   849→
+   850→   850→# 19. VOICE PRESET MODEL
+   851→   851→
+   852→   852→Database entity:
+   853→   853→
+   854→   854→```text
+   855→   855→VoicePreset
+   856→   856→- id
+   857→   857→- userId
+   858→   858→- name
+   859→   859→- provider
+   860→   860→- providerVoiceId
+   861→   861→- pitch
+   862→   862→- formant
+   863→   863→- tone
+   864→   864→- intensity
+   865→   865→- createdAt
+   866→   866→- updatedAt
+   867→   867→```
+   868→   868→
+   869→   869→Built-in presets must not impersonate real individuals without authorization.
+   870→   870→
+   871→   871→## 19.1 Voice Clone Verification Requirement (VOICE-CONSENT-001)
+   872→   872→
+   873→   873→This subsection converts the general "must include consent/authorization controls" requirement in §59 into concrete, implementable verification steps. It is mandatory for any feature that creates a `VoicePreset` from a user-supplied voice sample (a clone), as distinct from a purely synthetic/built-in preset.
+   874→   874→
+   875→   875→A cloned voice may not be created or activated for use until all of the following pass:
+   876→   876→
+   877→   877→| Step | Requirement |
+   878→   878→|---|---|
+   879→   879→| Rights attestation | The uploading user affirmatively attests, per clone, that the voice belongs to them or that they hold documented rights/consent to clone it. Store this attestation as an immutable record tied to the `VoicePreset` row, not just a one-time checkbox at signup. |
+   880→   880→| Liveness/active-consent capture | Require the source sample to be captured live within the product (e.g. read a randomized on-screen consent phrase), rather than accepting an arbitrary pre-recorded upload with no provenance. This raises the bar against cloning a voice the uploader does not control. |
+   881→   881→| Consent artifact retention | Retain the consent capture (audio + attestation + timestamp) as an auditable artifact under the retention policy in §41, independent of the derived voice model itself. |
+   882→   882→| Revocation path | The consenting individual (if different from the account holder, e.g. an authorized third party) must have a documented path to revoke consent, which immediately disables the associated `VoicePreset`. |
+   883→   883→| Abuse/impersonation review | Cloned-voice presets are subject to the moderation/abuse-control requirements referenced in §26, with a defined escalation path for reported impersonation. |
+   884→   884→
+   885→   885→`UNVERIFIED` claims about what a specific competitor product does or does not support (§101.3) must never be used to justify weakening this requirement. This gate exists independent of what any other product implements, per Contract item 19 in §0.
+   886→   886→
+   887→   887→---
+   888→   888→
+   889→   889→# 20. AUDIO/VIDEO SYNCHRONIZATION
+   890→   890→
+   891→   891→Use timestamps, not arbitrary JavaScript timers.
+   892→   892→
+   893→   893→Maintain:
+   894→   894→
+   895→   895→```text
+   896→   896→capture timestamp
+   897→   897→transport timestamp
+   898→   898→processing timestamp
+   899→   899→presentation timestamp
+   900→   900→```
+   901→   901→
+   902→   902→Synchronization engine responsibilities:
+   903→   903→
+   904→   904→- detect drift
+   905→   905→- calculate offset
+   906→   906→- correct drift smoothly
+   907→   907→- avoid audible discontinuities
+   908→   908→- avoid video freezing
+   909→   909→- maintain lip synchronization
+   910→   910→
+   911→   911→Target:
+   912→   912→
+   913→   913→- stable audio/video relationship under normal network conditions
+   914→   914→- graceful correction under degradation
+   915→   915→
+   916→   916→---
+   917→   917→
+   918→   918→# 21. RECORDING ENGINE
+   919→   919→
+   920→   920→Recording must be independent from AI inference.
+   921→   921→
+   922→   922→Pipeline:
+   923→   923→
+   924→   924→```text
+   925→   925→Output Media
+   926→   926→    ├──> Browser Preview
+   927→   927→    ├──> Recording
+   928→   928→    └──> Streaming
+   929→   929→```
+   930→   930→
+   931→   931→Do not make recording block inference.
+   932→   932→
+   933→   933→Requirements:
+   934→   934→
+   935→   935→- start
+   936→   936→- stop
+   937→   937→- pause/resume if supported
+   938→   938→- duration
+   939→   939→- file metadata
+   940→   940→- muxing
+   941→   941→- upload
+   942→   942→- processing
+   943→   943→- thumbnail
+   944→   944→- secure download
+   945→   945→- deletion
+   946→   946→
+   947→   947→---
+   948→   948→
+   949→   949→# 22. STREAMING ENGINE
+   950→   950→
+   951→   951→Support:
+   952→   952→
+   953→   953→- RTMP
+   954→   954→- SRT where appropriate
+   955→   955→- custom destinations
+   956→   956→- OBS integration
+   957→   957→
+   958→   958→Never expose stream credentials unnecessarily.
+   959→   959→
+   960→   960→Store credentials encrypted.
+   961→   961→
+   962→   962→Allow:
+   963→   963→
+   964→   964→- destination creation
+   965→   965→- validation
+   966→   966→- test
+   967→   967→- start
+   968→   968→- stop
+   969→   969→- status
+   970→   970→- failure reason
+   971→   971→
+   972→   972→---
+   973→   973→
+   974→   974→# 23. DATABASE DESIGN
+   975→   975→
+   976→   976→Core entities:
+   977→   977→
+   978→   978→### users
+   979→   979→
+   980→   980→- id
+   981→   981→- email
+   982→   982→- passwordHash
+   983→   983→- displayName
+   984→   984→- role
+   985→   985→- status
+   986→   986→- createdAt
+   987→   987→- updatedAt
+   988→   988→
+   989→   989→### projects
+   990→   990→
+   991→   991→- id
+   992→   992→- userId
+   993→   993→- name
+   994→   994→- settings
+   995→   995→- createdAt
+   996→   996→- updatedAt
+   997→   997→
+   998→   998→### sessions
+   999→   999→
+  1000→  1000→- id
+  1001→  1001→- userId
+  1002→  1002→- projectId
+  1003→  1003→- state
+  1004→  1004→- region
+  1005→  1005→- provider
+  1006→  1006→- startedAt
+  1007→  1007→- endedAt
+  1008→  1008→- failureReason
+  1009→  1009→
+  1010→  1010→### reference_images
+  1011→  1011→
+  1012→  1012→- id
+  1013→  1013→- userId
+  1014→  1014→- storageKey
+  1015→  1015→- mimeType
+  1016→  1016→- size
+  1017→  1017→- expiresAt
+  1018→  1018→- createdAt
+  1019→  1019→
+  1020→  1020→### voice_presets
+  1021→  1021→
+  1022→  1022→- id
+  1023→  1023→- userId
+  1024→  1024→- name
+  1025→  1025→- configuration
+  1026→  1026→- createdAt
+  1027→  1027→- updatedAt
+  1028→  1028→
+  1029→  1029→### transformations
+  1030→  1030→
+  1031→  1031→- id
+  1032→  1032→- sessionId
+  1033→  1033→- prompt
+  1034→  1034→- compiledRequest
+  1035→  1035→- provider
+  1036→  1036→- createdAt
+  1037→  1037→
+  1038→  1038→### recordings
+  1039→  1039→
+  1040→  1040→- id
+  1041→  1041→- userId
+  1042→  1042→- sessionId
+  1043→  1043→- storageKey
+  1044→  1044→- duration
+  1045→  1045→- size
+  1046→  1046→- status
+  1047→  1047→
+  1048→  1048→### stream_destinations
+  1049→  1049→
+  1050→  1050→- id
+  1051→  1051→- userId
+  1052→  1052→- provider
+  1053→  1053→- encryptedCredentials
+  1054→  1054→- status
+  1055→  1055→
+  1056→  1056→### usage_events
+  1057→  1057→
+  1058→  1058→- id
+  1059→  1059→- userId
+  1060→  1060→- sessionId
+  1061→  1061→- resourceType
+  1062→  1062→- quantity
+  1063→  1063→- provider
+  1064→  1064→- costBasis
+  1065→  1065→- createdAt
+  1066→  1066→
+  1067→  1067→### provider_health
+  1068→  1068→
+  1069→  1069→- provider
+  1070→  1070→- region
+  1071→  1071→- status
+  1072→  1072→- latency
+  1073→  1073→- errorRate
+  1074→  1074→- capacity
+  1075→  1075→- checkedAt
+  1076→  1076→
+  1077→  1077→### audit_logs
+  1078→  1078→
+  1079→  1079→- id
+  1080→  1080→- actorId
+  1081→  1081→- action
+  1082→  1082→- resourceType
+  1083→  1083→- resourceId
+  1084→  1084→- metadata
+  1085→  1085→- createdAt
+  1086→  1086→
+  1087→  1087→---
+  1088→  1088→
+  1089→  1089→# 24. BILLING ARCHITECTURE
+  1090→  1090→
+  1091→  1091→Usage must be server-authoritative.
+  1092→  1092→
+  1093→  1093→Never bill based solely on client-reported seconds.
+  1094→  1094→
+  1095→  1095→Record immutable usage events.
+  1096→  1096→
+  1097→  1097→Example:
+  1098→  1098→
+  1099→  1099→```text
+  1100→  1100→session_started
+  1101→  1101→video_second_consumed
+  1102→  1102→audio_second_consumed
+  1103→  1103→recording_storage_consumed
+  1104→  1104→stream_started
+  1105→  1105→session_ended
+  1106→  1106→```
+  1107→  1107→
+  1108→  1108→A billing service aggregates events.
+  1109→  1109→
+  1110→  1110→## 24.1 Owner/Internal Billing Exemption (BILL-001)
+  1111→  1111→
+  1112→  1112→The platform must support a role-scoped billing exemption for internal/owner accounts, without weakening the server-authoritative usage model above.
+  1113→  1113→
+  1114→  1114→Requirements:
+  1115→  1115→
+  1116→  1116→- `users.role` (§23) includes an internal tier (e.g. `owner`, `internal`) distinct from standard `user`/`admin` roles.
+  1117→  1117→- A per-account flag — e.g. `billingExempt: boolean` — determines whether usage events for that account are invoiced. This must be a data-level flag checked server-side, never a client-side or UI-level bypass.
+  1118→  1118→- **Usage events are still recorded for exempt accounts.** Exemption affects invoicing only, not metering. The owner's real GPU/provider cost is not free to the business — it must still flow through `usage_events` and the cost model in §57 so actual spend stays visible.
+  1119→  1119→- Exemption must be auditable: every exempt session is logged in `audit_logs` (§23) with actor, timestamp, and cost basis, so "free for me" never becomes an untracked liability.
+  1120→  1120→- Exemption must not bypass the abuse/quota controls in §57 (max session duration, concurrency limits) — an unmetered account is not an unlimited one; without a ceiling, a compromised or misused owner session can still generate runaway provider cost.
+  1121→  1121→- Feature flag: `billing_enforcement` (extends §42) is evaluated per-account, not globally, so standard pay-as-you-go billing for all other users is unaffected by the owner exemption.
+  1122→  1122→
+  1123→  1123→Every other account remains on the standard pay-as-you-go usage-event ledger defined above.
+  1124→  1124→
+  1125→  1125→---
+  1126→  1126→
+  1127→  1127→# 25. ADMIN PLATFORM
+  1128→  1128→
+  1129→  1129→Admin must be a separate application and separate authorization boundary.
+  1130→  1130→
+  1131→  1131→Dashboard:
+  1132→  1132→
+  1133→  1133→- active sessions
+  1134→  1134→- users online
+  1135→  1135→- realtime latency
+  1136→  1136→- FPS
+  1137→  1137→- provider health
+  1138→  1138→- GPU health
+  1139→  1139→- errors
+  1140→  1140→- usage
+  1141→  1141→- revenue
+  1142→  1142→- incidents
+  1143→  1143→
+  1144→  1144→Management:
+  1145→  1145→
+  1146→  1146→- users
+  1147→  1147→- sessions
+  1148→  1148→- providers
+  1149→  1149→- models
+  1150→  1150→- feature flags
+  1151→  1151→- plans
+  1152→  1152→- usage
+  1153→  1153→- recordings
+  1154→  1154→- incidents
+  1155→  1155→- audit logs
+  1156→  1156→
+  1157→  1157→Never trust admin UI restrictions alone.
+  1158→  1158→
+  1159→  1159→Authorization must happen server-side.
+  1160→  1160→
+  1161→  1161→---
+  1162→  1162→
+  1163→  1163→# 26. SECURITY ARCHITECTURE
+  1164→  1164→
+  1165→  1165→Required:
+  1166→  1166→
+  1167→  1167→- TLS
+  1168→  1168→- secure cookies
+  1169→  1169→- short-lived access tokens
+  1170→  1170→- refresh token rotation
+  1171→  1171→- password hashing
+  1172→  1172→- MFA-ready architecture
+  1173→  1173→- rate limiting
+  1174→  1174→- request validation
+  1175→  1175→- authorization middleware
+  1176→  1176→- RBAC
+  1177→  1177→- audit logging
+  1178→  1178→- secret management
+  1179→  1179→- signed object URLs
+  1180→  1180→- upload validation
+  1181→  1181→- abuse controls
+  1182→  1182→- CSP
+  1183→  1183→- secure headers
+  1184→  1184→
+  1185→  1185→Secrets must live in:
+  1186→  1186→
+  1187→  1187→- environment variables during development
+  1188→  1188→- secret manager in production
+  1189→  1189→
+  1190→  1190→---
+  1191→  1191→
+  1192→  1192→# 27. PRIVACY
+  1193→  1193→
+  1194→  1194→The user must know:
+  1195→  1195→
+  1196→  1196→- when camera is active
+  1197→  1197→- when microphone is active
+  1198→  1198→- whether media leaves the device
+  1199→  1199→- where media is processed
+  1200→  1200→- whether media is stored
+  1201→  1201→- retention period
+  1202→  1202→- how to delete it
+  1203→  1203→
+  1204→  1204→Default temporary media should expire automatically.
+  1205→  1205→
+  1206→  1206→---
+  1207→  1207→
+  1208→  1208→# 28. REALTIME PERFORMANCE BUDGET
+  1209→  1209→
+  1210→  1210→Measure:
+  1211→  1211→
+  1212→  1212→- capture latency
+  1213→  1213→- encode latency
+  1214→  1214→- network RTT
+  1215→  1215→- provider queue latency
+  1216→  1216→- inference latency
+  1217→  1217→- decode latency
+  1218→  1218→- render latency
+  1219→  1219→- audio processing latency
+  1220→  1220→- synchronization offset
+  1221→  1221→- glass-to-glass latency
+  1222→  1222→
+  1223→  1223→Expose diagnostics to developers/admins.
+  1224→  1224→
+  1225→  1225→Do not invent target numbers where the selected model/provider cannot guarantee them.
+  1226→  1226→
+  1227→  1227→---
+  1228→  1228→
+  1229→  1229→# 29. ADAPTIVE QUALITY
+  1230→  1230→
+  1231→  1231→Create an adaptive quality controller.
+  1232→  1232→
+  1233→  1233→Inputs:
+  1234→  1234→
+  1235→  1235→- FPS
+  1236→  1236→- packet loss
+  1237→  1237→- jitter
+  1238→  1238→- RTT
+  1239→  1239→- GPU queue
+  1240→  1240→- inference latency
+  1241→  1241→- browser CPU
+  1242→  1242→- browser memory
+  1243→  1243→
+  1244→  1244→Actions:
+  1245→  1245→
+  1246→  1246→- resolution reduction
+  1247→  1247→- frame-rate reduction
+  1248→  1248→- quality mode change
+  1249→  1249→- provider switch
+  1250→  1250→- effect simplification
+  1251→  1251→- degraded mode
+  1252→  1252→
+  1253→  1253→Never endlessly oscillate quality.
+  1254→  1254→
+  1255→  1255→Use hysteresis.
+  1256→  1256→
+  1257→  1257→---
+  1258→  1258→
+  1259→  1259→# 30. RESILIENCE
+  1260→  1260→
+  1261→  1261→Implement:
+  1262→  1262→
+  1263→  1263→## Retry policy
+  1264→  1264→
+  1265→  1265→- exponential backoff
+  1266→  1266→- jitter
+  1267→  1267→- maximum attempts
+  1268→  1268→- retry classification
+  1269→  1269→
+  1270→  1270→## Circuit breaker
+  1271→  1271→
+  1272→  1272→Open when provider failure rate crosses threshold.
+  1273→  1273→
+  1274→  1274→## Bulkhead isolation
+  1275→  1275→
+  1276→  1276→Separate:
+  1277→  1277→
+  1278→  1278→- video sessions
+  1279→  1279→- audio sessions
+  1280→  1280→- recording
+  1281→  1281→- streaming
+  1282→  1282→- background jobs
+  1283→  1283→
+  1284→  1284→## Graceful degradation
+  1285→  1285→
+  1286→  1286→If AI fails:
+  1287→  1287→
+  1288→  1288→```text
+  1289→  1289→Full AI
+  1290→  1290→↓
+  1291→  1291→Reduced AI
+  1292→  1292→↓
+  1293→  1293→Lightweight effect
+  1294→  1294→↓
+  1295→  1295→Original media
+  1296→  1296→```
+  1297→  1297→
+  1298→  1298→The user should not receive an unexplained black screen.
+  1299→  1299→
+  1300→  1300→---
+  1301→  1301→
+  1302→  1302→# 31. GPU WORKER ARCHITECTURE
+  1303→  1303→
+  1304→  1304→Workers must report:
+  1305→  1305→
+  1306→  1306→- workerId
+  1307→  1307→- region
+  1308→  1308→- GPU model
+  1309→  1309→- VRAM
+  1310→  1310→- utilization
+  1311→  1311→- active sessions
+  1312→  1312→- queue depth
+  1313→  1313→- inference latency
+  1314→  1314→- health
+  1315→  1315→- last heartbeat
+  1316→  1316→
+  1317→  1317→Scheduler chooses workers based on:
+  1318→  1318→
+  1319→  1319→```text
+  1320→  1320→health
+  1321→  1321→+ capacity
+  1322→  1322→+ region
+  1323→  1323→+ model compatibility
+  1324→  1324→+ latency
+  1325→  1325→+ cost
+  1326→  1326→```
+  1327→  1327→
+  1328→  1328→Workers must be drainable before deployment.
+  1329→  1329→
+  1330→  1330→---
+  1331→  1331→
+  1332→  1332→# 32. HIGH AVAILABILITY
+  1333→  1333→
+  1334→  1334→Production architecture must support:
+  1335→  1335→
+  1336→  1336→- multiple API replicas
+  1337→  1337→- multiple realtime gateways
+  1338→  1338→- redundant TURN
+  1339→  1339→- PostgreSQL high availability
+  1340→  1340→- Redis high availability
+  1341→  1341→- replicated object storage
+  1342→  1342→- multiple GPU workers
+  1343→  1343→- health checks
+  1344→  1344→- rolling deployment
+  1345→  1345→- rollback
+  1346→  1346→- backups
+  1347→  1347→- disaster recovery
+  1348→  1348→
+  1349→  1349→Define:
+  1350→  1350→
+  1351→  1351→- RPO
+  1352→  1352→- RTO
+  1353→  1353→- availability objective
+  1354→  1354→
+  1355→  1355→Do not claim 100% uptime.
+  1356→  1356→
+  1357→  1357→---
+  1358→  1358→
+  1359→  1359→# 33. OBSERVABILITY
+  1360→  1360→
+  1361→  1361→Every request/session should have:
+  1362→  1362→
+  1363→  1363→- requestId
+  1364→  1364→- traceId
+  1365→  1365→- sessionId
+  1366→  1366→- userId where permitted
+  1367→  1367→- provider
+  1368→  1368→- region
+  1369→  1369→
+  1370→  1370→Metrics:
+  1371→  1371→
+  1372→  1372→- active sessions
+  1373→  1373→- session success rate
+  1374→  1374→- session failure rate
+  1375→  1375→- P50/P95/P99 latency
+  1376→  1376→- FPS
+  1377→  1377→- packet loss
+  1378→  1378→- jitter
+  1379→  1379→- reconnect rate
+  1380→  1380→- provider error rate
+  1381→  1381→- GPU utilization
+  1382→  1382→- GPU queue depth
+  1383→  1383→- recording failures
+  1384→  1384→- streaming failures
+  1385→  1385→
+  1386→  1386→Create alerts for:
+  1387→  1387→
+  1388→  1388→- elevated session failure
+  1389→  1389→- provider outage
+  1390→  1390→- GPU exhaustion
+  1391→  1391→- database health
+  1392→  1392→- Redis health
+  1393→  1393→- TURN health
+  1394→  1394→- abnormal latency
+  1395→  1395→- storage failures
+  1396→  1396→
+  1397→  1397→---
+  1398→  1398→
+  1399→  1399→# 34. LOGGING RULES
+  1400→  1400→
+  1401→  1401→Use structured logs.
+  1402→  1402→
+  1403→  1403→Never log:
+  1404→  1404→
+  1405→  1405→- passwords
+  1406→  1406→- API keys
+  1407→  1407→- stream keys
+  1408→  1408→- raw authentication tokens
+  1409→  1409→- private media
+  1410→  1410→- unnecessary personal data
+  1411→  1411→
+  1412→  1412→Every production error must have a useful diagnostic identifier.
+  1413→  1413→
+  1414→  1414→---
+  1415→  1415→
+  1416→  1416→# 35. API DESIGN
+  1417→  1417→
+  1418→  1418→Expose:
+  1419→  1419→
+  1420→  1420→```text
+  1421→  1421→POST   /api/auth/register
+  1422→  1422→POST   /api/auth/login
+  1423→  1423→POST   /api/auth/logout
+  1424→  1424→
+  1425→  1425→GET    /api/me
+  1426→  1426→GET    /api/projects
+  1427→  1427→POST   /api/projects
+  1428→  1428→PATCH  /api/projects/:id
+  1429→  1429→DELETE /api/projects/:id
+  1430→  1430→
+  1431→  1431→POST   /api/references
+  1432→  1432→DELETE /api/references/:id
+  1433→  1433→
+  1434→  1434→POST   /api/sessions
+  1435→  1435→GET    /api/sessions/:id
+  1436→  1436→POST   /api/sessions/:id/transform
+  1437→  1437→POST   /api/sessions/:id/voice
+  1438→  1438→POST   /api/sessions/:id/stop
+  1439→  1439→
+  1440→  1440→POST   /api/recordings
+  1441→  1441→GET    /api/recordings
+  1442→  1442→DELETE /api/recordings/:id
+  1443→  1443→
+  1444→  1444→POST   /api/streams
+  1445→  1445→POST   /api/streams/:id/start
+  1446→  1446→POST   /api/streams/:id/stop
+  1447→  1447→
+  1448→  1448→GET    /api/usage
+  1449→  1449→GET    /api/health
+  1450→  1450→```
+  1451→  1451→
+  1452→  1452→Exact endpoints may evolve after architecture review.
+  1453→  1453→
+  1454→  1454→---
+  1455→  1455→
+  1456→  1456→# 36. REALTIME EVENTS
+  1457→  1457→
+  1458→  1458→Define typed events.
+  1459→  1459→
+  1460→  1460→```text
+  1461→  1461→session.created
+  1462→  1462→session.connecting
+  1463→  1463→session.connected
+  1464→  1464→session.degraded
+  1465→  1465→session.reconnecting
+  1466→  1466→session.recovered
+  1467→  1467→session.failed
+  1468→  1468→session.stopped
+  1469→  1469→
+  1470→  1470→video.stats
+  1471→  1471→audio.stats
+  1472→  1472→sync.stats
+  1473→  1473→
+  1474→  1474→transformation.requested
+  1475→  1475→transformation.applied
+  1476→  1476→transformation.failed
+  1477→  1477→
+  1478→  1478→voice.changed
+  1479→  1479→voice.failed
+  1480→  1480→
+  1481→  1481→recording.started
+  1482→  1482→recording.completed
+  1483→  1483→recording.failed
+  1484→  1484→
+  1485→  1485→stream.started
+  1486→  1486→stream.stopped
+  1487→  1487→stream.failed
+  1488→  1488→```
+  1489→  1489→
+  1490→  1490→---
+  1491→  1491→
+  1492→  1492→# 37. ERROR MODEL
+  1493→  1493→
+  1494→  1494→Create typed error codes.
+  1495→  1495→
+  1496→  1496→Examples:
+  1497→  1497→
+  1498→  1498→```text
+  1499→  1499→MEDIA_PERMISSION_DENIED
+  1500→  1500→MEDIA_DEVICE_UNAVAILABLE
+  1501→  1501→SESSION_AUTH_FAILED
+  1502→  1502→SESSION_PROVIDER_UNAVAILABLE
+  1503→  1503→SESSION_CAPACITY_EXCEEDED
+  1504→  1504→VIDEO_PROVIDER_TIMEOUT
+  1505→  1505→VOICE_PROVIDER_TIMEOUT
+  1506→  1506→REFERENCE_INVALID
+  1507→  1507→REFERENCE_TOO_LARGE
+  1508→  1508→STREAM_CONNECTION_FAILED
+  1509→  1509→RECORDING_FAILED
+  1510→  1510→QUOTA_EXCEEDED
+  1511→  1511→RATE_LIMITED
+  1512→  1512→```
+  1513→  1513→
+  1514→  1514→Every user-visible error must have:
+  1515→  1515→
+  1516→  1516→- safe message
+  1517→  1517→- internal error code
+  1518→  1518→- recovery suggestion
+  1519→  1519→
+  1520→  1520→---
+  1521→  1521→
+  1522→  1522→# 38. TESTING STRATEGY
+  1523→  1523→
+  1524→  1524→## Unit tests
+  1525→  1525→
+  1526→  1526→Test:
+  1527→  1527→
+  1528→  1528→- prompt compiler
+  1529→  1529→- validation
+  1530→  1530→- session state machine
+  1531→  1531→- retry logic
+  1532→  1532→- circuit breaker
+  1533→  1533→- billing
+  1534→  1534→- usage aggregation
+  1535→  1535→- synchronization calculations
+  1536→  1536→- provider selection
+  1537→  1537→
+  1538→  1538→## Integration tests
+  1539→  1539→
+  1540→  1540→Test:
+  1541→  1541→
+  1542→  1542→- API/database
+  1543→  1543→- Redis
+  1544→  1544→- object storage
+  1545→  1545→- session creation
+  1546→  1546→- provider adapters
+  1547→  1547→- WebRTC signaling
+  1548→  1548→
+  1549→  1549→## E2E
+  1550→  1550→
+  1551→  1551→Test:
+  1552→  1552→
+  1553→  1553→1. Login.
+  1554→  1554→2. Open Studio.
+  1555→  1555→3. Start camera.
+  1556→  1556→4. Start microphone.
+  1557→  1557→5. Start session.
+  1558→  1558→6. Apply transformation.
+  1559→  1559→7. Change prompt.
+  1560→  1560→8. Change voice.
+  1561→  1561→9. Record.
+  1562→  1562→10. Stop.
+  1563→  1563→11. Verify artifact.
+  1564→  1564→
+  1565→  1565→## Chaos tests
+  1566→  1566→
+  1567→  1567→Simulate:
+  1568→  1568→
+  1569→  1569→- network loss
+  1570→  1570→- provider outage
+  1571→  1571→- GPU failure
+  1572→  1572→- Redis restart
+  1573→  1573→- database failover
+  1574→  1574→- TURN failure
+  1575→  1575→- camera removal
+  1576→  1576→- microphone removal
+  1577→  1577→- browser backgrounding
+  1578→  1578→
+  1579→  1579→---
+  1580→  1580→
+  1581→  1581→# 39. LOAD TESTING
+  1582→  1582→
+  1583→  1583→Before production:
+  1584→  1584→
+  1585→  1585→Test:
+  1586→  1586→
+  1587→  1587→- concurrent session creation
+  1588→  1588→- concurrent realtime sessions
+  1589→  1589→- session churn
+  1590→  1590→- provider saturation
+  1591→  1591→- API throughput
+  1592→  1592→- WebSocket signaling
+  1593→  1593→- Redis load
+  1594→  1594→- database connections
+  1595→  1595→- object storage
+  1596→  1596→- GPU queue behavior
+  1597→  1597→
+  1598→  1598→Measure:
+  1599→  1599→
+  1600→  1600→- error rate
+  1601→  1601→- latency
+  1602→  1602→- resource utilization
+  1603→  1603→- recovery behavior
+  1604→  1604→
+  1605→  1605→Do not call the system production-ready until defined thresholds are met.
+  1606→  1606→
+  1607→  1607→---
+  1608→  1608→
+  1609→  1609→# 40. SECURITY TESTING
+  1610→  1610→
+  1611→  1611→Perform:
+  1612→  1612→
+  1613→  1613→- dependency audit
+  1614→  1614→- SAST
+  1615→  1615→- secret scan
+  1616→  1616→- authorization tests
+  1617→  1617→- rate-limit tests
+  1618→  1618→- upload tests
+  1619→  1619→- session fixation tests
+  1620→  1620→- token expiration tests
+  1621→  1621→- CSRF tests where relevant
+  1622→  1622→- CORS tests
+  1623→  1623→- SSRF tests
+  1624→  1624→- path traversal tests
+  1625→  1625→- injection tests
+  1626→  1626→
+  1627→  1627→---
+  1628→  1628→
+  1629→  1629→# 41. DATA RETENTION
+  1630→  1630→
+  1631→  1631→Implement configurable retention.
+  1632→  1632→
+  1633→  1633→Examples:
+  1634→  1634→
+  1635→  1635→- temporary reference assets: short TTL
+  1636→  1636→- temporary session metadata: configurable
+  1637→  1637→- recordings: user-controlled
+  1638→  1638→- audit logs: policy-controlled
+  1639→  1639→
+  1640→  1640→Deletion must remove:
+  1641→  1641→
+  1642→  1642→- database reference
+  1643→  1643→- object storage asset
+  1644→  1644→- derivative assets
+  1645→  1645→- provider-side asset where supported
+  1646→  1646→
+  1647→  1647→---
+  1648→  1648→
+  1649→  1649→# 42. FEATURE FLAGS
+  1650→  1650→
+  1651→  1651→Implement server-controlled feature flags:
+  1652→  1652→
+  1653→  1653→```text
+  1654→  1654→realtime_video
+  1655→  1655→realtime_voice
+  1656→  1656→reference_images
+  1657→  1657→lip_sync
+  1658→  1658→recording
+  1659→  1659→streaming
+  1660→  1660→provider_failover
+  1661→  1661→self_hosted_models
+  1662→  1662→advanced_voice_controls
+  1663→  1663→```
+  1664→  1664→
+  1665→  1665→This allows incomplete capabilities to remain disabled without deleting code.
+  1666→  1666→
+  1667→  1667→---
+  1668→  1668→
+  1669→  1669→# 43. DESIGN SYSTEM
+  1670→  1670→
+  1671→  1671→Create an original design system.
+  1672→  1672→
+  1673→  1673→Tokens:
+  1674→  1674→
+  1675→  1675→- typography
+  1676→  1676→- spacing
+  1677→  1677→- radii
+  1678→  1678→- shadows
+  1679→  1679→- motion
+  1680→  1680→- surface hierarchy
+  1681→  1681→- states
+  1682→  1682→- accessibility
+  1683→  1683→
+  1684→  1684→Do not clone another company's UI.
+  1685→  1685→
+  1686→  1686→The product should look premium, modern, technical, and cinematic without reproducing a competitor's interface.
+  1687→  1687→
+  1688→  1688→---
+  1689→  1689→
+  1690→  1690→# 44. ACCESSIBILITY
+  1691→  1691→
+  1692→  1692→Support:
+  1693→  1693→
+  1694→  1694→- keyboard navigation
+  1695→  1695→- focus management
+  1696→  1696→- readable contrast
+  1697→  1697→- screen-reader labels
+  1698→  1698→- reduced motion
+  1699→  1699→- clear error messages
+  1700→  1700→- accessible controls
+  1701→  1701→
+  1702→  1702→---
+  1703→  1703→
+  1704→  1704→# 45. INTERNATIONALIZATION
+  1705→  1705→
+  1706→  1706→Architecture must support:
+  1707→  1707→
+  1708→  1708→- English initially
+  1709→  1709→- additional languages later
+  1710→  1710→- locale-aware dates
+  1711→  1711→- locale-aware numbers
+  1712→  1712→- translated UI strings
+  1713→  1713→
+  1714→  1714→Never hardcode user-facing text throughout components.
+  1715→  1715→
+  1716→  1716→---
+  1717→  1717→
+  1718→  1718→# 46. MOBILE
+  1719→  1719→
+  1720→  1720→The initial desktop studio is primary.
+  1721→  1721→
+  1722→  1722→Mobile must still:
+  1723→  1723→
+  1724→  1724→- request permissions correctly
+  1725→  1725→- show preview
+  1726→  1726→- support basic transformations
+  1727→  1727→- support voice
+  1728→  1728→- handle device rotation
+  1729→  1729→- handle browser suspension
+  1730→  1730→
+  1731→  1731→Advanced production workflows may remain desktop-first.
+  1732→  1732→
+  1733→  1733→---
+  1734→  1734→
+  1735→  1735→# 47. DEPLOYMENT ENVIRONMENTS
+  1736→  1736→
+  1737→  1737→## Local
+  1738→  1738→
+  1739→  1739→- Docker Compose
+  1740→  1740→- PostgreSQL
+  1741→  1741→- Redis
+  1742→  1742→- object storage emulator
+  1743→  1743→- TURN
+  1744→  1744→- API
+  1745→  1745→- Studio
+  1746→  1746→- optional local workers
+  1747→  1747→
+  1748→  1748→## Staging
+  1749→  1749→
+  1750→  1750→Production-like infrastructure.
+  1751→  1751→
+  1752→  1752→## Production
+  1753→  1753→
+  1754→  1754→- HTTPS
+  1755→  1755→- CDN
+  1756→  1756→- load balancer
+  1757→  1757→- redundant services
+  1758→  1758→- production database
+  1759→  1759→- Redis
+  1760→  1760→- object storage
+  1761→  1761→- GPU workers
+  1762→  1762→- monitoring
+  1763→  1763→- backups
+  1764→  1764→
+  1765→  1765→---
+  1766→  1766→
+  1767→  1767→# 48. CONFIGURATION
+  1768→  1768→
+  1769→  1769→Use typed environment configuration.
+  1770→  1770→
+  1771→  1771→Example categories:
+  1772→  1772→
+  1773→  1773→```text
+  1774→  1774→DATABASE_URL
+  1775→  1775→REDIS_URL
+  1776→  1776→OBJECT_STORAGE_*
+  1777→  1777→TURN_*
+  1778→  1778→AUTH_*
+  1779→  1779→VIDEO_PROVIDER_*
+  1780→  1780→VOICE_PROVIDER_*
+  1781→  1781→LIPSYNC_PROVIDER_*
+  1782→  1782→OBSERVABILITY_*
+  1783→  1783→BILLING_*
+  1784→  1784→```
+  1785→  1785→
+  1786→  1786→Never expose server-only variables to the client.
+  1787→  1787→
+  1788→  1788→---
+  1789→  1789→
+  1790→  1790→# 49. CI/CD
+  1791→  1791→
+  1792→  1792→Pipeline:
+  1793→  1793→
+  1794→  1794→```text
+  1795→  1795→Commit
+  1796→  1796→ ↓
+  1797→  1797→Install
+  1798→  1798→ ↓
+  1799→  1799→Typecheck
+  1800→  1800→ ↓
+  1801→  1801→Lint
+  1802→  1802→ ↓
+  1803→  1803→Unit tests
+  1804→  1804→ ↓
+  1805→  1805→Integration tests
+  1806→  1806→ ↓
+  1807→  1807→Build
+  1808→  1808→ ↓
+  1809→  1809→Security scan
+  1810→  1810→ ↓
+  1811→  1811→E2E
+  1812→  1812→ ↓
+  1813→  1813→Container build
+  1814→  1814→ ↓
+  1815→  1815→Staging deployment
+  1816→  1816→ ↓
+  1817→  1817→Smoke tests
+  1818→  1818→ ↓
+  1819→  1819→Production approval
+  1820→  1820→ ↓
+  1821→  1821→Rolling deployment
+  1822→  1822→ ↓
+  1823→  1823→Health verification
+  1824→  1824→```
+  1825→  1825→
+  1826→  1826→Automatic rollback if critical health checks fail.
+  1827→  1827→
+  1828→  1828→---
+  1829→  1829→
+  1830→  1830→# 50. DEVELOPMENT PHASES
+  1831→  1831→
+  1832→  1832→## PHASE 0 — DISCOVERY
+  1833→  1833→
+  1834→  1834→Do not code.
+  1835→  1835→
+  1836→  1836→Interview the product owner.
+  1837→  1837→
+  1838→  1838→Questions must be grouped into small batches.
+  1839→  1839→
+  1840→  1840→First batch:
+  1841→  1841→
+  1842→  1842→1. Product name?
+  1843→  1843→2. Target audience?
+  1844→  1844→3. Desktop-only initially or desktop + mobile?
+  1845→  1845→4. Preferred visual style?
+  1846→  1846→5. Which transformations are mandatory for launch?
+  1847→  1847→6. Which voice features are mandatory?
+  1848→  1848→7. Which external AI providers are available?
+  1849→  1849→8. Expected initial concurrent users?
+  1850→  1850→9. Deployment budget?
+  1851→  1851→10. Preferred hosting/GPU provider?
+  1852→  1852→
+  1853→  1853→After answers, produce the final PRD delta.
+  1854→  1854→
+  1855→  1855→---
+  1856→  1856→
+  1857→  1857→## PHASE 1 — FOUNDATION
+  1858→  1858→
+  1859→  1859→Build:
+  1860→  1860→
+  1861→  1861→- monorepo
+  1862→  1862→- package system
+  1863→  1863→- TypeScript
+  1864→  1864→- linting
+  1865→  1865→- formatting
+  1866→  1866→- environment validation
+  1867→  1867→- CI
+  1868→  1868→- database
+  1869→  1869→- Redis
+  1870→  1870→- object storage
+  1871→  1871→- base API
+  1872→  1872→- base Studio shell
+  1873→  1873→
+  1874→  1874→Acceptance:
+  1875→  1875→
+  1876→  1876→- clean install
+  1877→  1877→- build succeeds
+  1878→  1878→- tests run
+  1879→  1879→- CI passes
+  1880→  1880→
+  1881→  1881→---
+  1882→  1882→
+  1883→  1883→## PHASE 2 — AUTHENTICATION
+  1884→  1884→
+  1885→  1885→Build:
+  1886→  1886→
+  1887→  1887→- registration
+  1888→  1888→- login
+  1889→  1889→- logout
+  1890→  1890→- sessions
+  1891→  1891→- password hashing
+  1892→  1892→- email verification architecture
+  1893→  1893→- RBAC
+  1894→  1894→
+  1895→  1895→Acceptance:
+  1896→  1896→
+  1897→  1897→- authentication tests pass
+  1898→  1898→- unauthorized API access fails
+  1899→  1899→
+  1900→  1900→---
+  1901→  1901→
+  1902→  1902→## PHASE 3 — MEDIA CAPTURE
+  1903→  1903→
+  1904→  1904→Build:
+  1905→  1905→
+  1906→  1906→- camera
+  1907→  1907→- microphone
+  1908→  1908→- device selector
+  1909→  1909→- permissions
+  1910→  1910→- preview
+  1911→  1911→- diagnostics
+  1912→  1912→
+  1913→  1913→Acceptance:
+  1914→  1914→
+  1915→  1915→- multiple cameras work
+  1916→  1916→- multiple microphones work
+  1917→  1917→- device switching works
+  1918→  1918→
+  1919→  1919→---
+  1920→  1920→
+  1921→  1921→## PHASE 4 — REALTIME TRANSPORT
+  1922→  1922→
+  1923→  1923→Build:
+  1924→  1924→
+  1925→  1925→- WebRTC
+  1926→  1926→- signaling
+  1927→  1927→- STUN
+  1928→  1928→- TURN
+  1929→  1929→- reconnection
+  1930→  1930→- statistics
+  1931→  1931→
+  1932→  1932→Acceptance:
+  1933→  1933→
+  1934→  1934→- session connects
+  1935→  1935→- network degradation is detected
+  1936→  1936→- recovery works
+  1937→  1937→
+  1938→  1938→---
+  1939→  1939→
+  1940→  1940→## PHASE 5 — VIDEO AI
+  1941→  1941→
+  1942→  1942→Build provider abstraction and first production provider.
+  1943→  1943→
+  1944→  1944→Build:
+  1945→  1945→
+  1946→  1946→- realtime transformation
+  1947→  1947→- prompt update
+  1948→  1948→- reference image
+  1949→  1949→- modes
+  1950→  1950→- quality controls
+  1951→  1951→
+  1952→  1952→Acceptance:
+  1953→  1953→
+  1954→  1954→- real provider produces real output
+  1955→  1955→- prompt update works
+  1956→  1956→- failure is handled
+  1957→  1957→
+  1958→  1958→---
+  1959→  1959→
+  1960→  1960→## PHASE 6 — VOICE AI
+  1961→  1961→
+  1962→  1962→Build:
+  1963→  1963→
+  1964→  1964→- realtime audio provider
+  1965→  1965→- preprocessing
+  1966→  1966→- voice presets
+  1967→  1967→- voice switching
+  1968→  1968→- metrics
+  1969→  1969→
+  1970→  1970→Acceptance:
+  1971→  1971→
+  1972→  1972→- voice conversion works continuously
+  1973→  1973→- no fake processing
+  1974→  1974→- provider failure is handled
+  1975→  1975→
+  1976→  1976→---
+  1977→  1977→
+  1978→  1978→## PHASE 7 — LIP SYNC + SYNC ENGINE
+  1979→  1979→
+  1980→  1980→Build:
+  1981→  1981→
+  1982→  1982→- timestamps
+  1983→  1983→- synchronization
+  1984→  1984→- drift correction
+  1985→  1985→- lip sync provider
+  1986→  1986→
+  1987→  1987→Acceptance:
+  1988→  1988→
+  1989→  1989→- synchronized output under normal conditions
+  1990→  1990→- recovery under drift
+  1991→  1991→
+  1992→  1992→---
+  1993→  1993→
+  1994→  1994→## PHASE 8 — RECORDING
+  1995→  1995→
+  1996→  1996→Build:
+  1997→  1997→
+  1998→  1998→- recording
+  1999→  1999→- muxing
+  2000→  2000→- storage
+
+[showing lines 1-2000 of 2002; use offset=2001 with limit to continue reading]

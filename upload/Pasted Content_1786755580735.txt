@@ -1,0 +1,4047 @@
+# MASTER PRD + TECHNICAL SPECIFICATION
+# Project: Original Realtime AI Video + Voice Transformation Studio
+## Version 1.0 — Production Architecture & Autonomous Development Contract
+
+> **Purpose**
+>
+> Build an original, production-grade realtime AI media platform with the capability class of modern realtime AI video studios: webcam transformation, reference-driven character transformation, realtime visual effects, realtime voice conversion, lip synchronization, recording, live streaming, projects, presets, usage metering, administration, observability, and resilient infrastructure.
+>
+> This document is the product requirements document, system architecture, engineering contract, QA specification, deployment specification, and phased execution plan for the coding AI.
+>
+> **Do not copy proprietary source code, model weights, private APIs, undocumented endpoints, branding, assets, or implementation details from any competitor.** Use only public behavior and public documentation as high-level inspiration. All product code, UI, orchestration, schemas, and branding must be independently implemented.
+
+---
+
+# 0. NON-NEGOTIABLE DEVELOPMENT CONTRACT
+
+The coding AI MUST:
+
+1. Read this entire document before modifying the repository.
+2. Inspect the existing repository before creating files.
+3. Never destroy working functionality without an explicit migration plan.
+4. Never fabricate API responses, model capabilities, latency, FPS, uptime, test results, or provider availability.
+5. Never put secrets/API keys in browser code.
+6. Never use localStorage as the production source of truth.
+7. Never create fake "AI processing" that merely changes a UI status.
+8. Never claim a feature works until it has been exercised by an automated or manual verification path.
+9. Never silently substitute a mock for a production provider.
+10. Clearly mark every external dependency.
+11. Build provider abstractions so AI vendors/models can be replaced without rewriting the product.
+12. Prefer real implementations over placeholders.
+13. Use feature flags for incomplete capabilities.
+14. Use typed contracts between every subsystem.
+15. Preserve backwards compatibility during migrations whenever practical.
+16. Add tests for every critical path.
+17. Treat realtime media, synchronization, security, recovery, observability, and graceful degradation as first-class product requirements.
+18. Do not promise literal zero downtime. Engineer measurable high availability and automatic recovery.
+19. Do not build functionality intended for impersonation, fraud, deception, or unauthorized voice/face cloning. Support fictional, user-owned, licensed, or explicitly consented identities.
+20. Do not begin the entire implementation in one uncontrolled generation.
+
+---
+
+# 1. EXECUTIVE PRODUCT DEFINITION
+
+## 1.1 Product
+
+A browser-first realtime AI media studio where a user can open a camera and microphone, choose a visual transformation and voice transformation, and see/hear the transformed result continuously with low latency.
+
+The product is not a conventional video generator.
+
+It is a **realtime interactive media system**.
+
+Primary pipeline:
+
+```text
+Camera ─┐
+        ├──> Capture ──> Realtime Media Transport ──> Session Gateway
+Mic ────┘                                      │
+                                               ├──> Video AI Pipeline
+                                               ├──> Voice AI Pipeline
+                                               ├──> Lip-Sync Pipeline
+                                               └──> Control/Prompt Pipeline
+                                                        │
+                                                        ▼
+                                                Synchronization Engine
+                                                        │
+                                                        ▼
+                                               Output Media Stream
+                                              /        |         \
+                                         Browser   Recorder    Streaming
+```
+
+## 1.2 Product goals
+
+The platform must provide:
+
+- realtime webcam transformation
+- realtime voice transformation
+- prompt-driven transformations
+- reference-image transformations
+- character/appearance transformation
+- background/environment transformation
+- object transformation
+- visual effects
+- style transformation
+- realtime lip synchronization
+- voice presets
+- custom voice configurations where permitted
+- recording
+- live streaming
+- projects
+- presets
+- session recovery
+- provider failover
+- usage tracking
+- administration
+- observability
+- secure media handling
+- scalable GPU infrastructure
+
+## 1.3 Non-goals for initial release
+
+Do not initially build:
+
+- proprietary foundation video model training
+- proprietary foundation voice model training
+- custom global CDN
+- custom browser engine
+- custom codec implementation
+- custom operating system
+- unlimited free inference
+
+The architecture must remain capable of supporting those later.
+
+---
+
+# 2. PRODUCT PRINCIPLES
+
+## 2.1 Realtime first
+
+Every major decision must preserve interactive latency.
+
+Avoid:
+
+```text
+record entire clip
+→ upload
+→ generate
+→ download
+```
+
+Prefer:
+
+```text
+capture
+→ stream
+→ transform incrementally
+→ synchronize
+→ stream output
+```
+
+## 2.2 Provider agnostic
+
+The product must not become a thin wrapper around one AI vendor.
+
+Use:
+
+```text
+Application
+    ↓
+AI Orchestration Layer
+    ↓
+Provider Interfaces
+    ↓
+Provider Adapters
+    ↓
+External or Self-hosted Models
+```
+
+## 2.3 Measured performance
+
+Never display fabricated FPS or latency.
+
+All metrics must originate from actual measurements.
+
+## 2.4 Failure is normal
+
+Network loss, GPU exhaustion, provider timeout, browser suspension, device removal, packet loss, and model failure are expected operating conditions.
+
+The product must recover gracefully.
+
+---
+
+# 3. USER PERSONAS
+
+## 3.1 Creator
+
+Wants to transform themselves during livestreams.
+
+Needs:
+
+- low latency
+- simple controls
+- presets
+- recording
+- streaming
+- reliable camera/audio
+
+## 3.2 Content producer
+
+Needs:
+
+- reusable projects
+- reference images
+- scenes
+- recordings
+- presets
+- high-quality output
+
+## 3.3 Developer/power user
+
+Needs:
+
+- advanced controls
+- diagnostics
+- model/provider selection
+- performance statistics
+- API access later
+
+## 3.4 Administrator
+
+Needs:
+
+- user management
+- session visibility
+- provider health
+- GPU health
+- billing
+- incidents
+- logs
+- feature flags
+
+---
+
+# 4. CORE USER JOURNEYS
+
+## Journey A — First realtime session
+
+1. User opens Studio.
+2. Browser requests camera/microphone permissions.
+3. Device selection appears.
+4. Local preview starts immediately.
+5. User selects a transformation.
+6. Backend creates a short-lived realtime session token.
+7. WebRTC session establishes.
+8. AI provider connection establishes.
+9. Output begins.
+10. Metrics appear.
+11. User can change transformation without leaving the session.
+
+## Journey B — Voice changer
+
+1. User enables microphone.
+2. Audio capture begins.
+3. Noise suppression and preprocessing run.
+4. Audio is streamed.
+5. Voice conversion processes the stream.
+6. Converted audio returns.
+7. Output is synchronized with video.
+8. User can switch voice presets during the session.
+
+## Journey C — Reference transformation
+
+1. User uploads reference image.
+2. Backend validates and stores it temporarily.
+3. Reference is converted to a secure temporary URL/provider asset.
+4. User enters prompt.
+5. Transformation request is compiled.
+6. Realtime session receives the update.
+7. Output changes without restarting unnecessarily.
+
+## Journey D — Network failure
+
+1. WebRTC connection degrades.
+2. Client detects quality degradation.
+3. UI displays reconnecting state.
+4. Session coordinator attempts bounded reconnection.
+5. Existing session state is restored if possible.
+6. If unavailable, provider failover/degraded mode activates.
+7. User receives a clear status.
+
+---
+
+# 5. FEATURE MATRIX
+
+| Feature | MVP | Production |
+|---|---:|---:|
+| Camera capture | YES | YES |
+| Mic capture | YES | YES |
+| Device switching | YES | YES |
+| WebRTC | YES | YES |
+| Realtime video provider | YES | YES |
+| Prompt transformations | YES | YES |
+| Reference images | YES | YES |
+| Voice conversion | YES | YES |
+| Lip sync | YES | YES |
+| Recording | YES | YES |
+| Streaming | NO/PHASE 2 | YES |
+| Projects | YES | YES |
+| Presets | YES | YES |
+| Usage metering | YES | YES |
+| Billing | PHASE 2 | YES |
+| Admin | YES | YES |
+| Observability | YES | YES |
+| Provider failover | PHASE 2 | YES |
+| Multi-region GPU | PHASE 3 | YES |
+| Self-hosted models | PHASE 3 | YES |
+| Mobile optimization | PHASE 3 | YES |
+
+---
+
+# 6. SYSTEM ARCHITECTURE
+
+## 6.1 Logical architecture
+
+```text
+                         ┌─────────────────────┐
+                         │      Browser        │
+                         │ React + WebRTC      │
+                         └──────────┬──────────┘
+                                    │
+                             HTTPS / WSS / WebRTC
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │       Edge / Load Balancer    │
+                    └───────────────┬───────────────┘
+                                    │
+             ┌──────────────────────┼─────────────────────┐
+             │                      │                     │
+             ▼                      ▼                     ▼
+       API Service          Realtime Gateway       Signaling Service
+             │                      │                     │
+             └──────────────┬───────┴─────────────────────┘
+                            ▼
+                    Session Orchestrator
+                            │
+            ┌───────────────┼────────────────┐
+            ▼               ▼                ▼
+       Video Service   Audio Service    LipSync Service
+            │               │                │
+            ▼               ▼                ▼
+       Video Providers  Voice Providers  Sync/Providers
+            │               │                │
+            └───────────────┼────────────────┘
+                            ▼
+                     Media Output Gateway
+                     /       |          \
+                    /        |           \
+               Browser    Recorder      RTMP/SRT
+
+             ┌──────────────────────────────────┐
+             │ PostgreSQL / Redis / ObjectStore │
+             └──────────────────────────────────┘
+
+             ┌──────────────────────────────────┐
+             │ Observability / Metrics / Logs   │
+             └──────────────────────────────────┘
+```
+
+---
+
+# 7. RECOMMENDED TECHNOLOGY STACK
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Framer Motion
+- Zustand
+- WebRTC
+- Web Audio API
+- MediaDevices API
+- WebCodecs where beneficial
+
+## Backend
+
+Preferred:
+
+- Node.js
+- TypeScript
+- Fastify or NestJS
+- WebSocket/WebRTC signaling
+- OpenAPI
+- Zod or equivalent runtime validation
+
+AI/media workers may use Python where model/runtime requirements make it appropriate.
+
+## Data
+
+- PostgreSQL
+- Redis
+- S3-compatible object storage
+
+## Infrastructure
+
+- Docker
+- Kubernetes or managed container orchestration
+- GPU node pools
+- TURN server
+- CDN
+- Load balancer
+- Secrets manager
+
+## Observability
+
+- OpenTelemetry
+- Prometheus-compatible metrics
+- Grafana-compatible dashboards
+- centralized structured logging
+- error tracking
+
+---
+
+# 8. REPOSITORY STRUCTURE
+
+Use a monorepo.
+
+```text
+/
+├── apps/
+│   ├── studio/
+│   ├── admin/
+│   └── api/
+│
+├── packages/
+│   ├── ui/
+│   ├── types/
+│   ├── config/
+│   ├── realtime/
+│   ├── media/
+│   ├── prompts/
+│   ├── providers/
+│   ├── telemetry/
+│   └── validation/
+│
+├── services/
+│   ├── session-orchestrator/
+│   ├── video-worker/
+│   ├── audio-worker/
+│   ├── lipsync-worker/
+│   ├── media-gateway/
+│   └── recording-worker/
+│
+├── infra/
+│   ├── docker/
+│   ├── k8s/
+│   ├── terraform/
+│   ├── monitoring/
+│   └── turn/
+│
+├── database/
+│   ├── migrations/
+│   └── seeds/
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── e2e/
+│   ├── load/
+│   └── chaos/
+│
+└── docs/
+    ├── architecture/
+    ├── api/
+    ├── runbooks/
+    └── operations/
+```
+
+If the chosen framework requires a different structure, document the deviation before implementing it.
+
+---
+
+# 9. FRONTEND UX SPECIFICATION
+
+## 9.1 Studio shell
+
+The Studio must feel like professional realtime creative software.
+
+Required areas:
+
+### Top bar
+
+- project name
+- session status
+- connection quality
+- FPS
+- latency
+- account
+- settings
+
+### Main canvas
+
+- transformed output
+- fullscreen
+- fit/fill
+- mirror
+- quality selector
+
+### Transformation panel
+
+- prompt
+- mode
+- intensity
+- reference image
+- preset
+- reset
+
+### Voice panel
+
+- enable/disable
+- preset
+- pitch
+- formant
+- tone
+- clarity
+- intensity
+- advanced controls
+
+### Bottom transport
+
+- camera
+- microphone
+- mute
+- record
+- stream
+- snapshot
+- effects
+- settings
+
+## 9.2 UX state model
+
+Every realtime state must have visual feedback:
+
+- Initializing
+- Connecting
+- Connected
+- Processing
+- Reconnecting
+- Degraded
+- Recovering
+- Failed
+- Stopped
+
+Never leave the user staring at an ambiguous spinner.
+
+---
+
+# 10. MEDIA CAPTURE ENGINE
+
+Implement a dedicated media capture abstraction.
+
+```ts
+interface MediaCaptureManager {
+  enumerateDevices(): Promise<MediaDeviceInfo[]>;
+  startCamera(config: CameraConfig): Promise<MediaStream>;
+  startMicrophone(config: MicrophoneConfig): Promise<MediaStream>;
+  switchCamera(deviceId: string): Promise<void>;
+  switchMicrophone(deviceId: string): Promise<void>;
+  stop(): Promise<void>;
+  getStats(): CaptureStats;
+}
+```
+
+Requirements:
+
+- permission handling
+- device enumeration
+- hot switching
+- unavailable-device handling
+- browser compatibility
+- mobile constraints
+- resolution adaptation
+- frame-rate adaptation
+
+---
+
+# 11. WEBRTC ENGINE
+
+Create a dedicated package:
+
+`packages/realtime`
+
+Responsibilities:
+
+- peer connection lifecycle
+- ICE handling
+- STUN/TURN
+- track management
+- data channels
+- statistics
+- reconnection
+- network quality
+- synchronization metadata
+
+Never spread WebRTC state across React components.
+
+The React application should consume a stable realtime-session API.
+
+---
+
+# 12. SESSION ORCHESTRATOR
+
+The Session Orchestrator is the central brain of the platform.
+
+Responsibilities:
+
+- create sessions
+- authorize sessions
+- select providers
+- reserve resources
+- maintain session state
+- coordinate video/audio
+- apply prompt changes
+- coordinate failover
+- collect metrics
+- terminate sessions
+- recover sessions
+
+Session state:
+
+```ts
+type SessionState =
+  | "IDLE"
+  | "CREATING"
+  | "CONNECTING"
+  | "CONNECTED"
+  | "DEGRADED"
+  | "RECONNECTING"
+  | "RECOVERING"
+  | "STOPPING"
+  | "STOPPED"
+  | "FAILED";
+```
+
+---
+
+# 13. AI PROVIDER ABSTRACTION
+
+Create:
+
+```ts
+interface VideoAIProvider {
+  capabilities(): Promise<VideoCapabilities>;
+  createSession(config: VideoSessionConfig): Promise<ProviderSession>;
+  updateTransformation(
+    sessionId: string,
+    request: TransformationRequest
+  ): Promise<void>;
+  closeSession(sessionId: string): Promise<void>;
+  health(): Promise<ProviderHealth>;
+}
+```
+
+Voice:
+
+```ts
+interface VoiceAIProvider {
+  capabilities(): Promise<VoiceCapabilities>;
+  createSession(config: VoiceSessionConfig): Promise<ProviderSession>;
+  updateVoice(
+    sessionId: string,
+    request: VoiceTransformationRequest
+  ): Promise<void>;
+  closeSession(sessionId: string): Promise<void>;
+  health(): Promise<ProviderHealth>;
+}
+```
+
+Lip sync:
+
+```ts
+interface LipSyncProvider {
+  synchronize(
+    video: MediaStream,
+    audio: MediaStream
+  ): Promise<MediaStream>;
+}
+```
+
+---
+
+# 14. PROVIDER REGISTRY
+
+Create a provider registry.
+
+```text
+ProviderRegistry
+├── Video
+│   ├── Provider A
+│   ├── Provider B
+│   └── Self Hosted
+├── Voice
+│   ├── Provider A
+│   ├── Provider B
+│   └── Self Hosted
+└── LipSync
+    ├── Provider A
+    └── Self Hosted
+```
+
+Provider selection must consider:
+
+- health
+- latency
+- region
+- cost
+- capacity
+- feature support
+- current error rate
+
+---
+
+# 15. VIDEO TRANSFORMATION MODEL
+
+Define a provider-neutral request:
+
+```ts
+interface TransformationRequest {
+  prompt: string;
+  mode: TransformationMode;
+  referenceImageId?: string;
+  intensity?: number;
+  preserveIdentity?: boolean;
+  preserveMotion?: boolean;
+  preserveExpression?: boolean;
+  quality?: "balanced" | "quality" | "performance";
+}
+```
+
+Modes:
+
+```text
+character
+appearance
+clothing
+background
+environment
+object
+style
+vfx
+custom
+```
+
+---
+
+# 16. PROMPT COMPILER
+
+The prompt system must be a real subsystem.
+
+Pipeline:
+
+```text
+User Prompt
+   ↓
+Validation
+   ↓
+Intent Extraction
+   ↓
+Transformation Schema
+   ↓
+Safety/Policy Check
+   ↓
+Provider Prompt Compiler
+   ↓
+Provider Adapter
+```
+
+Example:
+
+User:
+
+> "Make me look like a futuristic armored explorer standing on Mars."
+
+Internal semantic representation:
+
+```json
+{
+  "subject": "person",
+  "appearance": {
+    "wardrobe": "futuristic armored explorer"
+  },
+  "environment": {
+    "location": "Mars"
+  },
+  "style": "cinematic realistic",
+  "preserve": [
+    "body movement",
+    "facial expression",
+    "camera movement"
+  ]
+}
+```
+
+Do not depend on an LLM for every tiny UI operation.
+
+Use deterministic transformations for structured controls.
+
+---
+
+# 17. REFERENCE IMAGE PIPELINE
+
+Requirements:
+
+- file type validation
+- MIME validation
+- dimension limits
+- malware/security scanning where applicable
+- size limits
+- private object storage
+- signed URLs
+- automatic expiration
+- deletion
+- audit record
+
+Never expose raw storage credentials.
+
+---
+
+# 18. REALTIME VOICE ENGINE
+
+Architecture:
+
+```text
+Microphone
+   ↓
+Audio Capture
+   ↓
+Echo Cancellation
+   ↓
+Noise Suppression
+   ↓
+Voice Activity Detection
+   ↓
+Resampling / Normalization
+   ↓
+Realtime Voice Conversion
+   ↓
+Post Processing
+   ↓
+Limiter / Gain
+   ↓
+Output
+```
+
+The voice engine must not require uploading complete recordings for normal realtime operation.
+
+Track:
+
+- input RMS
+- output RMS
+- processing latency
+- packet loss
+- jitter
+- conversion errors
+- dropped audio frames
+
+---
+
+# 19. VOICE PRESET MODEL
+
+Database entity:
+
+```text
+VoicePreset
+- id
+- userId
+- name
+- provider
+- providerVoiceId
+- pitch
+- formant
+- tone
+- intensity
+- createdAt
+- updatedAt
+```
+
+Built-in presets must not impersonate real individuals without authorization.
+
+## 19.1 Voice Clone Verification Requirement (VOICE-CONSENT-001)
+
+This subsection converts the general "must include consent/authorization controls" requirement in §59 into concrete, implementable verification steps. It is mandatory for any feature that creates a `VoicePreset` from a user-supplied voice sample (a clone), as distinct from a purely synthetic/built-in preset.
+
+A cloned voice may not be created or activated for use until all of the following pass:
+
+| Step | Requirement |
+|---|---|
+| Rights attestation | The uploading user affirmatively attests, per clone, that the voice belongs to them or that they hold documented rights/consent to clone it. Store this attestation as an immutable record tied to the `VoicePreset` row, not just a one-time checkbox at signup. |
+| Liveness/active-consent capture | Require the source sample to be captured live within the product (e.g. read a randomized on-screen consent phrase), rather than accepting an arbitrary pre-recorded upload with no provenance. This raises the bar against cloning a voice the uploader does not control. |
+| Consent artifact retention | Retain the consent capture (audio + attestation + timestamp) as an auditable artifact under the retention policy in §41, independent of the derived voice model itself. |
+| Revocation path | The consenting individual (if different from the account holder, e.g. an authorized third party) must have a documented path to revoke consent, which immediately disables the associated `VoicePreset`. |
+| Abuse/impersonation review | Cloned-voice presets are subject to the moderation/abuse-control requirements referenced in §26, with a defined escalation path for reported impersonation. |
+
+`UNVERIFIED` claims about what a specific competitor product does or does not support (§101.3) must never be used to justify weakening this requirement. This gate exists independent of what any other product implements, per Contract item 19 in §0.
+
+---
+
+# 20. AUDIO/VIDEO SYNCHRONIZATION
+
+Use timestamps, not arbitrary JavaScript timers.
+
+Maintain:
+
+```text
+capture timestamp
+transport timestamp
+processing timestamp
+presentation timestamp
+```
+
+Synchronization engine responsibilities:
+
+- detect drift
+- calculate offset
+- correct drift smoothly
+- avoid audible discontinuities
+- avoid video freezing
+- maintain lip synchronization
+
+Target:
+
+- stable audio/video relationship under normal network conditions
+- graceful correction under degradation
+
+---
+
+# 21. RECORDING ENGINE
+
+Recording must be independent from AI inference.
+
+Pipeline:
+
+```text
+Output Media
+    ├──> Browser Preview
+    ├──> Recording
+    └──> Streaming
+```
+
+Do not make recording block inference.
+
+Requirements:
+
+- start
+- stop
+- pause/resume if supported
+- duration
+- file metadata
+- muxing
+- upload
+- processing
+- thumbnail
+- secure download
+- deletion
+
+---
+
+# 22. STREAMING ENGINE
+
+Support:
+
+- RTMP
+- SRT where appropriate
+- custom destinations
+- OBS integration
+
+Never expose stream credentials unnecessarily.
+
+Store credentials encrypted.
+
+Allow:
+
+- destination creation
+- validation
+- test
+- start
+- stop
+- status
+- failure reason
+
+---
+
+# 23. DATABASE DESIGN
+
+Core entities:
+
+### users
+
+- id
+- email
+- passwordHash
+- displayName
+- role
+- status
+- createdAt
+- updatedAt
+
+### projects
+
+- id
+- userId
+- name
+- settings
+- createdAt
+- updatedAt
+
+### sessions
+
+- id
+- userId
+- projectId
+- state
+- region
+- provider
+- startedAt
+- endedAt
+- failureReason
+
+### reference_images
+
+- id
+- userId
+- storageKey
+- mimeType
+- size
+- expiresAt
+- createdAt
+
+### voice_presets
+
+- id
+- userId
+- name
+- configuration
+- createdAt
+- updatedAt
+
+### transformations
+
+- id
+- sessionId
+- prompt
+- compiledRequest
+- provider
+- createdAt
+
+### recordings
+
+- id
+- userId
+- sessionId
+- storageKey
+- duration
+- size
+- status
+
+### stream_destinations
+
+- id
+- userId
+- provider
+- encryptedCredentials
+- status
+
+### usage_events
+
+- id
+- userId
+- sessionId
+- resourceType
+- quantity
+- provider
+- costBasis
+- createdAt
+
+### provider_health
+
+- provider
+- region
+- status
+- latency
+- errorRate
+- capacity
+- checkedAt
+
+### audit_logs
+
+- id
+- actorId
+- action
+- resourceType
+- resourceId
+- metadata
+- createdAt
+
+---
+
+# 24. BILLING ARCHITECTURE
+
+Usage must be server-authoritative.
+
+Never bill based solely on client-reported seconds.
+
+Record immutable usage events.
+
+Example:
+
+```text
+session_started
+video_second_consumed
+audio_second_consumed
+recording_storage_consumed
+stream_started
+session_ended
+```
+
+A billing service aggregates events.
+
+## 24.1 Owner/Internal Billing Exemption (BILL-001)
+
+The platform must support a role-scoped billing exemption for internal/owner accounts, without weakening the server-authoritative usage model above.
+
+Requirements:
+
+- `users.role` (§23) includes an internal tier (e.g. `owner`, `internal`) distinct from standard `user`/`admin` roles.
+- A per-account flag — e.g. `billingExempt: boolean` — determines whether usage events for that account are invoiced. This must be a data-level flag checked server-side, never a client-side or UI-level bypass.
+- **Usage events are still recorded for exempt accounts.** Exemption affects invoicing only, not metering. The owner's real GPU/provider cost is not free to the business — it must still flow through `usage_events` and the cost model in §57 so actual spend stays visible.
+- Exemption must be auditable: every exempt session is logged in `audit_logs` (§23) with actor, timestamp, and cost basis, so "free for me" never becomes an untracked liability.
+- Exemption must not bypass the abuse/quota controls in §57 (max session duration, concurrency limits) — an unmetered account is not an unlimited one; without a ceiling, a compromised or misused owner session can still generate runaway provider cost.
+- Feature flag: `billing_enforcement` (extends §42) is evaluated per-account, not globally, so standard pay-as-you-go billing for all other users is unaffected by the owner exemption.
+
+Every other account remains on the standard pay-as-you-go usage-event ledger defined above.
+
+---
+
+# 25. ADMIN PLATFORM
+
+Admin must be a separate application and separate authorization boundary.
+
+Dashboard:
+
+- active sessions
+- users online
+- realtime latency
+- FPS
+- provider health
+- GPU health
+- errors
+- usage
+- revenue
+- incidents
+
+Management:
+
+- users
+- sessions
+- providers
+- models
+- feature flags
+- plans
+- usage
+- recordings
+- incidents
+- audit logs
+
+Never trust admin UI restrictions alone.
+
+Authorization must happen server-side.
+
+---
+
+# 26. SECURITY ARCHITECTURE
+
+Required:
+
+- TLS
+- secure cookies
+- short-lived access tokens
+- refresh token rotation
+- password hashing
+- MFA-ready architecture
+- rate limiting
+- request validation
+- authorization middleware
+- RBAC
+- audit logging
+- secret management
+- signed object URLs
+- upload validation
+- abuse controls
+- CSP
+- secure headers
+
+Secrets must live in:
+
+- environment variables during development
+- secret manager in production
+
+---
+
+# 27. PRIVACY
+
+The user must know:
+
+- when camera is active
+- when microphone is active
+- whether media leaves the device
+- where media is processed
+- whether media is stored
+- retention period
+- how to delete it
+
+Default temporary media should expire automatically.
+
+---
+
+# 28. REALTIME PERFORMANCE BUDGET
+
+Measure:
+
+- capture latency
+- encode latency
+- network RTT
+- provider queue latency
+- inference latency
+- decode latency
+- render latency
+- audio processing latency
+- synchronization offset
+- glass-to-glass latency
+
+Expose diagnostics to developers/admins.
+
+Do not invent target numbers where the selected model/provider cannot guarantee them.
+
+---
+
+# 29. ADAPTIVE QUALITY
+
+Create an adaptive quality controller.
+
+Inputs:
+
+- FPS
+- packet loss
+- jitter
+- RTT
+- GPU queue
+- inference latency
+- browser CPU
+- browser memory
+
+Actions:
+
+- resolution reduction
+- frame-rate reduction
+- quality mode change
+- provider switch
+- effect simplification
+- degraded mode
+
+Never endlessly oscillate quality.
+
+Use hysteresis.
+
+---
+
+# 30. RESILIENCE
+
+Implement:
+
+## Retry policy
+
+- exponential backoff
+- jitter
+- maximum attempts
+- retry classification
+
+## Circuit breaker
+
+Open when provider failure rate crosses threshold.
+
+## Bulkhead isolation
+
+Separate:
+
+- video sessions
+- audio sessions
+- recording
+- streaming
+- background jobs
+
+## Graceful degradation
+
+If AI fails:
+
+```text
+Full AI
+↓
+Reduced AI
+↓
+Lightweight effect
+↓
+Original media
+```
+
+The user should not receive an unexplained black screen.
+
+---
+
+# 31. GPU WORKER ARCHITECTURE
+
+Workers must report:
+
+- workerId
+- region
+- GPU model
+- VRAM
+- utilization
+- active sessions
+- queue depth
+- inference latency
+- health
+- last heartbeat
+
+Scheduler chooses workers based on:
+
+```text
+health
++ capacity
++ region
++ model compatibility
++ latency
++ cost
+```
+
+Workers must be drainable before deployment.
+
+---
+
+# 32. HIGH AVAILABILITY
+
+Production architecture must support:
+
+- multiple API replicas
+- multiple realtime gateways
+- redundant TURN
+- PostgreSQL high availability
+- Redis high availability
+- replicated object storage
+- multiple GPU workers
+- health checks
+- rolling deployment
+- rollback
+- backups
+- disaster recovery
+
+Define:
+
+- RPO
+- RTO
+- availability objective
+
+Do not claim 100% uptime.
+
+---
+
+# 33. OBSERVABILITY
+
+Every request/session should have:
+
+- requestId
+- traceId
+- sessionId
+- userId where permitted
+- provider
+- region
+
+Metrics:
+
+- active sessions
+- session success rate
+- session failure rate
+- P50/P95/P99 latency
+- FPS
+- packet loss
+- jitter
+- reconnect rate
+- provider error rate
+- GPU utilization
+- GPU queue depth
+- recording failures
+- streaming failures
+
+Create alerts for:
+
+- elevated session failure
+- provider outage
+- GPU exhaustion
+- database health
+- Redis health
+- TURN health
+- abnormal latency
+- storage failures
+
+---
+
+# 34. LOGGING RULES
+
+Use structured logs.
+
+Never log:
+
+- passwords
+- API keys
+- stream keys
+- raw authentication tokens
+- private media
+- unnecessary personal data
+
+Every production error must have a useful diagnostic identifier.
+
+---
+
+# 35. API DESIGN
+
+Expose:
+
+```text
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+
+GET    /api/me
+GET    /api/projects
+POST   /api/projects
+PATCH  /api/projects/:id
+DELETE /api/projects/:id
+
+POST   /api/references
+DELETE /api/references/:id
+
+POST   /api/sessions
+GET    /api/sessions/:id
+POST   /api/sessions/:id/transform
+POST   /api/sessions/:id/voice
+POST   /api/sessions/:id/stop
+
+POST   /api/recordings
+GET    /api/recordings
+DELETE /api/recordings/:id
+
+POST   /api/streams
+POST   /api/streams/:id/start
+POST   /api/streams/:id/stop
+
+GET    /api/usage
+GET    /api/health
+```
+
+Exact endpoints may evolve after architecture review.
+
+---
+
+# 36. REALTIME EVENTS
+
+Define typed events.
+
+```text
+session.created
+session.connecting
+session.connected
+session.degraded
+session.reconnecting
+session.recovered
+session.failed
+session.stopped
+
+video.stats
+audio.stats
+sync.stats
+
+transformation.requested
+transformation.applied
+transformation.failed
+
+voice.changed
+voice.failed
+
+recording.started
+recording.completed
+recording.failed
+
+stream.started
+stream.stopped
+stream.failed
+```
+
+---
+
+# 37. ERROR MODEL
+
+Create typed error codes.
+
+Examples:
+
+```text
+MEDIA_PERMISSION_DENIED
+MEDIA_DEVICE_UNAVAILABLE
+SESSION_AUTH_FAILED
+SESSION_PROVIDER_UNAVAILABLE
+SESSION_CAPACITY_EXCEEDED
+VIDEO_PROVIDER_TIMEOUT
+VOICE_PROVIDER_TIMEOUT
+REFERENCE_INVALID
+REFERENCE_TOO_LARGE
+STREAM_CONNECTION_FAILED
+RECORDING_FAILED
+QUOTA_EXCEEDED
+RATE_LIMITED
+```
+
+Every user-visible error must have:
+
+- safe message
+- internal error code
+- recovery suggestion
+
+---
+
+# 38. TESTING STRATEGY
+
+## Unit tests
+
+Test:
+
+- prompt compiler
+- validation
+- session state machine
+- retry logic
+- circuit breaker
+- billing
+- usage aggregation
+- synchronization calculations
+- provider selection
+
+## Integration tests
+
+Test:
+
+- API/database
+- Redis
+- object storage
+- session creation
+- provider adapters
+- WebRTC signaling
+
+## E2E
+
+Test:
+
+1. Login.
+2. Open Studio.
+3. Start camera.
+4. Start microphone.
+5. Start session.
+6. Apply transformation.
+7. Change prompt.
+8. Change voice.
+9. Record.
+10. Stop.
+11. Verify artifact.
+
+## Chaos tests
+
+Simulate:
+
+- network loss
+- provider outage
+- GPU failure
+- Redis restart
+- database failover
+- TURN failure
+- camera removal
+- microphone removal
+- browser backgrounding
+
+---
+
+# 39. LOAD TESTING
+
+Before production:
+
+Test:
+
+- concurrent session creation
+- concurrent realtime sessions
+- session churn
+- provider saturation
+- API throughput
+- WebSocket signaling
+- Redis load
+- database connections
+- object storage
+- GPU queue behavior
+
+Measure:
+
+- error rate
+- latency
+- resource utilization
+- recovery behavior
+
+Do not call the system production-ready until defined thresholds are met.
+
+---
+
+# 40. SECURITY TESTING
+
+Perform:
+
+- dependency audit
+- SAST
+- secret scan
+- authorization tests
+- rate-limit tests
+- upload tests
+- session fixation tests
+- token expiration tests
+- CSRF tests where relevant
+- CORS tests
+- SSRF tests
+- path traversal tests
+- injection tests
+
+---
+
+# 41. DATA RETENTION
+
+Implement configurable retention.
+
+Examples:
+
+- temporary reference assets: short TTL
+- temporary session metadata: configurable
+- recordings: user-controlled
+- audit logs: policy-controlled
+
+Deletion must remove:
+
+- database reference
+- object storage asset
+- derivative assets
+- provider-side asset where supported
+
+---
+
+# 42. FEATURE FLAGS
+
+Implement server-controlled feature flags:
+
+```text
+realtime_video
+realtime_voice
+reference_images
+lip_sync
+recording
+streaming
+provider_failover
+self_hosted_models
+advanced_voice_controls
+```
+
+This allows incomplete capabilities to remain disabled without deleting code.
+
+---
+
+# 43. DESIGN SYSTEM
+
+Create an original design system.
+
+Tokens:
+
+- typography
+- spacing
+- radii
+- shadows
+- motion
+- surface hierarchy
+- states
+- accessibility
+
+Do not clone another company's UI.
+
+The product should look premium, modern, technical, and cinematic without reproducing a competitor's interface.
+
+---
+
+# 44. ACCESSIBILITY
+
+Support:
+
+- keyboard navigation
+- focus management
+- readable contrast
+- screen-reader labels
+- reduced motion
+- clear error messages
+- accessible controls
+
+---
+
+# 45. INTERNATIONALIZATION
+
+Architecture must support:
+
+- English initially
+- additional languages later
+- locale-aware dates
+- locale-aware numbers
+- translated UI strings
+
+Never hardcode user-facing text throughout components.
+
+---
+
+# 46. MOBILE
+
+The initial desktop studio is primary.
+
+Mobile must still:
+
+- request permissions correctly
+- show preview
+- support basic transformations
+- support voice
+- handle device rotation
+- handle browser suspension
+
+Advanced production workflows may remain desktop-first.
+
+---
+
+# 47. DEPLOYMENT ENVIRONMENTS
+
+## Local
+
+- Docker Compose
+- PostgreSQL
+- Redis
+- object storage emulator
+- TURN
+- API
+- Studio
+- optional local workers
+
+## Staging
+
+Production-like infrastructure.
+
+## Production
+
+- HTTPS
+- CDN
+- load balancer
+- redundant services
+- production database
+- Redis
+- object storage
+- GPU workers
+- monitoring
+- backups
+
+---
+
+# 48. CONFIGURATION
+
+Use typed environment configuration.
+
+Example categories:
+
+```text
+DATABASE_URL
+REDIS_URL
+OBJECT_STORAGE_*
+TURN_*
+AUTH_*
+VIDEO_PROVIDER_*
+VOICE_PROVIDER_*
+LIPSYNC_PROVIDER_*
+OBSERVABILITY_*
+BILLING_*
+```
+
+Never expose server-only variables to the client.
+
+---
+
+# 49. CI/CD
+
+Pipeline:
+
+```text
+Commit
+ ↓
+Install
+ ↓
+Typecheck
+ ↓
+Lint
+ ↓
+Unit tests
+ ↓
+Integration tests
+ ↓
+Build
+ ↓
+Security scan
+ ↓
+E2E
+ ↓
+Container build
+ ↓
+Staging deployment
+ ↓
+Smoke tests
+ ↓
+Production approval
+ ↓
+Rolling deployment
+ ↓
+Health verification
+```
+
+Automatic rollback if critical health checks fail.
+
+---
+
+# 50. DEVELOPMENT PHASES
+
+## PHASE 0 — DISCOVERY
+
+Do not code.
+
+Interview the product owner.
+
+Questions must be grouped into small batches.
+
+First batch:
+
+1. Product name?
+2. Target audience?
+3. Desktop-only initially or desktop + mobile?
+4. Preferred visual style?
+5. Which transformations are mandatory for launch?
+6. Which voice features are mandatory?
+7. Which external AI providers are available?
+8. Expected initial concurrent users?
+9. Deployment budget?
+10. Preferred hosting/GPU provider?
+
+After answers, produce the final PRD delta.
+
+---
+
+## PHASE 1 — FOUNDATION
+
+Build:
+
+- monorepo
+- package system
+- TypeScript
+- linting
+- formatting
+- environment validation
+- CI
+- database
+- Redis
+- object storage
+- base API
+- base Studio shell
+
+Acceptance:
+
+- clean install
+- build succeeds
+- tests run
+- CI passes
+
+---
+
+## PHASE 2 — AUTHENTICATION
+
+Build:
+
+- registration
+- login
+- logout
+- sessions
+- password hashing
+- email verification architecture
+- RBAC
+
+Acceptance:
+
+- authentication tests pass
+- unauthorized API access fails
+
+---
+
+## PHASE 3 — MEDIA CAPTURE
+
+Build:
+
+- camera
+- microphone
+- device selector
+- permissions
+- preview
+- diagnostics
+
+Acceptance:
+
+- multiple cameras work
+- multiple microphones work
+- device switching works
+
+---
+
+## PHASE 4 — REALTIME TRANSPORT
+
+Build:
+
+- WebRTC
+- signaling
+- STUN
+- TURN
+- reconnection
+- statistics
+
+Acceptance:
+
+- session connects
+- network degradation is detected
+- recovery works
+
+---
+
+## PHASE 5 — VIDEO AI
+
+Build provider abstraction and first production provider.
+
+Build:
+
+- realtime transformation
+- prompt update
+- reference image
+- modes
+- quality controls
+
+Acceptance:
+
+- real provider produces real output
+- prompt update works
+- failure is handled
+
+---
+
+## PHASE 6 — VOICE AI
+
+Build:
+
+- realtime audio provider
+- preprocessing
+- voice presets
+- voice switching
+- metrics
+
+Acceptance:
+
+- voice conversion works continuously
+- no fake processing
+- provider failure is handled
+
+---
+
+## PHASE 7 — LIP SYNC + SYNC ENGINE
+
+Build:
+
+- timestamps
+- synchronization
+- drift correction
+- lip sync provider
+
+Acceptance:
+
+- synchronized output under normal conditions
+- recovery under drift
+
+---
+
+## PHASE 8 — RECORDING
+
+Build:
+
+- recording
+- muxing
+- storage
+- metadata
+- playback
+
+Acceptance:
+
+- valid recording generated
+- audio/video present
+- secure retrieval works
+
+---
+
+## PHASE 9 — STREAMING
+
+Build:
+
+- RTMP
+- destination management
+- stream lifecycle
+- credentials security
+
+Acceptance:
+
+- successful test stream
+- failure recovery
+
+---
+
+## PHASE 10 — PROJECTS + PRESETS
+
+Build:
+
+- projects
+- saved transformations
+- voice presets
+- reference library
+
+---
+
+## PHASE 11 — USAGE + BILLING
+
+Build:
+
+- immutable usage ledger
+- aggregation
+- quota
+- billing integration abstraction
+
+---
+
+## PHASE 12 — ADMIN
+
+Build separate admin application.
+
+---
+
+## PHASE 13 — OBSERVABILITY
+
+Build:
+
+- metrics
+- logs
+- traces
+- dashboards
+- alerts
+
+---
+
+## PHASE 14 — RESILIENCE
+
+Build:
+
+- provider failover
+- worker failover
+- circuit breakers
+- degraded mode
+- recovery
+
+---
+
+## PHASE 15 — SECURITY HARDENING
+
+Perform full security test suite.
+
+---
+
+## PHASE 16 — LOAD + CHAOS TESTING
+
+Perform production-scale tests.
+
+---
+
+## PHASE 17 — PRODUCTION
+
+Deploy with:
+
+- monitoring
+- backups
+- rollback
+- incident runbooks
+- health checks
+
+---
+
+# 51. DEFINITION OF DONE
+
+A phase is NOT complete because files exist.
+
+A phase is complete only when:
+
+1. Code compiles.
+2. Type checks pass.
+3. Lint passes.
+4. Unit tests pass.
+5. Integration tests pass where applicable.
+6. E2E tests pass where applicable.
+7. Security checks pass.
+8. Actual external services are tested where required.
+9. Failure scenarios are tested.
+10. Documentation is updated.
+11. No known critical defect remains.
+12. Gate A and Gate B of the Code Integrity and Continuous Execution Protocol (§101) both ran, with the Gate B evidence log (§101.2) attached to the phase report.
+13. No open `Blocker`-severity defect remains in the Severity-Scored Defect Log (§101.7); `Major` defects are resolved or explicitly deferred with owner sign-off; `Minor` defects are logged.
+14. Every `ASSUMED` claim (§101.3) relied on by this phase is either resolved to `VERIFIED` or explicitly carried forward in the Assumption Register (§82) with no unresolved `UNVERIFIED` claim remaining in shipped code.
+
+---
+
+# 52. PRODUCTION READINESS CHECKLIST
+
+- [ ] Authentication secure
+- [ ] Authorization secure
+- [ ] Secrets protected
+- [ ] Camera capture tested
+- [ ] Microphone capture tested
+- [ ] WebRTC tested
+- [ ] TURN tested
+- [ ] Realtime video tested
+- [ ] Realtime voice tested
+- [ ] Lip sync tested
+- [ ] Synchronization tested
+- [ ] Recording tested
+- [ ] Streaming tested
+- [ ] Provider failure tested
+- [ ] GPU failure tested
+- [ ] Network failure tested
+- [ ] Browser/device failure tested
+- [ ] Database backups verified
+- [ ] Redis resilience verified
+- [ ] Object storage verified
+- [ ] Monitoring live
+- [ ] Alerts live
+- [ ] Load tests completed
+- [ ] Security tests completed
+- [ ] Rollback tested
+- [ ] Disaster recovery documented
+- [ ] Full Gate A/Gate B evidence trail exists for every shipped phase (§101.2)
+- [ ] Cross-phase consistency audit (§101.8) run against the full current build, not just the most recent phase
+- [ ] PRD-drift check (§101.14) shows no unreconciled divergence between shipped code and this document
+- [ ] No unresolved `Blocker` or `Major` defect remains in the Severity-Scored Defect Log (§101.7)
+- [ ] No unresolved `UNVERIFIED` claim remains in shipped code (§101.3)
+- [ ] Retry cost accounting (§101.10) reviewed — no subsystem consumed disproportionate re-derivation cost without escalation
+- [ ] In-app browser compatibility verified for every platform in the SOC-001 matrix (§102.1), each with a logged source/date per CI-013
+- [ ] Graceful in-app-browser degradation tested — no frozen prompt, no black screen, no silent fake feed (§102.1, §58, §87)
+- [ ] Social export presets (§102.2) verified against current platform specs, not hardcoded from memory
+- [ ] Any enabled streaming destination preset (§102.3) has verified current ingest/ToS terms; unverified presets remain behind a feature flag
+- [ ] Desktop, standalone mobile browser, and in-app mobile browser all confirmed for every Feature Matrix (§5) capability — three states checked, not two (§102.4)
+
+---
+
+# 53. AI CODING AGENT OPERATING MODE
+
+The coding AI must work as an engineering team, not a code autocomplete engine.
+
+Internally reason through these roles:
+
+- Product Manager
+- Principal Architect
+- Frontend Lead
+- Backend Lead
+- Realtime Media Engineer
+- ML/AI Engineer
+- GPU/Infrastructure Engineer
+- Security Engineer
+- QA Lead
+- SRE/DevOps Engineer
+
+Before each phase:
+
+```text
+UNDERSTAND
+↓
+INSPECT
+↓
+PLAN
+↓
+IMPLEMENT
+↓
+TEST
+↓
+BREAK
+↓
+FIX
+↓
+VERIFY
+↓
+DOCUMENT
+```
+
+Do not skip the BREAK stage for critical realtime functionality.
+
+---
+
+# 54. REQUIRED RESPONSE FORMAT FROM THE CODING AI
+
+At the beginning of each phase report:
+
+```text
+PHASE:
+OBJECTIVE:
+DEPENDENCIES:
+FILES TO CHANGE:
+RISKS:
+ACCEPTANCE CRITERIA:
+TEST PLAN:
+```
+
+After implementation report:
+
+```text
+IMPLEMENTED:
+TESTS:
+VERIFICATION:
+KNOWN LIMITATIONS:
+EXTERNAL DEPENDENCIES:
+SECURITY NOTES:
+NEXT PHASE:
+```
+
+Never hide failures.
+
+---
+
+# 55. MODEL/PROVIDER CAPABILITY RULE
+
+Before integrating any AI provider:
+
+1. Read current official documentation.
+2. Verify realtime support.
+3. Verify authentication method.
+4. Verify supported input/output formats.
+5. Verify latency characteristics where documented.
+6. Verify usage limits.
+7. Verify regional availability.
+8. Verify pricing.
+9. Verify terms/licensing.
+10. Verify whether media is retained.
+11. Verify whether streaming output is supported.
+12. Implement the provider adapter.
+13. Add an integration test.
+
+If a capability cannot be verified, mark it:
+
+`UNVERIFIED`
+
+Do not assume.
+
+---
+
+# 56. OWN MODEL ROADMAP
+
+The architecture must eventually permit replacing external AI providers.
+
+Future self-hosted stack may include:
+
+```text
+Model Registry
+      ↓
+Model Scheduler
+      ↓
+GPU Worker
+      ↓
+Inference Runtime
+      ↓
+Tensor/Frame Pipeline
+      ↓
+Realtime Media Gateway
+```
+
+Future optimization areas:
+
+- model quantization
+- batching where latency permits
+- kernel optimization
+- GPU memory reuse
+- frame interpolation
+- temporal caching
+- model distillation
+- compilation
+- multi-GPU scheduling
+
+Do not attempt this in MVP unless the required models and licenses are available.
+
+---
+
+# 57. COST CONTROL
+
+Track actual inference cost per session.
+
+Calculate:
+
+```text
+video cost
++
+voice cost
++
+lip-sync cost
++
+GPU cost
++
+storage cost
++
+bandwidth cost
+=
+session infrastructure cost
+```
+
+Use this data for pricing decisions.
+
+Prevent runaway sessions with:
+
+- quotas
+- maximum session duration
+- concurrency limits
+- rate limits
+- budget alerts
+
+---
+
+# 58. USER EXPERIENCE DURING FAILURE
+
+Bad:
+
+> "Something went wrong."
+
+Good:
+
+> "The AI video connection was interrupted. Reconnecting…"
+
+If recovery succeeds:
+
+> "Connection restored."
+
+If it fails:
+
+> "Realtime transformation could not be restored. Your camera is still available. Retry or continue with your original feed."
+
+Never leave the UI frozen.
+
+---
+
+# 59. PRIVACY/CONSENT GUARDRAILS
+
+The platform may support:
+
+- fictional characters
+- user-owned faces
+- user-provided references
+- explicitly authorized participants
+- licensed voices
+
+Do not create workflows specifically designed to impersonate real people without authorization.
+
+Custom voice identity features must include consent/authorization controls.
+
+---
+
+# 60. FINAL AUTONOMOUS BUILD INSTRUCTION
+
+You are NOT being asked to produce a superficial demo.
+
+You are being asked to engineer a real software product.
+
+Therefore:
+
+- inspect before editing
+- ask questions before architecture lock
+- architect before implementation
+- implement in phases
+- use real integrations
+- test continuously
+- instrument everything
+- make failure recoverable
+- keep providers replaceable
+- keep secrets server-side
+- keep media pipelines independent
+- synchronize with timestamps
+- measure actual performance
+- never fake success
+- never claim zero bugs
+- never claim zero downtime
+- never copy proprietary implementation
+
+The final system should be an independently designed, production-oriented realtime AI media platform capable of integrating state-of-the-art realtime video, voice, and synchronization models while remaining operationally resilient and replaceable at every major layer.
+
+## FIRST ACTION
+
+Do not write application code yet.
+
+Start by:
+
+1. Inspecting the repository.
+2. Identifying what already exists.
+3. Producing a concise architecture audit.
+4. Asking the highest-value Phase 0 product questions.
+5. Waiting for answers.
+6. Producing the finalized PRD delta.
+7. Only then beginning Phase 1.
+
+
+---
+
+# 61. V2 DISCOVERY-FIRST OPERATING SYSTEM
+
+This section supersedes any earlier instruction that could cause the agent to begin coding before understanding the product owner's intent.
+
+## 61.1 Absolute rule
+
+**DO NOT START IMPLEMENTATION UNTIL DISCOVERY IS COMPLETE AND THE PRODUCT OWNER HAS APPROVED THE ARCHITECTURE BASELINE.**
+
+The agent's first responsibility is not coding.
+
+It is understanding.
+
+The agent must determine:
+
+- what the product owner actually wants
+- what they saw in reference products
+- which behaviors matter
+- which behaviors are optional
+- what should be improved
+- what should be deliberately different
+- which capabilities are technically feasible
+- which capabilities require external AI providers
+- which capabilities can be implemented locally
+- which capabilities have browser/device limitations
+- what the cheapest viable architecture is
+- what the highest-quality architecture is
+- what the recommended architecture is
+
+---
+
+# 62. RESEARCH-FIRST PROTOCOL
+
+Before making a major technical recommendation, the agent MUST research current primary documentation.
+
+Priority:
+
+1. Official product/model documentation.
+2. Official browser/platform documentation.
+3. Official standards/specifications.
+4. Official GitHub repositories.
+5. Maintainer documentation.
+6. Reputable technical sources.
+7. Community discussions only when primary documentation is insufficient.
+
+Do not treat a search result, blog post, benchmark, or AI-generated answer as authoritative without verification.
+
+For every research-dependent decision record:
+
+```text
+QUESTION
+SOURCE
+DATE CHECKED
+WHAT THE SOURCE CONFIRMS
+WHAT IT DOES NOT CONFIRM
+IMPACT ON ARCHITECTURE
+RECOMMENDATION
+CONFIDENCE
+```
+
+---
+
+# 63. REQUIRED RESEARCH LIBRARY
+
+The coding agent should use these resources as starting points and then discover additional current resources.
+
+## Realtime browser/media fundamentals
+
+- MDN WebRTC:
+  https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+
+- MDN Web Audio:
+  https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+
+- MDN WebCodecs:
+  https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API
+
+- MDN WebRTC codecs:
+  https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/WebRTC_codecs
+
+The agent must verify browser compatibility rather than assuming identical behavior across Chrome, Safari, Firefox, Edge, iOS, and Android.
+
+## Realtime infrastructure
+
+- LiveKit:
+  https://livekit.io/
+  https://docs.livekit.io/
+
+Use this as one candidate architecture, not as a mandatory dependency.
+
+Compare it against alternatives before locking the media infrastructure.
+
+## UI foundation
+
+- shadcn/ui:
+  https://ui.shadcn.com/docs
+
+shadcn/ui is open-code and customizable. The agent may use it as a foundation but MUST create an original design system rather than reproducing another product's interface.
+
+- shadcn Vite:
+  https://ui.shadcn.com/docs/installation/vite
+
+- shadcn registries:
+  https://ui.shadcn.com/docs/registry
+
+## Icons
+
+- Lucide:
+  https://lucide.dev/
+
+- Iconify:
+  https://iconify.design/
+
+Use licensed/open-source icons and verify the license of the selected icon set.
+
+## Animation
+
+- Motion:
+  https://motion.dev/docs/react
+
+Use Motion for high-quality UI transitions and gestures where appropriate.
+
+Do not animate everything.
+
+Animation must communicate state, hierarchy, interaction, and realtime status.
+
+## 3D / visual effects
+
+- Three.js:
+  https://threejs.org/manual/
+
+- React Three Fiber:
+  https://r3f.docs.pmnd.rs/
+
+Use 3D only where it improves the product.
+
+Do not add expensive 3D effects that degrade mobile realtime performance.
+
+## Fonts
+
+- Google Fonts:
+  https://fonts.google.com/
+  https://developers.google.com/fonts
+
+- Google Fonts repository:
+  https://github.com/google/fonts
+
+- Fontsource:
+  https://fontsource.org/
+
+- Fontsource font API:
+  https://fontsource.org/docs/api/fonts
+
+Prefer variable fonts where appropriate.
+
+For production, evaluate self-hosting fonts through Fontsource or the font's official distribution to improve control, caching, privacy, and version stability.
+
+## Free/open media resources
+
+- Pexels API:
+  https://www.pexels.com/api/documentation/
+  https://help.pexels.com/hc/en-us/articles/47677890260761-Is-the-Pexels-API-free-to-use
+
+- Unsplash API:
+  https://unsplash.com/developers
+  https://unsplash.com/documentation
+
+- Pixabay API:
+  https://pixabay.com/api/docs/
+
+The agent MUST check the current license, attribution, rate limits, hotlinking requirements, and commercial-use rules before integrating any media source.
+
+## Free/public APIs
+
+- Public APIs:
+  https://github.com/public-apis/public-apis
+
+- Free Public APIs:
+  https://github.com/free-public-apis/apis
+
+Do not automatically integrate an API because it is listed as "free."
+
+Evaluate:
+
+- uptime
+- maintenance
+- rate limits
+- CORS
+- authentication
+- license
+- commercial use
+- privacy
+- data quality
+- dependency risk
+
+A free API that can disappear is not a production dependency.
+
+---
+
+# 64. DESIGN RESEARCH AGENT
+
+Create a dedicated design-research stage before finalizing the UI.
+
+The agent must research:
+
+- modern AI creative tools
+- professional video editors
+- realtime streaming studios
+- mobile camera applications
+- audio workstations
+- modern developer tools
+- premium SaaS dashboards
+- cinematic interfaces
+- accessibility patterns
+- responsive interaction patterns
+
+The agent must NOT copy a competitor.
+
+Instead extract design principles:
+
+```text
+Information hierarchy
+Navigation
+Density
+Control grouping
+Feedback
+Motion language
+Typography
+Color system
+Empty states
+Error states
+Mobile adaptation
+```
+
+Then create a unique design direction.
+
+---
+
+# 65. DESIGN EXPLORATION DELIVERABLE
+
+Before implementation, provide 3 distinct visual directions.
+
+For each:
+
+```text
+NAME:
+MOOD:
+PRIMARY USE CASE:
+COLOR DIRECTION:
+TYPOGRAPHY:
+ICON STYLE:
+CARD/CONTAINER STYLE:
+MOTION LANGUAGE:
+MOBILE APPROACH:
+WHY IT FITS:
+RISKS:
+```
+
+Then recommend one.
+
+The product owner chooses or asks for a hybrid.
+
+Do not silently choose a visual identity.
+
+---
+
+# 66. TYPOGRAPHY RESEARCH RULE
+
+The agent must research current available open fonts and propose at least:
+
+- 3 UI/body candidates
+- 3 display candidates
+- 2 monospace candidates
+
+Evaluate:
+
+- readability
+- variable-font availability
+- mobile rendering
+- language coverage
+- licensing
+- loading performance
+- visual personality
+
+Example candidates may include:
+
+- Inter
+- Geist
+- Manrope
+- DM Sans
+- Space Grotesk
+- IBM Plex Sans
+- Plus Jakarta Sans
+- Figtree
+- JetBrains Mono
+
+These are examples, not a final decision.
+
+The agent must verify current licensing and availability before selecting.
+
+---
+
+# 67. GRAPHIC ASSET RESEARCH
+
+The agent must determine which visual assets should be:
+
+- CSS-generated
+- SVG
+- procedural
+- Three.js/WebGL
+- locally stored
+- sourced from an API
+- generated with an image model
+- generated with an icon library
+
+Do not use random internet images as production assets.
+
+For each external asset:
+
+```text
+SOURCE
+LICENSE
+ATTRIBUTION
+COMMERCIAL USE
+HOTLINK REQUIREMENT
+LOCAL STORAGE ALLOWED?
+```
+
+---
+
+# 68. FREE API DISCOVERY ENGINE
+
+The product must include a research phase that searches for free or low-cost APIs relevant to:
+
+- image search
+- video search
+- fonts
+- icons
+- geolocation if needed
+- translation
+- text generation
+- speech-to-text
+- text-to-speech
+- audio processing
+- AI inference
+- analytics
+- email
+- authentication
+- storage
+- moderation
+- metadata
+- social/streaming integrations
+
+For every candidate API create:
+
+```text
+API:
+OFFICIAL URL:
+PURPOSE:
+FREE TIER:
+RATE LIMIT:
+AUTH:
+CORS:
+COMMERCIAL USE:
+DATA RETENTION:
+SLA:
+SDK:
+OPEN SOURCE:
+FALLBACK:
+RISK:
+RECOMMENDATION:
+```
+
+The agent must prefer official APIs over unofficial scraping.
+
+---
+
+# 69. AI MODEL RESEARCH MATRIX
+
+Do not assume the first model is the best.
+
+For every AI subsystem evaluate at least 3 viable options where available.
+
+## Video
+
+Compare:
+
+- realtime support
+- latency
+- FPS
+- visual quality
+- temporal consistency
+- identity consistency
+- prompt controllability
+- reference-image support
+- resolution
+- API stability
+- pricing
+- licensing
+- geographic availability
+
+## Voice
+
+Compare:
+
+- realtime support
+- latency
+- naturalness
+- intelligibility
+- voice conversion versus TTS
+- pitch/formant controls
+- custom voice support
+- consent requirements
+- licensing
+- pricing
+- browser compatibility
+
+## Lip sync
+
+Compare:
+
+- latency
+- accuracy
+- realtime support
+- expression preservation
+- API stability
+- licensing
+- cost
+
+Produce a scored matrix.
+
+Never select a provider simply because it is popular.
+
+---
+
+# 70. PROVIDER ABSTRACTION IS MANDATORY
+
+The frontend must never know the identity of a specific AI provider.
+
+Bad:
+
+```text
+React component → Provider X API
+```
+
+Correct:
+
+```text
+React
+  ↓
+Realtime Session SDK
+  ↓
+Backend Session API
+  ↓
+Orchestrator
+  ↓
+Provider Adapter
+  ↓
+Provider
+```
+
+This allows:
+
+- switching providers
+- fallback providers
+- self-hosted models
+- regional providers
+- experimental models
+- cost optimization
+
+---
+
+# 71. MOBILE-FIRST ENGINEERING REQUIREMENT
+
+Mobile is NOT a responsive afterthought.
+
+The product must have a dedicated mobile UX architecture.
+
+## Desktop
+
+Optimize for:
+
+- large preview
+- dense controls
+- multiple panels
+- advanced settings
+- keyboard shortcuts
+- multi-monitor workflows
+
+## Mobile
+
+Optimize for:
+
+- touch
+- portrait mode
+- camera-first workflow
+- bottom sheets
+- full-screen preview
+- simplified controls
+- large tap targets
+- low battery consumption
+- cellular conditions
+
+## Tablet
+
+Provide an intermediate layout.
+
+The same core session architecture must serve all form factors.
+
+---
+
+# 72. MOBILE DEVICE CAPABILITY MATRIX
+
+The agent must test and document:
+
+- iPhone Safari
+- iPad Safari
+- Android Chrome
+- Android Firefox where relevant
+- desktop Chrome
+- desktop Edge
+- desktop Safari
+- desktop Firefox
+
+Test:
+
+- camera permission
+- microphone permission
+- camera switching
+- microphone switching
+- Bluetooth audio
+- wired audio
+- orientation
+- backgrounding
+- screen locking
+- network switching
+- thermal behavior
+- memory pressure
+- recording
+- playback
+- upload
+- WebRTC
+- Web Audio
+- WebCodecs where used
+
+Unsupported functionality must degrade gracefully.
+
+---
+
+# 73. MOBILE PERFORMANCE RULES
+
+Do not run expensive browser-side processing simply because it works on a developer laptop.
+
+The agent must determine:
+
+```text
+CLIENT-SIDE
+SERVER-SIDE
+HYBRID
+```
+
+for every expensive operation.
+
+Measure:
+
+- CPU
+- GPU where measurable
+- memory
+- battery impact
+- frame drops
+- thermal throttling
+
+---
+
+# 74. RESPONSIVE DESIGN BREAKPOINTS
+
+Do not blindly use arbitrary breakpoints.
+
+Base responsive behavior on actual layout needs.
+
+Required states:
+
+```text
+PHONE PORTRAIT
+PHONE LANDSCAPE
+TABLET PORTRAIT
+TABLET LANDSCAPE
+LAPTOP
+DESKTOP
+ULTRAWIDE
+```
+
+Every critical screen must be visually reviewed at all states.
+
+---
+
+# 75. TOUCH INTERACTION
+
+Mobile controls must support:
+
+- tap
+- long press where useful
+- swipe
+- drag
+- pinch where relevant
+- bottom sheets
+- haptic feedback where available through supported platform mechanisms
+
+Never rely solely on hover.
+
+---
+
+# 76. OFFLINE/POOR NETWORK STRATEGY
+
+The realtime AI may require a network connection.
+
+The application shell should still remain useful under poor connectivity.
+
+Support:
+
+- local UI
+- cached assets
+- local project metadata where safe
+- reconnect state
+- queued non-realtime operations
+- clear network diagnostics
+
+Never pretend AI processing continues if the server connection is gone.
+
+---
+
+# 77. RECOMMENDATION ENGINE FOR THE CODING AI
+
+Whenever the product owner asks:
+
+> "What is the best way?"
+
+the agent must answer with:
+
+```text
+MY UNDERSTANDING:
+OPTIONS:
+OPTION A:
+OPTION B:
+OPTION C:
+
+RECOMMENDED:
+WHY:
+
+TRADE-OFFS:
+COST:
+COMPLEXITY:
+PERFORMANCE:
+MOBILE:
+DESKTOP:
+SCALABILITY:
+LOCK-IN:
+
+WHAT I NEED FROM YOU:
+```
+
+Then wait for approval when the choice is architecture-significant.
+
+---
+
+# 78. REQUIREMENT CONFIRMATION
+
+For every ambiguous request, the agent must distinguish:
+
+```text
+FACT
+ASSUMPTION
+INFERENCE
+RECOMMENDATION
+OPEN QUESTION
+```
+
+Never convert an assumption into a requirement without confirmation.
+
+---
+
+# 79. USER-INTENT INTERVIEW
+
+The interview should proceed conversationally.
+
+Do NOT ask:
+
+> "Please answer these 70 questions."
+
+Instead:
+
+### Round 1 — Vision
+
+Ask only the highest-value questions.
+
+Then summarize:
+
+```text
+I understand your goal as:
+...
+```
+
+Ask:
+
+> "Is that correct?"
+
+Only continue after confirmation.
+
+### Round 2 — Experience
+
+Understand:
+
+- what the user sees
+- what the user clicks
+- what the user expects
+- what should feel instant
+- what should feel cinematic
+- what should feel professional
+
+### Round 3 — Capabilities
+
+Determine required transformations and audio features.
+
+### Round 4 — Platforms
+
+Determine desktop/mobile/tablet requirements.
+
+### Round 5 — Infrastructure
+
+Determine budget, providers, hosting, scale.
+
+### Round 6 — Business
+
+Determine accounts, plans, quotas, billing.
+
+### Round 7 — Privacy/safety
+
+Determine media retention and identity/voice policies.
+
+---
+
+# 80. REQUIREMENT TRACEABILITY MATRIX
+
+Every feature gets a unique requirement ID.
+
+Example:
+
+```text
+VID-001
+VOICE-001
+SYNC-001
+MOBILE-001
+UI-001
+SEC-001
+OPS-001
+BILL-001
+```
+
+Each requirement must map to:
+
+```text
+PRD
+→ architecture
+→ implementation
+→ test
+→ acceptance criteria
+```
+
+No orphan requirements.
+
+---
+
+# 81. ARCHITECTURE DECISION RECORDS
+
+Every major decision must create an ADR.
+
+Format:
+
+```text
+ADR ID:
+TITLE:
+STATUS:
+CONTEXT:
+OPTIONS:
+DECISION:
+RATIONALE:
+TRADE-OFFS:
+CONSEQUENCES:
+REVISIT WHEN:
+```
+
+---
+
+# 82. ASSUMPTION REGISTER
+
+Maintain:
+
+```text
+ASSUMPTION
+EVIDENCE
+CONFIDENCE
+OWNER
+VALIDATED?
+DATE
+IMPACT IF WRONG
+```
+
+Any high-impact unverified assumption blocks architecture lock.
+
+---
+
+# 83. DEPENDENCY RISK REGISTER
+
+Track:
+
+- provider outage risk
+- API price changes
+- rate limits
+- browser changes
+- model deprecation
+- package vulnerabilities
+- vendor lock-in
+- licensing changes
+- GPU availability
+- storage cost
+- bandwidth cost
+
+Every critical dependency must have a fallback strategy where practical.
+
+---
+
+# 84. CURRENT-DOCUMENTATION RULE
+
+AI models, browser APIs, SDKs, pricing, and third-party APIs change.
+
+Therefore:
+
+**Never rely on memory for current capabilities.**
+
+Before implementation, verify official documentation.
+
+If documentation changed since an earlier decision:
+
+1. flag it
+2. reassess
+3. update ADR
+4. ask the product owner if the change materially affects product behavior
+
+---
+
+# 85. VISUAL QA LOOP
+
+For every major UI screen:
+
+```text
+IMPLEMENT
+↓
+RENDER DESKTOP
+↓
+RENDER MOBILE
+↓
+COMPARE AGAINST DESIGN SYSTEM
+↓
+CHECK SPACING
+↓
+CHECK TYPOGRAPHY
+↓
+CHECK ACCESSIBILITY
+↓
+CHECK ANIMATION
+↓
+CHECK PERFORMANCE
+↓
+FIX
+↓
+REPEAT
+```
+
+The agent should use screenshots or browser inspection when its environment permits.
+
+---
+
+# 86. REALTIME QA LOOP
+
+For every realtime feature:
+
+```text
+START
+↓
+CONNECT
+↓
+MEASURE
+↓
+TRANSFORM
+↓
+CHANGE CONTROL
+↓
+DEGRADE NETWORK
+↓
+RECOVER
+↓
+STOP
+↓
+RESTART
+↓
+VERIFY CLEANUP
+```
+
+Test both desktop and mobile.
+
+---
+
+# 87. "NO GLITCH" INTERPRETATION
+
+The phrase "no glitch" must be converted into measurable criteria.
+
+Examples:
+
+- no unhandled exceptions
+- no persistent black output
+- no frozen control state
+- no orphaned session
+- no memory leak beyond defined threshold
+- no audio duplication
+- no severe audio/video drift
+- no infinite reconnect loop
+- no unauthorized media access
+- no corrupted recording
+- no stuck GPU worker
+- no stale session token
+
+---
+
+# 88. "NO DOWNTIME" INTERPRETATION
+
+Do not promise literal zero downtime.
+
+Instead define:
+
+- availability objective
+- RPO
+- RTO
+- maximum planned deployment interruption
+- automatic failover behavior
+- rollback time
+- provider failover time
+
+These must be measurable.
+
+---
+
+# 89. PRODUCTION LAUNCH GATE
+
+Production deployment requires explicit sign-off against:
+
+```text
+PRODUCT
+ARCHITECTURE
+SECURITY
+PERFORMANCE
+MOBILE
+DESKTOP
+AI PROVIDERS
+MEDIA
+BILLING
+OBSERVABILITY
+BACKUPS
+DISASTER RECOVERY
+LEGAL/LICENSE REVIEW
+```
+
+If a critical gate fails:
+
+**DO NOT DEPLOY.**
+
+---
+
+# 90. FINAL AGENT BEHAVIOR
+
+The coding agent must behave like a skeptical senior engineering team.
+
+It should:
+
+- ask
+- listen
+- summarize
+- challenge
+- research
+- compare
+- recommend
+- obtain approval
+- architect
+- implement
+- test
+- deliberately break
+- recover
+- measure
+- document
+
+It must not:
+
+- blindly code
+- guess critical requirements
+- copy competitors
+- fabricate capabilities
+- hide failures
+- silently add expensive dependencies
+- silently choose an AI provider
+- treat mobile as an afterthought
+- claim perfection without evidence
+
+---
+
+# 91. FIRST RESPONSE THE CODING AGENT MUST GIVE
+
+When this document is loaded, the agent's first response MUST NOT contain application code.
+
+It must say, in substance:
+
+```text
+I have read the product specification.
+
+I will not begin implementation yet.
+
+First I will:
+1. inspect the repository
+2. identify the current stack
+3. identify existing capabilities
+4. research current relevant technologies/providers
+5. interview you about the product
+6. summarize my understanding
+7. identify contradictions and risks
+8. make architecture recommendations
+9. present the proposed architecture
+10. wait for your approval
+```
+
+Then begin with no more than 10 high-value questions.
+
+---
+
+# 92. INITIAL HIGH-VALUE QUESTIONS
+
+The agent should begin with questions similar to:
+
+1. What is the name/working name of the platform?
+2. In your own words, what exactly do you want the user to be able to do from the moment they open the camera?
+3. Which parts of the reference experience are absolutely mandatory?
+4. Which capabilities do you want that the reference product does not have?
+5. What should the realtime voice changer be capable of?
+6. Should users be able to upload/reference characters, environments, outfits, or other visual assets?
+7. Do you want the first version to work in mobile browsers as well as desktop browsers, or should mobile eventually have a native app?
+8. Do you want the system to use external AI models initially, your own models, or both?
+9. What matters most initially: lowest cost, highest visual quality, lowest latency, or the best balance?
+10. What is your expected first-stage number of simultaneous users?
+
+The agent must adapt subsequent questions based on the answers.
+
+---
+
+# 93. RESEARCH SOURCES MUST BE CLICKABLE
+
+When the coding agent presents research, it must provide clickable official sources.
+
+Do not merely say:
+
+> "WebRTC supports realtime communication."
+
+Instead provide:
+
+```text
+Source:
+https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+
+Finding:
+...
+
+Architectural impact:
+...
+```
+
+Use primary documentation wherever possible.
+
+---
+
+# 94. SOURCE EVALUATION RULE
+
+Every external recommendation receives:
+
+```text
+SOURCE QUALITY:
+Official / Maintainer / Standards / Community
+
+FRESHNESS:
+Current / Potentially stale
+
+CONFIDENCE:
+High / Medium / Low
+
+LICENSE:
+Verified / Needs verification
+
+PRODUCTION SUITABILITY:
+Yes / Conditional / No
+```
+
+---
+
+# 95. FREE DOES NOT MEAN PRODUCTION-READY
+
+The agent must distinguish:
+
+```text
+FREE
+FREE TIER
+OPEN SOURCE
+SELF-HOSTABLE
+NO API KEY
+NO COST
+COMMERCIAL-LICENSED
+```
+
+These are not equivalent.
+
+Before recommending a "free API", verify:
+
+- actual current limits
+- terms
+- commercial use
+- attribution
+- data retention
+- uptime
+- abuse policy
+- whether it can be called from the browser
+- whether server-side proxying is required
+
+---
+
+# 96. FINAL PRODUCT PHILOSOPHY
+
+Build a product that is:
+
+**original**
+**fast**
+**beautiful**
+**mobile-capable**
+**desktop-capable**
+**realtime**
+**observable**
+**secure**
+**resilient**
+**provider-independent**
+**measurable**
+**maintainable**
+**scalable**
+
+The objective is not to make a superficial clone.
+
+The objective is to engineer a better, independently designed realtime AI creative platform with a strong technical foundation that can evolve from third-party models to proprietary/self-hosted intelligence over time.
+
+---
+
+# 97. RESEARCH APPENDIX — INITIAL VERIFIED RESOURCE MAP
+
+The following sources were reviewed while preparing this specification. The coding agent should re-check them at implementation time because APIs, pricing, browser support, and product capabilities change.
+
+## Browser/media
+
+- WebRTC API:
+  https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API
+- Web Audio API:
+  https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+- WebCodecs:
+  https://developer.mozilla.org/en-US/docs/Web/API/WebCodecs_API
+- WebRTC codecs:
+  https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/WebRTC_codecs
+
+WebCodecs exposes low-level browser video/audio encode/decode primitives and can be useful for advanced media processing; support must still be verified per target browser/device. WebRTC browser interoperability should be based on documented codec support and fallback behavior rather than assumptions.
+
+## UI
+
+- shadcn/ui:
+  https://ui.shadcn.com/docs
+- shadcn Vite:
+  https://ui.shadcn.com/docs/installation/vite
+- shadcn registry:
+  https://ui.shadcn.com/docs/registry
+- Lucide:
+  https://lucide.dev/
+- Iconify:
+  https://iconify.design/
+
+## Animation / 3D
+
+- Motion:
+  https://motion.dev/docs/react
+- Three.js:
+  https://threejs.org/manual/
+- React Three Fiber:
+  https://r3f.docs.pmnd.rs/
+
+## Fonts
+
+- Google Fonts:
+  https://fonts.google.com/
+- Google Fonts developer documentation:
+  https://developers.google.com/fonts
+- Google Fonts repository:
+  https://github.com/google/fonts
+- Fontsource:
+  https://fontsource.org/
+- Fontsource API:
+  https://fontsource.org/docs/api/fonts
+
+Google states that its fonts are released under open-source licenses, while the repository notes that individual font directories contain their applicable licensing metadata. Always verify the exact selected family's license.
+
+## Media APIs
+
+- Pexels:
+  https://www.pexels.com/api/documentation/
+- Pexels API help:
+  https://help.pexels.com/hc/en-us/categories/900001326143-API
+- Unsplash:
+  https://unsplash.com/developers
+- Unsplash documentation:
+  https://unsplash.com/documentation
+- Unsplash API guidelines:
+  https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines
+- Pixabay:
+  https://pixabay.com/api/docs/
+
+## Free API discovery
+
+- Public APIs:
+  https://github.com/public-apis/public-apis
+- Free Public APIs:
+  https://github.com/free-public-apis/apis
+
+## Realtime infrastructure candidate
+
+- LiveKit:
+  https://livekit.io/
+- LiveKit documentation:
+  https://docs.livekit.io/
+
+LiveKit is one candidate for realtime transport/session infrastructure. It must be compared with alternatives before the architecture is locked.
+
+---
+
+# 98. RESEARCH TASK QUEUE
+
+Before architecture lock, the agent must investigate and report on:
+
+### A. Realtime video
+- Current realtime video transformation providers
+- Current reference-image support
+- Prompt-update behavior
+- Latency/FPS characteristics
+- Browser integration
+- Provider pricing
+- Terms/licensing
+
+### B. Voice conversion
+- Current realtime voice-conversion providers
+- Streaming protocols
+- latency
+- quality
+- voice-preservation controls
+- custom voice policies
+- consent requirements
+- pricing
+- browser compatibility
+
+### C. Lip sync
+- Current realtime lip-sync systems
+- provider APIs
+- self-hosted options
+- latency
+- quality
+- licensing
+
+### D. WebRTC
+- browser support
+- iOS restrictions
+- Android restrictions
+- TURN
+- codec strategy
+- reconnect behavior
+- network adaptation
+
+### E. Mobile
+- iOS Safari
+- Android Chrome
+- camera APIs
+- microphone APIs
+- backgrounding
+- Bluetooth
+- thermal constraints
+- WebCodecs support
+
+### F. UI
+- current AI studio design patterns
+- best open-source component systems
+- typography
+- icon systems
+- motion
+- accessibility
+- mobile navigation patterns
+
+### G. Free resources
+- open-source fonts
+- free media APIs
+- open-source icons
+- free/low-cost infrastructure
+- open-source AI models
+- free developer APIs
+
+### H. Infrastructure
+- GPU providers
+- serverless limitations
+- persistent GPU options
+- managed WebRTC
+- self-hosted WebRTC
+- storage
+- database
+- Redis
+- monitoring
+
+### I. Cost
+Produce three architectures:
+
+```text
+LEAN
+BALANCED
+PREMIUM
+```
+
+For each estimate:
+
+- monthly infrastructure
+- expected concurrency
+- major bottlenecks
+- provider costs
+- scaling strategy
+
+Clearly label estimates.
+
+---
+
+# 99. ARCHITECTURE SELECTION SCORECARD
+
+Score candidate architectures from 1–10:
+
+| Criterion | Weight |
+|---|---:|
+| Realtime latency | 20% |
+| Video quality | 15% |
+| Voice quality | 10% |
+| Mobile compatibility | 15% |
+| Desktop compatibility | 10% |
+| Cost | 10% |
+| Scalability | 10% |
+| Provider independence | 5% |
+| Developer velocity | 5% |
+
+Weights may be changed after the product owner's priorities are known.
+
+The recommended architecture must show its score and explain the assumptions.
+
+---
+
+# 100. FINAL RULE
+
+**The product owner's intent is the source of truth.**
+
+Research informs recommendations.
+
+Recommendations do not override the product owner.
+
+Technical reality overrides impossible assumptions.
+
+Security and law override unsafe implementation requests.
+
+And when the agent does not know:
+
+**IT MUST SAY IT DOES NOT KNOW, RESEARCH IT, AND RETURN WITH EVIDENCE.**
+
+---
+
+# 101. CODE INTEGRITY AND CONTINUOUS EXECUTION PROTOCOL (CI-CEP)
+
+This section is binding on every phase defined in §50 and every acceptance gate defined in §51 and §52. It supersedes any earlier instruction that could be read as permission to produce shallow, generic, or unverified code, or to abandon a phase before its acceptance criteria are met. Where this section and an earlier section conflict on execution discipline, this section governs.
+
+Requirement IDs introduced here (`CI-xxx`) must be added to the Requirement Traceability Matrix in §80 like any other requirement.
+
+## 101.1 Definition: Generic/Sloppy Output (CI-001)
+
+Output is classified **NON-CONFORMANT** if any of the following are true. Non-conformant output cannot be reported as part of a completed phase under §51.
+
+| Class | Definition |
+|---|---|
+| Untraced boilerplate | Code copied from a generic pattern without being adapted to this repository's actual types, contracts, and provider-abstraction layers (§13, §70) |
+| Unverified plausibility | Code that "looks correct" but was not checked against the real current state of the files it touches |
+| Placeholder-as-final | TODOs, stubs, hardcoded fixtures, or fake success paths (violates Contract items 7–9 in §0) present in a path reported as complete |
+| Silent scope narrowing | Code that satisfies the literal wording of a requirement while missing its functional intent |
+| Orphaned change | Code with no traceable requirement ID (§80) or ADR (§81) justifying why it exists |
+
+Every artifact the agent writes must cite the requirement ID(s) and/or ADR ID(s) it implements. A change with no traceable justification is itself a defect.
+
+## 101.2 Verification Gate (CI-002)
+
+Every unit of work passes through two mandatory checkpoints. Neither may be skipped or merged into one.
+
+**Gate A — Pre-Implementation**
+
+| Step | Action |
+|---|---|
+| A1 | Inspect actual current repository state for every file to be touched (§0 item 2) |
+| A2 | Reconcile intended change against real structure, types, and contracts — not memory of a similar system |
+| A3 | Classify every non-trivial claim per the Zero-Guess Protocol (§101.3) before writing code that depends on it |
+
+**Gate B — Post-Implementation**
+
+| Step | Action |
+|---|---|
+| B1 | Re-read every changed file as written to disk, not as drafted |
+| B2 | Check against the phase's stated `ACCEPTANCE CRITERIA` (§54) |
+| B3 | Check against every PRD section the change implements |
+| B4 | Verify integration points — types, imports, config keys, provider contracts — actually resolve |
+| B5 | Verify no previously passing behavior regressed (§0 item 3) |
+| B6 | Run the applicable tier of §38 tests before the phase may be reported complete |
+| B7 | Produce a Gate B evidence log — commands run, raw output, files diffed, tests executed with results — and attach it to the phase report (§54). A self-report of "Gate B passed" with no attached evidence does not satisfy B7 (see §101.9). |
+
+Code is not "done" because it was generated. It is done only after passing Gate B. A phase report (§54) submitted without an attached Gate B evidence log is itself non-conformant and cannot satisfy Definition of Done item 12 (§51).
+
+## 101.3 Zero-Guess Protocol (CI-003)
+
+Every non-trivial factual claim underlying a piece of code must be classified before that code is written:
+
+| Label | Meaning | Permitted basis |
+|---|---|---|
+| `VERIFIED` | Confirmed against the actual repository, actual official documentation (§62), or an actual executed check | Direct inspection only |
+| `ASSUMED` | Not yet confirmed; logged to the Assumption Register (§82) with confidence and impact-if-wrong | Explicit, tracked, reversible |
+| `UNVERIFIED` | Flagged as such in the response; blocks phase completion until resolved | Never a basis for shipped code |
+
+Forbidden basis for writing code: pattern-matching to "what this API/library/file usually looks like" and presenting it as fact. This applies to API signatures, provider behavior, library interfaces, configuration keys, file paths, existing repository structure, and data shapes — no exceptions for "just one line." A single fabricated line is treated with the same severity as a fabricated subsystem, because the failure mode (undetected incorrect assumption in shipped code) is identical.
+
+**Fallout rule:** if an `ASSUMED` claim logged to the Assumption Register (§82) is later proven wrong, this is not a footnote-only correction. It automatically triggers a Non-Regressive Recovery Protocol re-derivation (§101.5) for the assumption itself and for every downstream artifact that was built depending on it, traced via the requirement/ADR IDs those artifacts cited under CI-001. An ADR update alone does not close the loop — the affected code must be re-verified against the corrected fact.
+
+## 101.4 Continuous Execution Guarantee (CI-004)
+
+Once a phase's scope is confirmed (§50, §54), the agent drives it to its stated acceptance criteria without discretionary interruption. The distinction that governs this section is **blocking condition** vs. **discretionary halt**:
+
+| Condition | Classification | Required response |
+|---|---|---|
+| Failing test, compile error, unexpected repo state | Expected operating condition | Diagnose and fix; continue (per §53's BREAK→FIX→VERIFY loop) |
+| Ambiguous product decision with no safe default | Genuine blocker | Surface immediately per §77/§78; do not silently choose and do not silently stall |
+| Missing credential/external dependency outside agent's control | Genuine blocker | Surface immediately, name exactly what is needed, continue on all unblocked work in parallel |
+| Fatigue-style stopping, scope feels large, task feels tedious | Discretionary halt | **Prohibited.** Not a valid reason to pause, defer, or abandon a phase |
+| Partial progress feels "good enough" | Discretionary halt | **Prohibited.** Only the stated acceptance criteria define done (§51) |
+
+Surfacing a genuine blocker is reporting, not stopping — the agent states what it needs and keeps working on everything not gated by that blocker. Silence, indefinite pausing, or unexplained abandonment mid-phase are not available responses under this protocol.
+
+## 101.5 Non-Regressive Recovery Protocol (CI-005)
+
+If a phase's acceptance criteria are not met by the end of an attempt, the failure is handled as data, not as a stopping point:
+
+1. **Report honestly** — state exactly what passed Gate B, what failed, and why, using the `KNOWN LIMITATIONS` field of §54's response format. Never mark a failed phase complete.
+2. **Do not leave a half-verified state as the baseline** — an incomplete attempt must not be left implicit for a future attempt to inherit unexamined.
+3. **Re-derive from ground truth on the next attempt** — re-run Gate A against the repository's actual current state rather than resuming from the previous attempt's assumptions. If the previous attempt's partial work is inconsistent with what Gate A now finds, treat it as unverified and rebuild the affected portion rather than patching over it.
+4. **Do not repeat the same unverified work indefinitely** — each retry must be demonstrably different from the last: a new fact was verified, a blocker was resolved, an assumption was corrected. A retry that changes nothing about what was previously wrong is not a valid retry.
+5. **Retry ceiling** — after **three** re-derivation attempts on the same requirement ID without meeting acceptance criteria, the requirement automatically escalates to a `BLOCKED — HUMAN DECISION REQUIRED` state rather than attempting a fourth retry. Escalation must state: what was tried across all three attempts, what changed each time, and the specific decision or resource needed to proceed. A subsystem-specific ADR (§81) may set a different ceiling with explicit justification; absent one, three is the default.
+
+The objective of CI-005 is that every attempt starts from verified ground truth rather than compounding an earlier, unverified mistake — not endless unmonitored looping, and not silent abandonment.
+
+## 101.6 Hallucinated-Dependency Check (CI-006)
+
+A distinct and common failure mode from general guessing (§101.3): inventing a dependency that does not exist. Before any import, package install, API endpoint, or config flag is used, the agent must confirm — not assume — that it is real:
+
+| Dependency type | Required confirmation |
+|---|---|
+| npm/pip/other package | Confirm the package name, version, and published API actually exist in the registry (§48's package boundaries apply) — not "a package like this probably exists" |
+| External API endpoint | Confirm the endpoint exists in current official documentation (§62), not a remembered or inferred URL pattern |
+| Config/environment flag | Confirm the flag is real for the specific library/service version in use, not a plausible-sounding name |
+| Framework API/method | Confirm the method exists on the specific version pinned in this repository, not a version remembered from training |
+
+A hallucinated dependency is classified as an `UNVERIFIED` claim under §101.3 regardless of how confident the output sounds, and blocks Gate B until resolved.
+
+## 101.7 Severity-Scored Defect Log (CI-007)
+
+Not every issue found in Gate B halts a phase — but nothing found may be silently dropped. Every defect surfaced during Gate B is logged and scored:
+
+| Severity | Definition | Effect on phase completion |
+|---|---|---|
+| Blocker | Violates §0's non-negotiable contract, causes data loss, security exposure, or a non-functional critical path | Phase cannot be marked complete until resolved |
+| Major | Functional gap against acceptance criteria, or a regression in previously working behavior | Must be resolved, or explicitly deferred with an owner sign-off recorded in the phase report |
+| Minor | Cosmetic, non-blocking, or low-impact issue | Logged; does not block phase completion, but must not silently disappear from the record |
+
+This log feeds Definition of Done item 13 (§51) and the Production Readiness Checklist (§52) directly — a phase or a production launch cannot claim a clean bill of health while an open Blocker or unresolved Major sits outside this log.
+
+## 101.8 Cross-Phase Consistency Check (CI-008)
+
+Because phases in §50 build sequentially, an earlier "done" phase can silently drift out of true as later phases change shared contracts, types, or provider behavior. At a minimum every 3 phases, and always before the Production Launch Gate (§89):
+
+1. Re-run the applicable Gate B checks (§101.2) against every previously completed phase, not only the current one.
+2. Confirm shared contracts (types, provider interfaces, API shapes) that earlier phases depended on have not silently changed underneath them.
+3. Log any drift found as a defect under CI-007, scored by actual impact — a drifted contract that still functions correctly is not automatically a Blocker.
+
+## 101.9 Self-Report Audit Clause (CI-009)
+
+The agent's own claim that a gate passed is not self-verifying. A phase report claiming Gate B success must include enough raw evidence — per the Gate B evidence log (§101.2, step B7) — that a human or an independent process could check the claim without re-doing the work from scratch. An assertion of "tests pass" with no attached test output, or "verified against the repo" with no cited file state, does not meet this bar and is treated as an unverified self-report, not a completed phase.
+
+## 101.10 Retry Cost Accounting (CI-010)
+
+Re-derivation attempts under CI-005 are not free — GPU inference and provider API calls consumed during a failed attempt are real cost per §57. Each re-derivation attempt must log its incurred cost (video/voice/lip-sync/GPU/storage/bandwidth, as itemized in §57) against the requirement ID it was attempting. If a single requirement's cumulative retry cost becomes disproportionate to its scope before the three-attempt ceiling (§101.5) is reached, this is itself a signal to escalate early rather than continue spending toward the ceiling.
+
+## 101.11 Tamper-Evident Audit Trail (CI-011)
+
+The Gate B evidence log (§101.2) and the Severity-Scored Defect Log (§101.7) must be append-only, consistent with the structured-logging rules in §34. A phase must not be quietly re-marked complete, and a logged defect must not be quietly removed, without a visible corrective entry explaining the change. The audit trail exists so that "this was verified" is a checkable historical claim, not a mutable status field.
+
+## 101.12 Cross-Session Handoff Protocol (CI-012)
+
+If a different agent session or a different agent instance picks up a phase mid-stream, it must not trust the prior session's in-progress claims at face value. It must run Gate A (§101.2) fresh against the repository's actual current state before continuing — the same discipline CI-005 requires after a failed attempt applies here, with the session boundary itself as the trigger, not only an explicit failure.
+
+## 101.13 Definition of "Verified" for External Claims (CI-013)
+
+A claim about an external provider, API, model capability, or third-party service is only eligible for the `VERIFIED` label under §101.3 if the source URL and the date it was checked are both recorded, consistent with the research-recording format already required by §62. A claim with no citable source and date is `ASSUMED` at best, never `VERIFIED`, regardless of how standard or well-known the claim seems.
+
+## 101.14 PRD-Drift Check (CI-014)
+
+Across a long build, shipped code can silently diverge from this document without any single phase appearing to violate it. Before the Production Launch Gate (§89), and periodically per §101.8, the agent must reconcile the actual shipped system against this PRD section by section and report any divergence explicitly — whether the divergence is a regression that must be fixed, or a deliberate, approved deviation that should instead update this document via an ADR (§81). Silent divergence in either direction is not an acceptable end state.
+
+---
+
+# 102. CROSS-PLATFORM AND SOCIAL DISTRIBUTION COMPATIBILITY
+
+This section makes explicit a requirement that was previously implicit: the product must work reliably for real users on the surfaces they actually arrive from and share to — which for a camera/mic-based creative tool means both native desktop/mobile browsers **and** the in-app browsers embedded in major social apps, plus export formats that fit those platforms' actual current specs.
+
+Per §84 (Current-Documentation Rule), none of the platform-specific behaviors below may be hardcoded from memory. In-app browser permission handling, embed policies, RTMP ingest availability, and export specs all change without notice. Every claim in this section's tables must be classified `VERIFIED` / `ASSUMED` / `UNVERIFIED` per §101.3 and re-checked before Production Launch (§89), not assumed to still hold from whenever this document was written.
+
+## 102.1 In-App Browser Compatibility Requirement (SOC-001)
+
+Camera- and microphone-based web apps are frequently opened from links shared inside social/messaging apps, which render the page in a constrained in-app (embedded) browser rather than the user's default browser. This is a distinct environment from the standalone mobile browsers already covered in §71–§76 and must be tested separately, not assumed to behave the same.
+
+**Target platform scope for this build:** WhatsApp, Facebook, Zangi, Telegram, Signal. This replaces a broader initial draft list and is the authoritative scope for SOC-001 verification effort.
+
+### 102.1.1 Verified research findings (per CI-013, §101.13)
+
+These findings are `VERIFIED` per §101.3 — sourced, dated, and directly relevant to this product's target platform list:
+
+| Finding | Source | Date checked | Confidence |
+|---|---|---|---|
+| Signal has no in-app browser. Links tapped in Signal (iOS and Android) open in the device's external default browser, not an embedded WebView | Signal-iOS GitHub issue #4150 ("Links in Signal — Please give us choice of browser," discussing that links already open externally, just not in the user's preferred external browser) | 2026-08-15 | High — primary source (Signal's own issue tracker), corroborated by a second Signal-Android issue (#12347) discussing external link-opening behavior |
+| On iOS, Telegram's Mini-App `openLink` method always opens links in the **external** browser, never Telegram's in-app browser — this is explicitly the opposite of Android, where the same call opens in-app by default | Telegram-iOS GitHub issue #1670 | 2026-08-15 | High — primary source (Telegram's own repository) |
+| Separately, for an ordinary tapped link (not a Mini-App `openLink` call), Telegram on iOS generally uses `SFSafariViewController` rather than a raw `WKWebView` for its in-app browser view. `SFSafariViewController` is a materially different technical situation than the raw-`WKWebView` pattern documented in 102.1.1 below for Facebook — it runs as Safari's own view controller rather than an embedded web engine without Safari's privileges | Cross-referenced from Telegram browser-behavior documentation and the general SFSafariViewController vs. WKWebView distinction | 2026-08-15 | Medium — the general architectural distinction is well-established; this response did not find a primary source confirming `getUserMedia` parity specifically for Telegram's `SFSafariViewController` instance |
+| `getUserMedia` in raw WKWebView-based in-app browsers (the pattern Facebook's in-app browser follows) has a long-documented history of failing or behaving inconsistently versus standalone Safari — including reports as recent as iOS 17.5/17.6 and 18 simulators, indicating this is an ongoing issue, not one that was fully resolved after the original 2019–2021-era reports | WebKit Bugzilla #208667; Apple Developer Forums threads 734363, 750254, 770737 | 2026-08-15 | High — primary sources, spanning multiple iOS versions over several years |
+| Facebook deliberately keeps outbound links inside its own in-app browser rather than handing off to the system browser, as a retention mechanism — this is the default experience for a shared link, not an edge case | Apple Community discussion thread 742526; independent confirmation from a link-routing vendor's documentation | 2026-08-15 | Medium — consistent user/developer reports, not an official Meta statement |
+
+**What this response could not verify:**
+
+- **WhatsApp's specific in-app browser engine.** WhatsApp is widely believed in web-developer communities to use a WKWebView-based in-app browser on iOS, consistent with the general Meta-family pattern seen in Facebook — but this response did not find a primary source confirming that specifically for WhatsApp's current version. Treat as `ASSUMED`, not `VERIFIED`, until device-tested.
+- **Zangi.** No usable information was found on Zangi's in-app browser behavior, engine, or WebRTC support at all — it is a smaller/less-documented app and this response found nothing authoritative. This is not evidence that it works or doesn't; it means it must be device-tested from a position of zero prior information, and should not be assumed to follow the Meta-family (Facebook/WhatsApp) pattern or the Signal/Telegram pattern.
+
+### 102.1.2 Risk tier and required build priority
+
+Given the above, the platforms in scope for this build fall into three distinct risk tiers rather than one uniform risk — this should directly inform build and test order:
+
+| Platform | Risk tier | Basis |
+|---|---|---|
+| Signal | Low | No in-app browser exists; behaves like a standalone browser visit (102.1.1, high confidence) |
+| Telegram | Low–Medium, path-dependent | External browser for Mini-App `openLink` calls (high confidence); ordinary tapped links likely use `SFSafariViewController` on iOS, a materially safer engine than raw WKWebView, though not independently confirmed for `getUserMedia` specifically (medium confidence). Android in-app behavior is a separate case requiring its own test. |
+| Facebook | High | Directly documented WKWebView-pattern history of `getUserMedia` failures; deliberately does not hand off to external browser by default |
+| WhatsApp | High, `ASSUMED` | Believed to follow the same Meta-family WKWebView pattern as Facebook, but not independently confirmed this session — treat as high-risk until device-tested, not as an assumption resolved in the product's favor |
+| Zangi | Unknown | No information found; requires ground-up device testing with no prior assumption in either direction |
+
+Minimum required test/verification matrix — extends the Mobile Device Capability Matrix in §72:
+
+| Surface | Risk tier | Must verify (current, per §62/§84) |
+|---|---|---|
+| WhatsApp in-app browser (iOS + Android) | High, `ASSUMED` engine | `getUserMedia` availability with combined audio+video, permission prompt behavior, whether an explicit escape to native Safari/Chrome exists |
+| Facebook in-app browser (iOS + Android) | High | Same as above |
+| Zangi in-app browser or link-handling behavior (iOS + Android) | Unknown | Same as above, plus first establish whether an in-app browser exists at all |
+| Telegram — Mini-App `openLink` path (iOS) | Low (confirmed external) | Confirm current behavior still matches 102.1.1's finding |
+| Telegram — ordinary tapped link (iOS) | Low–Medium | Confirm `SFSafariViewController` is actually in use and that `getUserMedia` with combined audio+video works in it |
+| Telegram — in-app browser (Android) | Medium, untested | Android opens in-app by default per 102.1.1; verify `getUserMedia` behavior directly, do not assume parity with the iOS finding |
+| Signal (iOS + Android) | Low | Confirm links still open externally in the current app version before relying on this |
+
+Required product behavior, regardless of what verification finds for each platform:
+
+1. **Detect** in-app browser context on load (a `VERIFIED`, tested detection method — not a guessed user-agent string). Since Signal and parts of the Telegram flow may not present an in-app-browser context at all, detection logic must not assume every referring app behaves the same way.
+2. **Attempt** the native realtime flow first if camera/mic access is actually available in that context. Given 102.1.1–102.1.2, expect this to succeed by default for Signal and the Telegram `openLink` path, and to need the fallback more often for Facebook and (assumed) WhatsApp.
+3. **Fail gracefully and specifically** if it is not — per the UX failure standard in §58, not a generic error: e.g. *"This app's built-in browser blocks camera access. Tap ⋯ and choose 'Open in Browser' to continue."* Never a frozen permission prompt or an unexplained black screen (§87).
+4. **Never silently degrade to a fake/stub camera feed** to avoid the error state — this would violate Contract items 7 and 9 in §0.
+
+Findings above establish the general pattern and justify the risk-tier prioritization; they do not substitute for live, per-platform, per-version device testing, which remains mandatory before this requirement is marked satisfied — this is a live compatibility surface that changes without notice, not a one-time assumption. Findings for Zangi in particular start from zero and must be established from direct testing, not inferred from any other platform in this table.
+
+## 102.2 Social Export/Share Specification (SOC-002)
+
+Recordings (§21) intended for re-sharing to social platforms must support the aspect ratios, resolutions, and duration constraints those platforms actually currently accept. The agent must research and confirm current specs (per §62) rather than hardcode remembered values, since these change per platform over time. At minimum, verify and support:
+
+| Format class | Typical use | Verify before hardcoding |
+|---|---|---|
+| Vertical (9:16) | Reels/Shorts/Stories-style short-form | Current max resolution, max duration, codec/container accepted |
+| Square (1:1) | Feed posts | Same |
+| Horizontal (16:9) | Traditional feed/YouTube-style | Same |
+
+Requirements:
+
+- The Recording Engine (§21) must support exporting the same captured session at multiple target aspect ratios without re-running AI inference — a crop/reframe/export step, not a re-transformation.
+- Export presets are configuration data, not hardcoded constants buried in UI code, so they can be updated as platform specs change without a full redeploy (consistent with the Feature Flags philosophy in §42).
+- Never claim an export is "optimized for [Platform]" without the underlying spec being `VERIFIED` per §101.13.
+
+## 102.3 Social Streaming Destination Presets (SOC-003)
+
+Extends the Streaming Engine (§22) with named destination presets for major live platforms, subject to the same verification discipline as §98's provider research:
+
+- For each candidate destination (e.g. common RTMP-ingest platforms), verify current: RTMP/SRT ingest availability, authentication method, terms of service around third-party client tools, and any rate/quality limits — per the API research template in §68.
+- Store destination credentials encrypted per §22 and §26; never hardcode a platform's ingest URL without verifying it is still current.
+- A destination preset that cannot be verified is marked `UNVERIFIED` and shipped behind a feature flag (§42) until confirmed, not enabled by default on assumption.
+
+## 102.4 Desktop + Mobile Parity Reaffirmation (SOC-004)
+
+This section adds social/in-app-browser coverage on top of — and never as a replacement for — the Mobile-First Engineering Requirement already defined in §71–§76. To be explicit:
+
+- Every capability in the Feature Matrix (§5) must have a defined behavior on desktop, standalone mobile browser, and in-app/embedded mobile browser — three states, not two.
+- Where in-app browser constraints make a full realtime capability impossible (e.g. no `getUserMedia`), the required response is the graceful degradation and clear redirect defined in §102.1 — not silently shipping a desktop-only product and calling it cross-platform.
+- The Responsive Design breakpoints (§74) and Touch Interaction requirements (§75) apply identically whether the surface is a standalone browser or an in-app browser tab.
+- This requirement is added to the Requirement Traceability Matrix (§80) and the Production Readiness Checklist (§52) as below.
