@@ -43,28 +43,27 @@ export interface UseFaceSwapReturn {
 }
 
 /**
+ * Convert a File/Blob to a data URL.
+ */
+function fileToDataUrl(file: File | Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+/**
  * useFaceSwap — React hook for ComfyUI ReActor face swap.
  *
  * Captures frames from a <video> element at the configured FPS,
  * sends each frame to the ComfyUI adapter for face swapping,
  * and draws the result onto a <canvas> element overlaid on the video.
  *
- * Usage in StudioShell:
- * ```tsx
- * const faceSwap = useFaceSwap()
- *
- * // Canvas overlay ref
- * const canvasRef = useRef<HTMLCanvasElement>(null)
- *
- * // Start when face swap is enabled
- * useEffect(() => {
- *   if (faceSwapEnabled && activeFaceProvider && videoRef.current && canvasRef.current) {
- *     faceSwap.startSwap(videoRef.current, canvasRef.current)
- *   } else {
- *     faceSwap.stopSwap()
- *   }
- * }, [faceSwapEnabled, activeFaceProvider])
- * ```
+ * Reference face is buffered locally so the user can upload before
+ * connecting to ComfyUI. The buffered face is pushed to the adapter
+ * as soon as one is created.
  */
 export function useFaceSwap(): UseFaceSwapReturn {
   const adapterRef = useRef<ComfyUIFaceSwapAdapter | null>(null)
@@ -72,7 +71,9 @@ export function useFaceSwap(): UseFaceSwapReturn {
   const isRunningRef = useRef(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const processingRef = useRef(false) // prevents overlapping frame sends
+  const processingRef = useRef(false)
+  // Buffer the reference face locally — works even before adapter exists
+  const bufferedRefFaceRef = useRef<string | null>(null)
 
   const [adapterState, setAdapterState] = useState<FaceSwapAdapterState>({
     status: 'disconnected',
@@ -105,8 +106,13 @@ export function useFaceSwap(): UseFaceSwapReturn {
           ? 'error'
           : 'disconnected'
 
+  // Derive hasReferenceFace from local buffer OR adapter state
+  const hasReferenceFace = adapterState.hasReferenceFace || bufferedRefFaceRef.current !== null
+  const referenceFacePreview = adapterState.referenceFaceDataUrl || bufferedRefFaceRef.current
+
   /**
    * Get or create the adapter from the active face provider.
+   * If we have a buffered reference face, push it to the new adapter.
    */
   const getAdapter = useCallback((): ComfyUIFaceSwapAdapter | null => {
     if (!activeFaceProvider?.endpoint) return null
@@ -124,12 +130,16 @@ export function useFaceSwap(): UseFaceSwapReturn {
       adapterRef.current = createFaceSwapAdapter(activeFaceProvider)
       adapterRef.current.onStateChange((partial) => {
         setAdapterState((prev) => ({ ...prev, ...partial }))
-        // Sync to store
         if (partial.latency !== undefined) setFaceSwapLatency(partial.latency)
         if (partial.framesProcessed !== undefined) setFaceSwapFramesProcessed(partial.framesProcessed)
         if (partial.errorMessage !== undefined) setFaceSwapError(partial.errorMessage)
         if (partial.hasReferenceFace !== undefined) setFaceSwapHasReferenceFace(partial.hasReferenceFace)
       })
+
+      // Push buffered reference face to the newly created adapter
+      if (bufferedRefFaceRef.current) {
+        adapterRef.current.setReferenceFace(bufferedRefFaceRef.current)
+      }
     }
 
     return adapterRef.current
@@ -176,36 +186,83 @@ export function useFaceSwap(): UseFaceSwapReturn {
 
   /**
    * Set reference face from a data URL, File, or Blob.
+   * Buffers locally AND pushes to adapter if one exists.
    */
   const setReferenceFace = useCallback(async (input: string | File | Blob) => {
-    await adapterRef.current?.setReferenceFace(input)
-  }, [])
+    let dataUrl: string
+    if (typeof input === 'string') {
+      dataUrl = input
+    } else {
+      dataUrl = await fileToDataUrl(input)
+    }
+
+    // Buffer locally (works before adapter exists)
+    bufferedRefFaceRef.current = dataUrl
+    setAdapterState((prev) => ({
+      ...prev,
+      hasReferenceFace: true,
+      referenceFaceDataUrl: dataUrl,
+    }))
+    setFaceSwapHasReferenceFace(true)
+
+    // Also push to adapter if it exists
+    if (adapterRef.current) {
+      await adapterRef.current.setReferenceFace(dataUrl)
+    }
+  }, [setFaceSwapHasReferenceFace])
 
   /**
    * Capture reference face from a video element (current frame).
    */
   const setReferenceFromVideo = useCallback((video: HTMLVideoElement) => {
-    adapterRef.current?.captureReferenceFromVideo(video)
-  }, [])
+    const canvas = document.createElement('canvas')
+    const size = Math.min(video.videoWidth, video.videoHeight)
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')!
+    const sx = (video.videoWidth - size) / 2
+    const sy = (video.videoHeight - size) / 2
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, size, size)
+    const dataUrl = canvas.toDataURL('image/png')
+
+    // Buffer locally
+    bufferedRefFaceRef.current = dataUrl
+    setAdapterState((prev) => ({
+      ...prev,
+      hasReferenceFace: true,
+      referenceFaceDataUrl: dataUrl,
+    }))
+    setFaceSwapHasReferenceFace(true)
+
+    // Push to adapter if it exists
+    if (adapterRef.current) {
+      adapterRef.current.setReferenceFace(dataUrl)
+    }
+  }, [setFaceSwapHasReferenceFace])
 
   /**
    * Load reference face from a file.
    */
   const setReferenceFromFile = useCallback(async (file: File) => {
-    await adapterRef.current?.setReferenceFace(file)
-  }, [])
+    await setReferenceFace(file)
+  }, [setReferenceFace])
 
   /**
    * Clear the reference face.
    */
   const clearReference = useCallback(() => {
+    bufferedRefFaceRef.current = null
     adapterRef.current?.clearReferenceFace()
-  }, [])
+    setAdapterState((prev) => ({
+      ...prev,
+      hasReferenceFace: false,
+      referenceFaceDataUrl: null,
+    }))
+    setFaceSwapHasReferenceFace(false)
+  }, [setFaceSwapHasReferenceFace])
 
   /**
    * Start the face swap pipeline.
-   * Captures frames from videoElement at the configured FPS,
-   * sends each to ComfyUI, draws results onto canvasElement.
    */
   const startSwap = useCallback(
     (videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement) => {
@@ -214,7 +271,7 @@ export function useFaceSwap(): UseFaceSwapReturn {
         console.warn('[useFaceSwap] No adapter. Connect first.')
         return
       }
-      if (!adapterState.hasReferenceFace) {
+      if (!hasReferenceFace) {
         console.warn('[useFaceSwap] No reference face set.')
         return
       }
@@ -226,13 +283,10 @@ export function useFaceSwap(): UseFaceSwapReturn {
       setFaceSwapStatus('active')
 
       // Size the canvas to match the video
-      const resizeCanvas = () => {
-        if (canvasRef.current && videoRef.current) {
-          canvasRef.current.width = videoRef.current.videoWidth || 640
-          canvasRef.current.height = videoRef.current.videoHeight || 480
-        }
+      if (canvasRef.current && videoRef.current) {
+        canvasRef.current.width = videoRef.current.videoWidth || 640
+        canvasRef.current.height = videoRef.current.videoHeight || 480
       }
-      resizeCanvas()
 
       // Set up frame capture interval
       const fps = faceSwap.fps
@@ -255,7 +309,6 @@ export function useFaceSwap(): UseFaceSwapReturn {
           img.onload = () => {
             const canvas = canvasRef.current!
             const ctx = canvas.getContext('2d')!
-            // Clear and draw the swapped frame (contain-fit to match video CSS)
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             const scale = Math.min(
               canvas.width / img.width,
@@ -268,7 +321,6 @@ export function useFaceSwap(): UseFaceSwapReturn {
           }
           img.src = URL.createObjectURL(resultBlob)
         } catch (err) {
-          // Don't spam errors — only log if it's a real failure, not "already processing"
           if (err instanceof Error && !err.message.includes('Already processing')) {
             console.warn('[useFaceSwap] frame error:', err.message)
           }
@@ -277,7 +329,7 @@ export function useFaceSwap(): UseFaceSwapReturn {
         }
       }, intervalMs)
     },
-    [adapterRef, adapterState.hasReferenceFace, faceSwap.fps, setFaceSwapStatus]
+    [hasReferenceFace, faceSwap.fps, setFaceSwapStatus]
   )
 
   /**
@@ -292,7 +344,6 @@ export function useFaceSwap(): UseFaceSwapReturn {
       frameIntervalRef.current = null
     }
 
-    // Clear the canvas
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d')
       if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
@@ -307,10 +358,8 @@ export function useFaceSwap(): UseFaceSwapReturn {
   const setFps = useCallback(
     (fps: FaceSwapFps) => {
       setFaceSwapFps(fps)
-      // If currently running, restart with new FPS
       if (isRunningRef.current && videoRef.current && canvasRef.current) {
         stopSwap()
-        // Small delay then restart
         setTimeout(() => {
           if (videoRef.current && canvasRef.current) {
             startSwap(videoRef.current, canvasRef.current)
@@ -321,16 +370,10 @@ export function useFaceSwap(): UseFaceSwapReturn {
     [setFaceSwapFps, stopSwap, startSwap]
   )
 
-  /**
-   * Get current FPS.
-   */
   const getFps = useCallback((): FaceSwapFps => {
     return faceSwap.fps
   }, [faceSwap.fps])
 
-  /**
-   * Get the adapter state.
-   */
   const getState = useCallback((): FaceSwapAdapterState => {
     return adapterRef.current?.getState() || adapterState
   }, [adapterState])
@@ -356,8 +399,8 @@ export function useFaceSwap(): UseFaceSwapReturn {
     connect,
     disconnect,
     testConnection,
-    hasReferenceFace: adapterState.hasReferenceFace,
-    referenceFacePreview: adapterState.referenceFaceDataUrl,
+    hasReferenceFace,
+    referenceFacePreview,
     setReferenceFace,
     setReferenceFromVideo,
     setReferenceFromFile,

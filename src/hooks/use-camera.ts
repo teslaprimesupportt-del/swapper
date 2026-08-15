@@ -23,15 +23,22 @@ export function useCamera(videoRef: React.RefObject<HTMLVideoElement | null>) {
         audio: false,
       })
       streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-      }
       setCameraStatus('active')
     } catch (err) {
       console.error('Camera access failed:', err)
       setCameraStatus('error')
     }
-  }, [cameraFacingMode, setCameraStatus, videoRef])
+  }, [cameraFacingMode, setCameraStatus])
+
+  // Sync stream to video element when it mounts
+  // The <video> is conditionally rendered (only when cameraStatus === 'active'),
+  // so videoRef.current is null during startCamera(). This effect picks up the
+  // stream once the video element actually appears in the DOM.
+  useEffect(() => {
+    if (cameraStatus === 'active' && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current
+    }
+  }, [cameraStatus, videoRef])
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
