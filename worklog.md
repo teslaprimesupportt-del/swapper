@@ -182,3 +182,28 @@ Stage Summary:
 - SeedVCRealtimePipeline: ScriptProcessorNode-based mic capture, 0.18s chunk size, 2.5s left context, noise gate, auto-playback via AudioBufferSourceNode
 - useSeedVC hook: full studio store binding, auto-connect/disconnect lifecycle, reference recording (3s mic clip), pipeline start/stop, output level metering
 - Files: src/services/seed-vc-adapter.ts, src/hooks/use-seed-vc.ts
+---
+Task ID: 2
+Agent: main
+Task: Build ComfyUI face swap adapter, useFaceSwap hook, extract tab components, wire everything into StudioShell with canvas overlay
+
+Work Log:
+- Updated studio-store.ts: added FaceSwapState, FaceSwapStatus, FaceSwapFps types, activeFaceProvider, and 7 face swap actions (setEnabled, setFps, setStatus, setLatency, setFramesProcessed, setError, setHasReferenceFace)
+- Built src/services/comfyui-face-swap-adapter.ts (~614 lines): ComfyUIFaceSwapAdapter class with connect/test/disconnect, reference face management (upload/capture/clear), swapFrame (per-frame inference), default ReActor workflow template, Gradio workflow JSON builder, ComfyUI /system_stats health check, /prompt submit, /history polling, /view output download, element-to-dataUrl conversion
+- Built src/hooks/use-face-swap.ts (~280 lines): React hook with connect/disconnect, reference face loading (File, video capture, data URL), startSwap/stopSwap pipeline (setInterval at configurable FPS), canvas draw, store state sync, auto-cleanup
+- Extracted 4 tab components from StudioShell into src/components/studio/tabs/:
+  - VoiceTab.tsx: voice conversion toggle, presets, pitch slider, reference audio upload/record, connect/stream controls, stats
+  - AudioTab.tsx: audio status, headphones detection, noise gate
+  - FaceSwapTab.tsx: face swap toggle, reference face upload/capture/clear with preview, ComfyUI connect/disconnect, start/stop, FPS selector, stats
+  - ModelsTab.tsx: quick start guides for both voice and face
+- Rewrote StudioShell.tsx: added canvas overlay for face swap, 4-tab side panel (Voice/Face/Audio/Models), face swap lifecycle in start/end session, ComfyUI hint in SettingsDialog for faceswap provider type
+- Fixed TypeScript strict mode issues in comfyui adapter (unknown object access, optional chaining)
+- Full tsc --noEmit passes with zero errors on all new/modified files
+
+Stage Summary:
+- Voice + Face swap can run SIMULTANEOUSLY via separate providers (activeProvider for voice, activeFaceProvider for face)
+- Face swap uses canvas overlay that is invisible when disabled, opaque when active
+- Configurable FPS (1/2/3/5) for CPU vs GPU tradeoff
+- Default ReActor workflow template embedded, custom workflows supported via setCustomWorkflow()
+- Files created: comfyui-face-swap-adapter.ts, use-face-swap.ts, VoiceTab.tsx, AudioTab.tsx, FaceSwapTab.tsx, ModelsTab.tsx
+- Files modified: studio-store.ts, StudioShell.tsx

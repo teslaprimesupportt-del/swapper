@@ -6,6 +6,8 @@ export type CameraStatus = 'off' | 'requesting' | 'active' | 'error'
 export type AudioStatus = 'off' | 'requesting' | 'active' | 'error'
 export type ProviderType = 'seed-vc' | 'rvc' | 'openvoice' | 'liveportrait' | 'wav2lip' | 'faceswap' | 'custom'
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
+export type FaceSwapStatus = 'off' | 'connecting' | 'active' | 'error'
+export type FaceSwapFps = 1 | 2 | 3 | 5
 
 export interface VoicePreset {
   id: string
@@ -29,6 +31,16 @@ export interface AIProviderConfig {
 export interface AudioLevels {
   input: number
   output: number
+}
+
+export interface FaceSwapState {
+  status: FaceSwapStatus
+  fps: FaceSwapFps
+  latencyMs: number
+  framesProcessed: number
+  errorMessage: string | null
+  hasReferenceFace: boolean
+  faceSwapEnabled: boolean
 }
 
 interface StudioState {
@@ -75,6 +87,18 @@ interface StudioState {
   recordingDuration: number
   setRecordingStatus: (s: RecordingStatus) => void
   setRecordingDuration: (d: number) => void
+
+  // Face Swap
+  faceSwap: FaceSwapState
+  activeFaceProvider: AIProviderConfig | null
+  setActiveFaceProvider: (p: AIProviderConfig | null) => void
+  setFaceSwapEnabled: (e: boolean) => void
+  setFaceSwapFps: (f: FaceSwapFps) => void
+  setFaceSwapStatus: (s: FaceSwapStatus) => void
+  setFaceSwapLatency: (ms: number) => void
+  setFaceSwapFramesProcessed: (n: number) => void
+  setFaceSwapError: (msg: string | null) => void
+  setFaceSwapHasReferenceFace: (has: boolean) => void
 
   // AI Provider (BYOK)
   providers: AIProviderConfig[]
@@ -148,6 +172,40 @@ export const useStudioStore = create<StudioState>((set) => ({
   recordingDuration: 0,
   setRecordingStatus: (s) => set({ recordingStatus: s }),
   setRecordingDuration: (d) => set({ recordingDuration: d }),
+
+  // Face Swap
+  faceSwap: {
+    status: 'off',
+    fps: 3,
+    latencyMs: 0,
+    framesProcessed: 0,
+    errorMessage: null,
+    hasReferenceFace: false,
+    faceSwapEnabled: false,
+  },
+  activeFaceProvider: null,
+  setActiveFaceProvider: (p) => set({ activeFaceProvider: p }),
+  setFaceSwapEnabled: (e) => set((s) => ({
+    faceSwap: { ...s.faceSwap, faceSwapEnabled: e },
+  })),
+  setFaceSwapFps: (f) => set((s) => ({
+    faceSwap: { ...s.faceSwap, fps: f },
+  })),
+  setFaceSwapStatus: (status) => set((s) => ({
+    faceSwap: { ...s.faceSwap, status },
+  })),
+  setFaceSwapLatency: (ms) => set((s) => ({
+    faceSwap: { ...s.faceSwap, latencyMs: ms },
+  })),
+  setFaceSwapFramesProcessed: (n) => set((s) => ({
+    faceSwap: { ...s.faceSwap, framesProcessed: n },
+  })),
+  setFaceSwapError: (msg) => set((s) => ({
+    faceSwap: { ...s.faceSwap, errorMessage: msg },
+  })),
+  setFaceSwapHasReferenceFace: (has) => set((s) => ({
+    faceSwap: { ...s.faceSwap, hasReferenceFace: has },
+  })),
 
   // AI Provider
   providers: [],
