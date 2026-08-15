@@ -1,0 +1,77 @@
+// AI REALTIME STUDIO - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  sessions    Session[]
+  recordings  Recording[]
+  voiceModels VoiceModel[]
+  providers   AIProvider[]
+}
+
+model Session {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  status    String     @default("active")
+  duration  Int        @default(0)
+  startedAt DateTime   @default(now())
+  endedAt   DateTime?
+  recordings Recording[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Recording {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  sessionId String?
+  session   Session?  @relation(fields: [sessionId], references: [id])
+  filename  String
+  filePath  String
+  fileSize  Int       @default(0)
+  duration  Int       @default(0)
+  format    String    @default("webm")
+  createdAt DateTime  @default(now())
+}
+
+model VoiceModel {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  description String?
+  provider    String
+  modelId     String
+  audioSample String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AIProvider {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  type       String
+  name       String
+  endpoint   String
+  apiKey     String?
+  isActive   Boolean   @default(true)
+  lastTested DateTime?
+  status     String    @default("untested")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
