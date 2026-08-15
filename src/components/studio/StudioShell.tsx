@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Video, VideoOff, Mic, MicOff, Settings, Circle, Square,
   RotateCcw, ChevronUp, ChevronDown, MonitorSpeaker, Headphones,
-  Radio, Clock, Zap, AlertCircle, Download
+  Radio, Clock, Zap, AlertCircle, Download, Upload, Play,
+  Volume2, Link2, Unplug
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +25,7 @@ import { useCamera } from '@/hooks/use-camera'
 import { useAudio } from '@/hooks/use-audio'
 import { useRecording } from '@/hooks/use-recording'
 import { useSessionTimer } from '@/hooks/use-session-timer'
+import { useVoiceConversion } from '@/hooks/use-voice-conversion'
 import { useStudioStore, type VoicePreset, type ProviderType } from '@/stores/studio-store'
 import { cn } from '@/lib/utils'
 
@@ -36,10 +38,12 @@ function formatDuration(seconds: number): string {
 }
 
 const voiceIcons: Record<ProviderType, string> = {
+  'seed-vc': '🌿',
   rvc: '🎙️',
   openvoice: '🧬',
   liveportrait: '🎭',
   wav2lip: '👄',
+  faceswap: '👤',
   custom: '⚙️',
 }
 
@@ -118,14 +122,15 @@ export default function StudioShell() {
     cameraStatus, audioStatus, sessionStatus, sessionDuration,
     recordingStatus, recordingDuration,
     audioLevels, isMuted, headphonesDetected,
-    activeProvider, isMobileControlsOpen,
+    activeProvider, voiceConversionEnabled, isMobileControlsOpen,
     startSession, endSession,
     setMobileControlsOpen,
   } = useStudioStore()
 
   const { startCamera, stopCamera, flipCamera } = useCamera(videoRef)
-  const { startAudio, stopAudio, toggleMute } = useAudio()
+  const { startAudio, stopAudio, toggleMute, audioStream } = useAudio()
   const { toggleRecording } = useRecording()
+  const vc = useVoiceConversion()
   useSessionTimer()
 
   // Build combined stream for recording
@@ -151,17 +156,25 @@ export default function StudioShell() {
     await startCamera()
     await startAudio()
     startSession()
-  }, [startCamera, startAudio, startSession])
+    // Auto-start voice conversion if enabled and connected
+    if (voiceConversionEnabled && activeProvider?.status === 'connected' && audioStream.current) {
+      vc.startConversion(audioStream.current).catch(console.error)
+    }
+  }, [startCamera, startAudio, startSession, voiceConversionEnabled, activeProvider, vc, audioStream])
 
   // End session handler
   const handleEndSession = useCallback(() => {
     if (recordingStatus === 'recording') {
       toggleRecording(combinedStreamRef.current || new MediaStream())
     }
+    // Stop voice conversion
+    if (vc.isStreaming) {
+      vc.stopConversion()
+    }
     stopCamera()
     stopAudio()
     endSession()
-  }, [recordingStatus, toggleRecording, stopCamera, stopAudio, endSession])
+  }, [recordingStatus, toggleRecording, stopCamera, stopAudio, endSession, vc])
 
   // Record handler
   const handleToggleRecording = useCallback(async () => {
@@ -232,7 +245,7 @@ export default function StudioShell() {
               </div>
             ) : (
               <p className="text-center text-xs text-studio-muted-foreground/50">
-                No AI provider configured — <SettingsDialog /> to add one
+                No AI provider configured -- <SettingsDialog /> to add one
               </p>
             )}
           </div>
@@ -461,13 +474,20 @@ export default function StudioShell() {
 }
 
 // ─── SIDE PANEL CONTENT (shared between desktop & mobile) ──
+// --- SIDE PANEL CONTENT (shared between desktop & mobile) ---
 function SidePanelContent() {
   const {
     activeVoicePreset, voicePresets, voicePitch, voiceConversionEnabled,
     noiseGateEnabled, noiseGateThreshold, headphonesDetected, audioStatus,
     setActiveVoicePreset, setVoicePitch, setVoiceConversionEnabled,
     setNoiseGateEnabled, setNoiseGateThreshold,
+    activeProvider,
   } = useStudioStore()
+  const vc = useVoiceConversion()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingTimer, setRecordingTimer] = useState(0)
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval>>(null)
 
   const [activeTab, setActiveTab] = useState<'voice' | 'audio' | 'models'>('voice')
 
@@ -557,14 +577,119 @@ function SidePanelContent() {
                     </div>
                   </div>
 
-                  {/* Clone Voice Button */}
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-studio-border/50 text-studio-muted-foreground/70 hover:border-studio-accent/50 hover:text-studio-accent"
-                  >
-                    <Mic className="w-4 h-4 mr-2" />
-                    Clone New Voice
-                  </Button>
+                  {/* Seed-VC Reference Audio */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+                      Reference Voice (Seed-VC)
+                    </p>
+                    <p className="text-[10px] text-studio-muted-foreground/50">
+                      Upload or record a 1-30s clip of the target voice. Zero-shot - no training needed.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 border-studio-border/50"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="w-3.5 h-3.5 mr-1.5" />
+                        Upload
+                      </Button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="audio/*,.wav,.mp3,.flac,.m4a,.ogg,.opus"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) vc.setReferenceAudio(file)
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          'flex-1 border-studio-border/50',
+                          isRecording && 'border-studio-danger text-studio-danger animate-recording'
+                        )}
+                        disabled={isRecording}
+                        onClick={async () => {
+                          try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+                            setIsRecording(true)
+                            setRecordingTimer(5)
+                            recordingTimerRef.current = setInterval(() => {
+                              setRecordingTimer(t => {
+                                if (t <= 1) {
+                                  clearInterval(recordingTimerRef.current!)
+                                  return 0
+                                }
+                                return t - 1
+                              })
+                            }, 1000)
+                            const blob = await vc.recordReference(stream, 5000)
+                            stream.getTracks().forEach(t => t.stop())
+                            setIsRecording(false)
+                          } catch (err) {
+                            console.error('Reference recording failed:', err)
+                            setIsRecording(false)
+                          }
+                        }}
+                      >
+                        <Mic className="w-3.5 h-3.5 mr-1.5" />
+                        {isRecording ? recordingTimer + 's' : 'Record 5s'}
+                      </Button>
+                    </div>
+                    {vc.hasReferenceAudio && (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-studio-success/10 border border-studio-success/20">
+                        <Volume2 className="w-3.5 h-3.5 text-studio-success shrink-0" />
+                        <span className="text-xs text-studio-success">Reference audio loaded</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Connect / Stream Controls */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+                        Seed-VC Pipeline
+                      </p>
+                      <span className="text-[10px] text-studio-muted-foreground/50">{vc.status}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1" onClick={() => vc.connect()} disabled={!activeProvider?.endpoint}>
+                        <Link2 className="w-3.5 h-3.5 mr-1.5" />
+                        Connect
+                      </Button>
+                      {vc.status === 'connected' && (
+                        <Button size="sm" className="flex-1 bg-studio-accent hover:bg-studio-accent/80" disabled={!vc.hasReferenceAudio}>
+                          <Play className="w-3.5 h-3.5 mr-1.5" />
+                          Start Streaming
+                        </Button>
+                      )}
+                      {vc.status === 'streaming' && (
+                        <Button size="sm" variant="outline" className="flex-1 border-studio-danger/50 text-studio-danger" onClick={() => vc.stopConversion()}>
+                          <Unplug className="w-3.5 h-3.5 mr-1.5" />
+                          Stop
+                        </Button>
+                      )}
+                    </div>
+                    {vc.errorMessage && (
+                      <p className="text-[10px] text-studio-danger p-2 rounded bg-studio-danger/10">{vc.errorMessage}</p>
+                    )}
+                    {vc.isStreaming && (
+                      <div className="grid grid-cols-2 gap-2 text-center">
+                        <div className="p-2 rounded-lg bg-secondary/50">
+                          <p className="text-lg font-mono text-studio-accent">{vc.latencyMs}</p>
+                          <p className="text-[10px] text-studio-muted-foreground/50">Latency (ms)</p>
+                        </div>
+                        <div className="p-2 rounded-lg bg-secondary/50">
+                          <p className="text-lg font-mono text-studio-accent">{vc.chunksProcessed}</p>
+                          <p className="text-[10px] text-studio-muted-foreground/50">Chunks</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </div>
@@ -573,7 +698,6 @@ function SidePanelContent() {
           {/* AUDIO TAB */}
           {activeTab === 'audio' && (
             <div className="space-y-4 animate-fade-in">
-              {/* Audio Status */}
               <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
                 <div className={cn(
                   'w-2 h-2 rounded-full',
@@ -583,8 +707,6 @@ function SidePanelContent() {
                   {audioStatus === 'active' ? 'Audio Active' : 'Audio Off'}
                 </span>
               </div>
-
-              {/* Headphone Status */}
               {audioStatus === 'active' && !headphonesDetected && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-studio-warning/10 border border-studio-warning/20">
                   <Headphones className="w-4 h-4 text-studio-warning mt-0.5 shrink-0" />
@@ -596,15 +718,12 @@ function SidePanelContent() {
                   </div>
                 </div>
               )}
-
               {headphonesDetected && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-studio-success/10 border border-studio-success/20">
                   <MonitorSpeaker className="w-4 h-4 text-studio-success" />
                   <span className="text-xs text-studio-success">Headphones connected</span>
                 </div>
               )}
-
-              {/* Noise Gate */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -642,18 +761,20 @@ function SidePanelContent() {
           {activeTab === 'models' && (
             <div className="space-y-4 animate-fade-in">
               <p className="text-xs text-studio-muted-foreground/60">
-                Manage your AI providers and voice models. Connect your own API keys (BYOK) to enable real-time transformation.
+                Connect your Seed-VC instance (running on Colab or local GPU) via BYOK to enable real-time zero-shot voice conversion.
               </p>
-              <Button
-                variant="outline"
-                className="w-full border-dashed border-studio-border/50"
-                onClick={() => {}}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Import Voice Model
-              </Button>
+              <div className="p-3 rounded-lg border border-studio-accent/20 bg-studio-accent/5 space-y-2">
+                <p className="text-xs font-medium text-studio-accent">Quick Start</p>
+                <ol className="text-[10px] text-studio-muted-foreground/70 space-y-1 list-decimal pl-3">
+                  <li>Run Seed-VC on Colab (free T4 GPU)</li>
+                  <li>Copy the Gradio URL (e.g. https://xxxxx.gradio.live)</li>
+                  <li>Paste it in Settings (gear icon) as a Seed-VC provider</li>
+                  <li>Upload or record a 5s reference voice clip</li>
+                  <li>Hit Connect, then Start Streaming</li>
+                </ol>
+              </div>
               <div className="text-center text-xs text-studio-muted-foreground/40">
-                Supported: RVC, So-VITS-SVC, OpenVoice
+                Voice: Seed-VC (zero-shot) . Face: coming soon
               </div>
             </div>
           )}
@@ -663,11 +784,10 @@ function SidePanelContent() {
   )
 }
 
-// ─── SETTINGS DIALOG ────────────────────────────────
 function SettingsDialog() {
   const { providers, setProviders, activeProvider, setActiveProvider, updateProviderStatus } = useStudioStore()
   const [name, setName] = useState('')
-  const [type, setType] = useState<ProviderType>('rvc')
+  const [type, setType] = useState<ProviderType>('seed-vc')
   const [endpoint, setEndpoint] = useState('')
   const [apiKey, setApiKey] = useState('')
 
@@ -736,21 +856,23 @@ function SettingsDialog() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="seed-vc">Seed-VC (Zero-Shot VC) - Recommended</SelectItem>
                   <SelectItem value="rvc">RVC (Voice Conversion)</SelectItem>
                   <SelectItem value="openvoice">OpenVoice (Voice Clone)</SelectItem>
                   <SelectItem value="liveportrait">LivePortrait (Face)</SelectItem>
+                  <SelectItem value="faceswap">Face Swap</SelectItem>
                   <SelectItem value="wav2lip">Wav2Lip (Lip Sync)</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
               <Input
-                placeholder="API endpoint URL"
+                placeholder="e.g. https://xxxxx.gradio.live"
                 value={endpoint}
                 onChange={(e) => setEndpoint(e.target.value)}
                 className="h-9 text-sm"
               />
               <Input
-                placeholder="API Key (optional)"
+                placeholder="API Key (optional - most Seed-VC instances don't need one)"
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
@@ -796,7 +918,7 @@ function SettingsDialog() {
                       variant="ghost"
                       size="sm"
                       className="h-7 text-xs"
-                      onClick={() => testProvider(p.id)}
+                      onClick={() => p.id && testProvider(p.id)}
                       disabled={p.status === 'connecting'}
                     >
                       Test
@@ -820,7 +942,7 @@ function SettingsDialog() {
 
           {providers.length === 0 && (
             <p className="text-center text-xs text-studio-muted-foreground/40 py-4">
-              No providers configured yet. Add your RVC, OpenVoice, or custom AI endpoint above.
+              No providers yet. Add your Seed-VC Gradio URL above.
             </p>
           )}
         </div>

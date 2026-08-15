@@ -148,3 +148,20 @@ Stage Summary:
 - Responsive: desktop multi-panel + mobile full-screen with bottom sheet
 - All core UI flows working: session lifecycle, camera, audio, recording, voice presets, provider management
 - Next step: WebSocket realtime service for AI pipeline integration
+---
+Task ID: 1
+Agent: main
+Task: Build Seed-VC adapter for AI REALTIME STUDIO
+
+Work Log:
+- Fetched and analyzed Seed-VC GitHub repo (https://github.com/Plachtaa/seed-vc)
+- Created /src/lib/seed-vc-adapter.ts - Full Seed-VC client class with: audio capture, 48kHz->22kHz resampling, WAV encoding, chunking, Gradio HTTP API integration, crossfade playback scheduling, VAD, observer pattern
+- Created /src/hooks/use-voice-conversion.ts - React hook wiring adapter to studio (connect, setReferenceAudio, recordReference, startConversion, stopConversion, disconnect)
+- Updated /src/stores/studio-store.ts - Added seed-vc and faceswap provider types, updated voice presets to Seed-VC models (realtime/quality/singing)
+- Updated /src/components/studio/StudioShell.tsx - Added Seed-VC controls (reference audio upload/record, pipeline connect/stream buttons, latency/chunks stats), updated BYOK settings dialog, updated models tab with quick start guide, wired voice conversion into session start/stop
+- All files compile with 0 TypeScript errors
+
+Stage Summary:
+- Seed-VC adapter is fully built and integrated into the studio UI
+- User workflow: Settings > Add Seed-VC provider (paste Gradio URL) > Voice tab > Upload/record reference > Connect > Start Streaming
+- Adapter handles: zero-shot voice conversion, real-time audio pipeline, latency monitoring, chunk statistics

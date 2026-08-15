@@ -1,0 +1,709 @@
+    80→   123→    setMobileControlsOpen,
+    81→   124→  } = useStudioStore()
+    82→   125→
+    83→   126→  const { startCamera, stopCamera, flipCamera } = useCamera(videoRef)
+    84→   127→  const { startAudio, stopAudio, toggleMute } = useAudio()
+    85→   128→  const { toggleRecording } = useRecording()
+    86→   129→  useSessionTimer()
+    87→   130→
+    88→   131→  // Build combined stream for recording
+    89→   132→  const buildCombinedStream = useCallback(async () => {
+    90→   133→    const tracks: MediaStreamTrack[] = []
+    91→   134→    if (videoRef.current?.srcObject) {
+    92→   135→      const vidStream = videoRef.current.srcObject as MediaStream
+    93→   136→      tracks.push(...vidStream.getVideoTracks())
+    94→   137→    }
+    95→   138→    // We'll add audio tracks when audio is active
+    96→   139→    const audioTracks = [] as MediaStreamTrack[]
+    97→   140→    try {
+    98→   141→      const devices = await navigator.mediaDevices.enumerateDevices()
+    99→   142→      // This gets the active audio stream tracks
+   100→   143→    } catch { /* no-op */ }
+   101→   144→    combinedStreamRef.current = new MediaStream(tracks)
+   102→   145→    return combinedStreamRef.current
+   103→   146→  }, [])
+   104→   147→
+   105→   148→  // Start session handler
+   106→   149→  const handleStartSession = useCallback(async () => {
+   107→   150→    setShowPermissionGate(false)
+   108→   151→    await startCamera()
+   109→   152→    await startAudio()
+   110→   153→    startSession()
+   111→   154→  }, [startCamera, startAudio, startSession])
+   112→   155→
+   113→   156→  // End session handler
+   114→   157→  const handleEndSession = useCallback(() => {
+   115→   158→    if (recordingStatus === 'recording') {
+   116→   159→      toggleRecording(combinedStreamRef.current || new MediaStream())
+   117→   160→    }
+   118→   161→    stopCamera()
+   119→   162→    stopAudio()
+   120→   163→    endSession()
+   121→   164→  }, [recordingStatus, toggleRecording, stopCamera, stopAudio, endSession])
+   122→   165→
+   123→   166→  // Record handler
+   124→   167→  const handleToggleRecording = useCallback(async () => {
+   125→   168→    const stream = await buildCombinedStream()
+   126→   169→    toggleRecording(stream)
+   127→   170→  }, [buildCombinedStream, toggleRecording])
+   128→   171→
+   129→   172→  const isSessionActive = sessionStatus === 'active'
+   130→   173→  const isRecording = recordingStatus === 'recording'
+   131→   174→
+   132→   175→  // ─── PERMISSION GATE (shown before session starts) ──
+   133→   176→  if (showPermissionGate && sessionStatus === 'idle') {
+   134→   177→    return (
+   135→   178→      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+   136→   179→        <motion.div
+   137→   180→          initial={{ opacity: 0, y: 20 }}
+   138→   181→          animate={{ opacity: 1, y: 0 }}
+   139→   182→          transition={{ duration: 0.5, ease: 'easeOut' }}
+   140→   183→          className="w-full max-w-md"
+   141→   184→        >
+   142→   185→          {/* Logo */}
+   143→   186→          <div className="text-center mb-8">
+   144→   187→            <motion.div
+   145→   188→              className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+   146→   189→              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.18 265), oklch(0.6 0.15 265))' }}
+   147→   190→              whileHover={{ scale: 1.05, rotate: 5 }}
+   148→   191→            >
+   149→   192→              <Radio className="w-8 h-8 text-white" />
+   150→   193→            </motion.div>
+   151→   194→            <h1 className="text-2xl font-bold tracking-tight">AI REALTIME STUDIO</h1>
+   152→   195→            <p className="text-studio-muted-foreground/60 mt-2 text-sm">
+   153→   196→              Real-time voice & video transformation
+   154→   197→            </p>
+   155→   198→          </div>
+   156→   199→
+   157→   200→          {/* Start Card */}
+   158→   201→          <div className="rounded-xl border border-studio-border/50 bg-card/80 backdrop-blur-sm p-6 space-y-4">
+   159→   202→            <div className="space-y-3">
+   160→   203→              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
+   161→   204→                <Video className="w-5 h-5 text-studio-accent" />
+   162→   205→                <div>
+   163→   206→                  <p className="text-sm font-medium">Camera Access</p>
+   164→   207→                  <p className="text-xs text-studio-muted-foreground/60">Required for video transformation</p>
+   165→   208→                </div>
+   166→   209→              </div>
+   167→   210→              <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
+   168→   211→                <Mic className="w-5 h-5 text-studio-accent" />
+   169→   212→                <div>
+   170→   213→                  <p className="text-sm font-medium">Microphone Access</p>
+   171→   214→                  <p className="text-xs text-studio-muted-foreground/60">Required for voice transformation</p>
+   172→   215→                </div>
+   173→   216→              </div>
+   174→   217→            </div>
+   175→   218→
+   176→   219→            <Button
+   177→   220→              onClick={handleStartSession}
+   178→   221→              className="w-full h-12 text-sm font-semibold"
+   179→   222→              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.18 265), oklch(0.6 0.15 265))' }}
+   180→   223→            >
+   181→   224→              <Zap className="w-4 h-4 mr-2" />
+   182→   225→              Start Studio Session
+   183→   226→            </Button>
+   184→   227→
+   185→   228→            {activeProvider ? (
+   186→   229→              <div className="flex items-center justify-center gap-2 text-xs text-studio-success">
+   187→   230→                <div className="w-1.5 h-1.5 rounded-full bg-studio-success animate-pulse-glow" />
+   188→   231→                Connected to {activeProvider.name}
+   189→   232→              </div>
+   190→   233→            ) : (
+   191→   234→              <p className="text-center text-xs text-studio-muted-foreground/50">
+   192→   235→                No AI provider configured — <SettingsDialog /> to add one
+   193→   236→              </p>
+   194→   237→            )}
+   195→   238→          </div>
+   196→   239→        </motion.div>
+   197→   240→      </div>
+   198→   241→    )
+   199→   242→  }
+   200→   243→
+   201→   244→  // ─── ACTIVE STUDIO ─────────────────────────────────
+   202→   245→  return (
+   203→   246→    <div className="min-h-screen bg-background flex flex-col">
+   204→   247→      {/* Top Bar */}
+   205→   248→      <header className="h-12 border-b border-studio-border/50 flex items-center justify-between px-3 md:px-4 bg-card/50 backdrop-blur-sm shrink-0 z-50">
+   206→   249→        <div className="flex items-center gap-3">
+   207→   250→          <div className="flex items-center gap-2">
+   208→   251→            <Radio className="w-4 h-4 text-studio-accent" />
+   209→   252→            <span className="text-xs font-semibold tracking-wider uppercase hidden sm:inline">
+   210→   253→              AI REALTIME STUDIO
+   211→   254→            </span>
+   212→   255→          </div>
+   213→   256→          <Separator orientation="vertical" className="h-4" />
+   214→   257→          <div className="flex items-center gap-1.5 text-xs text-studio-muted-foreground/70">
+   215→   258→            <Clock className="w-3 h-3" />
+   216→   259→            <span className="font-mono">{formatDuration(sessionDuration)}</span>
+   217→   260→          </div>
+   218→   261→          {isRecording && (
+   219→   262→            <Badge
+   220→   263→              variant="destructive"
+   221→   264→              className="text-[10px] px-1.5 py-0 gap-1 animate-recording"
+   222→   265→            >
+   223→   266→              <Circle className="w-2 h-2 fill-current" />
+   224→   267→              REC {formatDuration(recordingDuration)}
+   225→   268→            </Badge>
+   226→   269→          )}
+   227→   270→        </div>
+   228→   271→
+   229→   272→        <div className="flex items-center gap-1.5">
+   230→   273→          {/* Provider Status */}
+   231→   274→          {activeProvider && (
+   232→   275→            <Badge
+   233→   276→              variant="outline"
+   234→   277→              className="text-[10px] px-2 py-0 gap-1 border-studio-success/30 text-studio-success hidden sm:flex"
+   235→   278→            >
+   236→   279→              <div className="w-1.5 h-1.5 rounded-full bg-studio-success animate-pulse-glow" />
+   237→   280→              {activeProvider.name}
+   238→   281→            </Badge>
+   239→   282→          )}
+   240→   283→          {!activeProvider && (
+   241→   284→            <Badge
+   242→   285→              variant="outline"
+   243→   286→              className="text-[10px] px-2 py-0 gap-1 border-studio-warning/30 text-studio-warning hidden sm:flex"
+   244→   287→            >
+   245→   288→              <AlertCircle className="w-2.5 h-2.5" />
+   246→   289→              No Provider
+   247→   290→            </Badge>
+   248→   291→          )}
+   249→   292→          <SettingsDialog />
+   250→   293→        </div>
+   251→   294→      </header>
+   252→   295→
+   253→   296→      {/* Main Content Area */}
+   254→   297→      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+   255→   298→        {/* ─── Camera Preview (shared) ─── */}
+   256→   299→        <div className="flex-1 relative bg-black flex items-center justify-center min-h-0">
+   257→   300→          {cameraStatus === 'active' ? (
+   258→   301→            <video
+   259→   302→              ref={videoRef}
+   260→   303→              autoPlay
+   261→   304→              playsInline
+   262→   305→              muted
+   263→   306→              className={cn(
+   264→   307→                'w-full h-full object-contain',
+   265→   308→                'transition-transform duration-300',
+   266→   309→              )}
+   267→   310→              style={{ transform: 'scaleX(-1)' }}
+   268→   311→            />
+   269→   312→          ) : cameraStatus === 'requesting' ? (
+   270→   313→            <div className="flex flex-col items-center gap-3 animate-pulse">
+   271→   314→              <Video className="w-10 h-10 text-studio-muted-foreground/30" />
+   272→   315→              <span className="text-sm text-studio-muted-foreground/50">Requesting camera...</span>
+   273→   316→            </div>
+   274→   317→          ) : cameraStatus === 'error' ? (
+   275→   318→            <div className="flex flex-col items-center gap-3">
+   276→   319→              <AlertCircle className="w-10 h-10 text-studio-danger" />
+   277→   320→              <span className="text-sm text-studio-danger">Camera access denied</span>
+   278→   321→              <Button variant="outline" size="sm" onClick={startCamera}>
+   279→   322→                Retry
+   280→   323→              </Button>
+   281→   324→            </div>
+   282→   325→          ) : (
+   283→   326→            <div className="flex flex-col items-center gap-3">
+   284→   327→              <VideoOff className="w-10 h-10 text-studio-muted-foreground/20" />
+   285→   328→              <span className="text-sm text-studio-muted-foreground/40">Camera off</span>
+   286→   329→            </div>
+   287→   330→          )}
+   288→   331→
+   289→   332→          {/* Floating Control Bar (overlay on camera) */}
+   290→   333→          <div className="absolute bottom-0 left-0 right-0">
+   291→   334→            <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-16 pb-3 px-4">
+   292→   335→              {/* Audio Levels (shown on camera overlay) */}
+   293→   336→              <div className="max-w-md mx-auto mb-3 space-y-1">
+   294→   337→                <AudioLevelMeter level={audioLevels.input} label="Input" />
+   295→   338→              </div>
+   296→   339→
+   297→   340→              {/* Main Control Buttons */}
+   298→   341→              <div className="flex items-center justify-center gap-3">
+   299→   342→                {/* Camera Toggle */}
+   300→   343→                <Button
+   301→   344→                  variant="outline"
+   302→   345→                  size="icon"
+   303→   346→                  className={cn(
+   304→   347→                    'rounded-full w-11 h-11 border-studio-border/50 bg-black/30 backdrop-blur-sm',
+   305→   348→                    cameraStatus === 'active' && 'border-studio-accent/50 text-studio-accent'
+   306→   349→                  )}
+   307→   350→                  onClick={cameraStatus === 'active' ? stopCamera : startCamera}
+   308→   351→                >
+   309→   352→                  {cameraStatus === 'active' ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+   310→   353→                </Button>
+   311→   354→
+   312→   355→                {/* Mic Toggle */}
+   313→   356→                <Button
+   314→   357→                  variant="outline"
+   315→   358→                  size="icon"
+   316→   359→                  className={cn(
+   317→   360→                    'rounded-full w-11 h-11 border-studio-border/50 bg-black/30 backdrop-blur-sm',
+   318→   361→                    audioStatus === 'active' && !isMuted && 'border-studio-accent/50 text-studio-accent',
+   319→   362→                    isMuted && 'border-studio-danger/50 text-studio-danger'
+   320→   363→                  )}
+   321→   364→                  onClick={audioStatus === 'active' ? toggleMute : startAudio}
+   322→   365→                >
+   323→   366→                  {audioStatus === 'active' && !isMuted ? (
+   324→   367→                    <Mic className="w-5 h-5" />
+   325→   368→                  ) : (
+   326→   369→                    <MicOff className="w-5 h-5" />
+   327→   370→                  )}
+   328→   371→                </Button>
+   329→   372→
+   330→   373→                {/* Record Button */}
+   331→   374→                <Button
+   332→   375→                  variant="outline"
+   333→   376→                  size="icon"
+   334→   377→                  className={cn(
+   335→   378→                    'rounded-full w-14 h-14 border-2 bg-black/30 backdrop-blur-sm transition-all',
+   336→   379→                    isRecording
+   337→   380→                      ? 'border-studio-danger text-studio-danger animate-recording'
+   338→   381→                      : 'border-studio-border/50 hover:border-studio-danger/50'
+   339→   382→                  )}
+   340→   383→                  onClick={handleToggleRecording}
+   341→   384→                  disabled={!isSessionActive}
+   342→   385→                >
+   343→   386→                  {isRecording ? (
+   344→   387→                    <Square className="w-5 h-5 fill-current" />
+   345→   388→                  ) : (
+   346→   389→                    <Circle className="w-5 h-5 fill-current" />
+   347→   390→                  )}
+   348→   391→                </Button>
+   349→   392→
+   350→   393→                {/* Flip Camera (mobile only) */}
+   351→   394→                <Button
+   352→   395→                  variant="outline"
+   353→   396→                  size="icon"
+   354→   397→                  className="rounded-full w-11 h-11 border-studio-border/50 bg-black/30 backdrop-blur-sm lg:hidden"
+   355→   398→                  onClick={flipCamera}
+   356→   399→                >
+   357→   400→                  <RotateCcw className="w-4 h-4" />
+   358→   401→                </Button>
+   359→   402→
+   360→   403→                {/* Mobile Controls Toggle */}
+   361→   404→                <Button
+   362→   405→                  variant="outline"
+   363→   406→                  size="icon"
+   364→   407→                  className="rounded-full w-11 h-11 border-studio-border/50 bg-black/30 backdrop-blur-sm lg:hidden"
+   365→   408→                  onClick={() => setMobileControlsOpen(!isMobileControlsOpen)}
+   366→   409→                >
+   367→   410→                  {isMobileControlsOpen ? (
+   368→   411→                    <ChevronDown className="w-5 h-5" />
+   369→   412→                  ) : (
+   370→   413→                    <ChevronUp className="w-5 h-5" />
+   371→   414→                  )}
+   372→   415→                </Button>
+   373→   416→
+   374→   417→                {/* End Session */}
+   375→   418→                <Button
+   376→   419→                  variant="outline"
+   377→   420→                  size="sm"
+   378→   421→                  className="rounded-full border-studio-danger/50 text-studio-danger hover:bg-studio-danger/10 bg-black/30 backdrop-blur-sm"
+   379→   422→                  onClick={handleEndSession}
+   380→   423→                >
+   381→   424→                  <Square className="w-3.5 h-3.5 mr-1.5" />
+   382→   425→                  <span className="hidden sm:inline">End</span>
+   383→   426→                </Button>
+   384→   427→              </div>
+   385→   428→            </div>
+   386→   429→          </div>
+   387→   430→        </div>
+   388→   431→
+   389→   432→        {/* ─── Desktop Side Panel ─── */}
+   390→   433→        <aside className="hidden lg:flex w-80 xl:w-96 border-l border-studio-border/50 bg-card/30 flex-col overflow-hidden">
+   391→   434→          <SidePanelContent />
+   392→   435→        </aside>
+   393→   436→
+   394→   437→        {/* ─── Mobile Bottom Sheet ─── */}
+   395→   438→        <AnimatePresence>
+   396→   439→          {isMobileControlsOpen && (
+   397→   440→            <motion.div
+   398→   441→              initial={{ y: '100%' }}
+   399→   442→              animate={{ y: 0 }}
+   400→   443→              exit={{ y: '100%' }}
+   401→   444→              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+   402→   445→              className="lg:hidden fixed inset-x-0 bottom-0 z-40 max-h-[70vh] bg-card/95 backdrop-blur-xl border-t border-studio-border/50 rounded-t-2xl"
+   403→   446→            >
+   404→   447→              <div className="flex justify-center pt-2 pb-1">
+   405→   448→                <div className="w-10 h-1 rounded-full bg-studio-border/50" />
+   406→   449→              </div>
+   407→   450→              <ScrollArea className="h-[calc(70vh-2rem)]">
+   408→   451→                <div className="p-4">
+   409→   452→                  <SidePanelContent />
+   410→   453→                </div>
+   411→   454→              </ScrollArea>
+   412→   455→            </motion.div>
+   413→   456→          )}
+   414→   457→        </AnimatePresence>
+   415→   458→      </main>
+   416→   459→    </div>
+   417→   460→  )
+   418→   461→}
+   419→   462→
+   420→   463→// ─── SIDE PANEL CONTENT (shared between desktop & mobile) ──
+   421→   464→function SidePanelContent() {
+   422→   465→  const {
+   423→   466→    activeVoicePreset, voicePresets, voicePitch, voiceConversionEnabled,
+   424→   467→    noiseGateEnabled, noiseGateThreshold, headphonesDetected, audioStatus,
+   425→   468→    setActiveVoicePreset, setVoicePitch, setVoiceConversionEnabled,
+   426→   469→    setNoiseGateEnabled, setNoiseGateThreshold,
+   427→   470→  } = useStudioStore()
+   428→   471→
+   429→   472→  const [activeTab, setActiveTab] = useState<'voice' | 'audio' | 'models'>('voice')
+   430→   473→
+   431→   474→  return (
+   432→   475→    <div className="flex flex-col h-full">
+   433→   476→      {/* Tab Navigation */}
+   434→   477→      <div className="flex border-b border-studio-border/50 shrink-0">
+   435→   478→        {(['voice', 'audio', 'models'] as const).map((tab) => (
+   436→   479→          <button
+   437→   480→            key={tab}
+   438→   481→            onClick={() => setActiveTab(tab)}
+   439→   482→            className={cn(
+   440→   483→              'flex-1 py-2.5 text-xs font-medium uppercase tracking-wider transition-colors',
+   441→   484→              activeTab === tab
+   442→   485→                ? 'text-studio-accent border-b-2 border-studio-accent'
+   443→   486→                : 'text-studio-muted-foreground/60 hover:text-studio-muted-foreground'
+   444→   487→            )}
+   445→   488→          >
+   446→   489→            {tab}
+   447→   490→          </button>
+   448→   491→        ))}
+   449→   492→      </div>
+   450→   493→
+   451→   494→      <ScrollArea className="flex-1">
+   452→   495→        <div className="p-4 space-y-5">
+   453→   496→          {/* VOICE TAB */}
+   454→   497→          {activeTab === 'voice' && (
+   455→   498→            <div className="space-y-4 animate-fade-in">
+   456→   499→              {/* Voice Conversion Toggle */}
+   457→   500→              <div className="flex items-center justify-between">
+   458→   501→                <div>
+   459→   502→                  <p className="text-sm font-medium">Voice Conversion</p>
+   460→   503→                  <p className="text-xs text-studio-muted-foreground/60">Transform your voice in real-time</p>
+   461→   504→                </div>
+   462→   505→                <Switch
+   463→   506→                  checked={voiceConversionEnabled}
+   464→   507→                  onCheckedChange={setVoiceConversionEnabled}
+   465→   508→                />
+   466→   509→              </div>
+   467→   510→
+   468→   511→              {voiceConversionEnabled && (
+   469→   512→                <motion.div
+   470→   513→                  initial={{ opacity: 0, height: 0 }}
+   471→   514→                  animate={{ opacity: 1, height: 'auto' }}
+   472→   515→                  exit={{ opacity: 0, height: 0 }}
+   473→   516→                  className="space-y-4"
+   474→   517→                >
+   475→   518→                  {/* Voice Presets */}
+   476→   519→                  <div className="space-y-2">
+   477→   520→                    <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+   478→   521→                      Voice Presets
+   479→   522→                    </p>
+   480→   523→                    <div className="space-y-1.5">
+   481→   524→                      {voicePresets.map((preset) => (
+   482→   525→                        <VoicePresetCard
+   483→   526→                          key={preset.id}
+   484→   527→                          preset={preset}
+   485→   528→                          isActive={activeVoicePreset?.id === preset.id}
+   486→   529→                          onSelect={setActiveVoicePreset}
+   487→   530→                        />
+   488→   531→                      ))}
+   489→   532→                    </div>
+   490→   533→                  </div>
+   491→   534→
+   492→   535→                  {/* Pitch Slider */}
+   493→   536→                  <div className="space-y-2">
+   494→   537→                    <div className="flex items-center justify-between">
+   495→   538→                      <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+   496→   539→                        Pitch Shift
+   497→   540→                      </p>
+   498→   541→                      <span className="text-xs font-mono text-studio-muted-foreground/50">
+   499→   542→                        {voicePitch > 0 ? '+' : ''}{voicePitch} st
+   500→   543→                      </span>
+   501→   544→                    </div>
+   502→   545→                    <Slider
+   503→   546→                      value={[voicePitch]}
+   504→   547→                      onValueChange={([v]) => setVoicePitch(v)}
+   505→   548→                      min={-12}
+   506→   549→                      max={12}
+   507→   550→                      step={1}
+   508→   551→                      className="w-full"
+   509→   552→                    />
+   510→   553→                    <div className="flex justify-between text-[10px] text-studio-muted-foreground/40">
+   511→   554→                      <span>-12</span>
+   512→   555→                      <span>0</span>
+   513→   556→                      <span>+12</span>
+   514→   557→                    </div>
+   515→   558→                  </div>
+   516→   559→
+   517→   560→                  {/* Clone Voice Button */}
+   518→   561→                  <Button
+   519→   562→                    variant="outline"
+   520→   563→                    className="w-full border-dashed border-studio-border/50 text-studio-muted-foreground/70 hover:border-studio-accent/50 hover:text-studio-accent"
+   521→   564→                  >
+   522→   565→                    <Mic className="w-4 h-4 mr-2" />
+   523→   566→                    Clone New Voice
+   524→   567→                  </Button>
+   525→   568→                </motion.div>
+   526→   569→              )}
+   527→   570→            </div>
+   528→   571→          )}
+   529→   572→
+   530→   573→          {/* AUDIO TAB */}
+   531→   574→          {activeTab === 'audio' && (
+   532→   575→            <div className="space-y-4 animate-fade-in">
+   533→   576→              {/* Audio Status */}
+   534→   577→              <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
+   535→   578→                <div className={cn(
+   536→   579→                  'w-2 h-2 rounded-full',
+   537→   580→                  audioStatus === 'active' ? 'bg-studio-success animate-pulse-glow' : 'bg-studio-muted-foreground/30'
+   538→   581→                )} />
+   539→   582→                <span className="text-sm">
+   540→   583→                  {audioStatus === 'active' ? 'Audio Active' : 'Audio Off'}
+   541→   584→                </span>
+   542→   585→              </div>
+   543→   586→
+   544→   587→              {/* Headphone Status */}
+   545→   588→              {audioStatus === 'active' && !headphonesDetected && (
+   546→   589→                <div className="flex items-start gap-2 p-3 rounded-lg bg-studio-warning/10 border border-studio-warning/20">
+   547→   590→                  <Headphones className="w-4 h-4 text-studio-warning mt-0.5 shrink-0" />
+   548→   591→                  <div>
+   549→   592→                    <p className="text-xs font-medium text-studio-warning">Headphones not detected</p>
+   550→   593→                    <p className="text-[10px] text-studio-muted-foreground/60 mt-0.5">
+   551→   594→                      For best experience, connect headphones to prevent echo feedback.
+   552→   595→                    </p>
+   553→   596→                  </div>
+   554→   597→                </div>
+   555→   598→              )}
+   556→   599→
+   557→   600→              {headphonesDetected && (
+   558→   601→                <div className="flex items-center gap-2 p-3 rounded-lg bg-studio-success/10 border border-studio-success/20">
+   559→   602→                  <MonitorSpeaker className="w-4 h-4 text-studio-success" />
+   560→   603→                  <span className="text-xs text-studio-success">Headphones connected</span>
+   561→   604→                </div>
+   562→   605→              )}
+   563→   606→
+   564→   607→              {/* Noise Gate */}
+   565→   608→              <div className="space-y-3">
+   566→   609→                <div className="flex items-center justify-between">
+   567→   610→                  <div>
+   568→   611→                    <p className="text-sm font-medium">Noise Gate</p>
+   569→   612→                    <p className="text-xs text-studio-muted-foreground/60">Suppress background noise</p>
+   570→   613→                  </div>
+   571→   614→                  <Switch
+   572→   615→                    checked={noiseGateEnabled}
+   573→   616→                    onCheckedChange={setNoiseGateEnabled}
+   574→   617→                  />
+   575→   618→                </div>
+   576→   619→                {noiseGateEnabled && (
+   577→   620→                  <div className="space-y-2">
+   578→   621→                    <div className="flex items-center justify-between">
+   579→   622→                      <span className="text-xs text-studio-muted-foreground/60">Threshold</span>
+   580→   623→                      <span className="text-xs font-mono text-studio-muted-foreground/50">
+   581→   624→                        {noiseGateThreshold} dB
+   582→   625→                      </span>
+   583→   626→                    </div>
+   584→   627→                    <Slider
+   585→   628→                      value={[noiseGateThreshold]}
+   586→   629→                      onValueChange={([v]) => setNoiseGateThreshold(v)}
+   587→   630→                      min={-60}
+   588→   631→                      max={-10}
+   589→   632→                      step={1}
+   590→   633→                      className="w-full"
+   591→   634→                    />
+   592→   635→                  </div>
+   593→   636→                )}
+   594→   637→              </div>
+   595→   638→            </div>
+   596→   639→          )}
+   597→   640→
+   598→   641→          {/* MODELS TAB */}
+   599→   642→          {activeTab === 'models' && (
+   600→   643→            <div className="space-y-4 animate-fade-in">
+   601→   644→              <p className="text-xs text-studio-muted-foreground/60">
+   602→   645→                Manage your AI providers and voice models. Connect your own API keys (BYOK) to enable real-time transformation.
+   603→   646→              </p>
+   604→   647→              <Button
+   605→   648→                variant="outline"
+   606→   649→                className="w-full border-dashed border-studio-border/50"
+   607→   650→                onClick={() => {}}
+   608→   651→              >
+   609→   652→                <Download className="w-4 h-4 mr-2" />
+   610→   653→                Import Voice Model
+   611→   654→              </Button>
+   612→   655→              <div className="text-center text-xs text-studio-muted-foreground/40">
+   613→   656→                Supported: RVC, So-VITS-SVC, OpenVoice
+   614→   657→              </div>
+   615→   658→            </div>
+   616→   659→          )}
+   617→   660→        </div>
+   618→   661→      </ScrollArea>
+   619→   662→    </div>
+   620→   663→  )
+   621→   664→}
+   622→   665→
+   623→   666→// ─── SETTINGS DIALOG ────────────────────────────────
+   624→   667→function SettingsDialog() {
+   625→   668→  const { providers, setProviders, activeProvider, setActiveProvider, updateProviderStatus } = useStudioStore()
+   626→   669→  const [name, setName] = useState('')
+   627→   670→  const [type, setType] = useState<ProviderType>('rvc')
+   628→   671→  const [endpoint, setEndpoint] = useState('')
+   629→   672→  const [apiKey, setApiKey] = useState('')
+   630→   673→
+   631→   674→  const addProvider = () => {
+   632→   675→    if (!name || !endpoint) return
+   633→   676→    const newProvider = {
+   634→   677→      id: crypto.randomUUID(),
+   635→   678→      name, type, endpoint, apiKey,
+   636→   679→      status: 'disconnected' as const,
+   637→   680→    }
+   638→   681→    setProviders([...providers, newProvider])
+   639→   682→    setName('')
+   640→   683→    setEndpoint('')
+   641→   684→    setApiKey('')
+   642→   685→  }
+   643→   686→
+   644→   687→  const testProvider = async (id: string) => {
+   645→   688→    const provider = providers.find(p => p.id === id)
+   646→   689→    if (!provider) return
+   647→   690→    updateProviderStatus(id, 'connecting')
+   648→   691→    try {
+   649→   692→      const controller = new AbortController()
+   650→   693→      const timeout = setTimeout(() => controller.abort(), 5000)
+   651→   694→      await fetch(provider.endpoint, {
+   652→   695→        method: 'GET',
+   653→   696→        signal: controller.signal,
+   654→   697→        headers: provider.apiKey ? { Authorization: `Bearer ${provider.apiKey}` } : {},
+   655→   698→      })
+   656→   699→      clearTimeout(timeout)
+   657→   700→      updateProviderStatus(id, 'connected')
+   658→   701→    } catch {
+   659→   702→      updateProviderStatus(id, 'error')
+   660→   703→    }
+   661→   704→  }
+   662→   705→
+   663→   706→  return (
+   664→   707→    <Dialog>
+   665→   708→      <DialogTrigger asChild>
+   666→   709→        <Button variant="ghost" size="icon" className="w-8 h-8">
+   667→   710→          <Settings className="w-4 h-4" />
+   668→   711→        </Button>
+   669→   712→      </DialogTrigger>
+   670→   713→      <DialogContent className="sm:max-w-md bg-card border-studio-border/50">
+   671→   714→        <DialogHeader>
+   672→   715→          <DialogTitle className="flex items-center gap-2">
+   673→   716→            <Settings className="w-4 h-4" />
+   674→   717→            AI Provider Settings (BYOK)
+   675→   718→          </DialogTitle>
+   676→   719→        </DialogHeader>
+   677→   720→
+   678→   721→        <div className="space-y-4 mt-4">
+   679→   722→          {/* Add Provider Form */}
+   680→   723→          <div className="space-y-3 p-3 rounded-lg border border-studio-border/30 bg-secondary/30">
+   681→   724→            <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+   682→   725→              Add Provider
+   683→   726→            </p>
+   684→   727→            <div className="grid gap-2">
+   685→   728→              <Input
+   686→   729→                placeholder="Provider name (e.g. My RVC Server)"
+   687→   730→                value={name}
+   688→   731→                onChange={(e) => setName(e.target.value)}
+   689→   732→                className="h-9 text-sm"
+   690→   733→              />
+   691→   734→              <Select value={type} onValueChange={(v) => setType(v as ProviderType)}>
+   692→   735→                <SelectTrigger className="h-9 text-sm">
+   693→   736→                  <SelectValue />
+   694→   737→                </SelectTrigger>
+   695→   738→                <SelectContent>
+   696→   739→                  <SelectItem value="rvc">RVC (Voice Conversion)</SelectItem>
+   697→   740→                  <SelectItem value="openvoice">OpenVoice (Voice Clone)</SelectItem>
+   698→   741→                  <SelectItem value="liveportrait">LivePortrait (Face)</SelectItem>
+   699→   742→                  <SelectItem value="wav2lip">Wav2Lip (Lip Sync)</SelectItem>
+   700→   743→                  <SelectItem value="custom">Custom</SelectItem>
+   701→   744→                </SelectContent>
+   702→   745→              </Select>
+   703→   746→              <Input
+   704→   747→                placeholder="API endpoint URL"
+   705→   748→                value={endpoint}
+   706→   749→                onChange={(e) => setEndpoint(e.target.value)}
+   707→   750→                className="h-9 text-sm"
+   708→   751→              />
+   709→   752→              <Input
+   710→   753→                placeholder="API Key (optional)"
+   711→   754→                type="password"
+   712→   755→                value={apiKey}
+   713→   756→                onChange={(e) => setApiKey(e.target.value)}
+   714→   757→                className="h-9 text-sm"
+   715→   758→              />
+   716→   759→              <Button onClick={addProvider} size="sm" className="w-full" disabled={!name || !endpoint}>
+   717→   760→                Add Provider
+   718→   761→              </Button>
+   719→   762→            </div>
+   720→   763→          </div>
+   721→   764→
+   722→   765→          {/* Provider List */}
+   723→   766→          {providers.length > 0 && (
+   724→   767→            <div className="space-y-2">
+   725→   768→              <p className="text-xs font-medium uppercase tracking-wider text-studio-muted-foreground/70">
+   726→   769→                Configured Providers
+   727→   770→              </p>
+   728→   771→              {providers.map((p) => (
+   729→   772→                <div
+   730→   773→                  key={p.id}
+   731→   774→                  className={cn(
+   732→   775→                    'flex items-center justify-between p-3 rounded-lg border transition-colors',
+   733→   776→                    activeProvider?.id === p.id
+   734→   777→                      ? 'border-studio-accent/50 bg-studio-accent/5'
+   735→   778→                      : 'border-studio-border/30 bg-secondary/30'
+   736→   779→                  )}
+   737→   780→                >
+   738→   781→                  <div className="flex items-center gap-2 min-w-0">
+   739→   782→                    <div className={cn(
+   740→   783→                      'w-2 h-2 rounded-full shrink-0',
+   741→   784→                      p.status === 'connected' ? 'bg-studio-success' :
+   742→   785→                      p.status === 'connecting' ? 'bg-studio-warning animate-pulse' :
+   743→   786→                      p.status === 'error' ? 'bg-studio-danger' :
+   744→   787→                      'bg-studio-muted-foreground/30'
+   745→   788→                    )} />
+   746→   789→                    <div className="min-w-0">
+   747→   790→                      <p className="text-sm font-medium truncate">{p.name}</p>
+   748→   791→                      <p className="text-[10px] text-studio-muted-foreground/50 truncate">{p.type} · {p.endpoint}</p>
+   749→   792→                    </div>
+   750→   793→                  </div>
+   751→   794→                  <div className="flex items-center gap-1 shrink-0">
+   752→   795→                    <Button
+   753→   796→                      variant="ghost"
+   754→   797→                      size="sm"
+   755→   798→                      className="h-7 text-xs"
+   756→   799→                      onClick={() => testProvider(p.id)}
+   757→   800→                      disabled={p.status === 'connecting'}
+   758→   801→                    >
+   759→   802→                      Test
+   760→   803→                    </Button>
+   761→   804→                    <Button
+   762→   805→                      variant="ghost"
+   763→   806→                      size="sm"
+   764→   807→                      className={cn(
+   765→   808→                        'h-7 text-xs',
+   766→   809→                        activeProvider?.id === p.id && 'text-studio-accent'
+   767→   810→                      )}
+   768→   811→                      onClick={() => setActiveProvider(p)}
+   769→   812→                    >
+   770→   813→                      {activeProvider?.id === p.id ? 'Active' : 'Use'}
+   771→   814→                    </Button>
+   772→   815→                  </div>
+   773→   816→                </div>
+   774→   817→              ))}
+   775→   818→            </div>
+   776→   819→          )}
+   777→   820→
+   778→   821→          {providers.length === 0 && (
+   779→   822→            <p className="text-center text-xs text-studio-muted-foreground/40 py-4">
+   780→   823→              No providers configured yet. Add your RVC, OpenVoice, or custom AI endpoint above.
+   781→   824→            </p>
+   782→   825→          )}
+   783→   826→        </div>
+   784→   827→      </DialogContent>
+   785→   828→    </Dialog>
+   786→   829→  )
+   787→   830→}
+   788→   831→

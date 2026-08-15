@@ -4,7 +4,7 @@ export type SessionStatus = 'idle' | 'connecting' | 'active' | 'paused' | 'ended
 export type RecordingStatus = 'idle' | 'recording' | 'paused' | 'stopped'
 export type CameraStatus = 'off' | 'requesting' | 'active' | 'error'
 export type AudioStatus = 'off' | 'requesting' | 'active' | 'error'
-export type ProviderType = 'rvc' | 'openvoice' | 'liveportrait' | 'wav2lip' | 'custom'
+export type ProviderType = 'seed-vc' | 'rvc' | 'openvoice' | 'liveportrait' | 'wav2lip' | 'faceswap' | 'custom'
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
 
 export interface VoicePreset {
@@ -131,10 +131,10 @@ export const useStudioStore = create<StudioState>((set) => ({
   activeVoicePreset: null,
   voicePresets: [
     { id: 'default', name: 'Original Voice', provider: 'custom', modelId: 'none', description: 'No voice transformation' },
+    { id: 'seed-vc-realtime', name: 'Seed-VC Real-Time', provider: 'seed-vc', modelId: 'seed-uvit-tat-xlsr-tiny', description: 'Zero-shot real-time VC (25M params)' },
+    { id: 'seed-vc-quality', name: 'Seed-VC Quality', provider: 'seed-vc', modelId: 'seed-uvit-whisper-small-wavenet', description: 'Offline high-quality VC (98M params)' },
+    { id: 'seed-vc-singing', name: 'Seed-VC Singing', provider: 'seed-vc', modelId: 'seed-uvit-whisper-base', description: 'Singing voice conversion (200M params)' },
     { id: 'rvc-male-1', name: 'Deep Male', provider: 'rvc', modelId: 'male-deep-01', description: 'Deep, resonant male voice' },
-    { id: 'rvc-female-1', name: 'Soft Female', provider: 'rvc', modelId: 'female-soft-01', description: 'Soft, warm female voice' },
-    { id: 'rvc-anime-1', name: 'Anime Style', provider: 'rvc', modelId: 'anime-style-01', description: 'Anime-inspired voice' },
-    { id: 'openvoice-1', name: 'OpenVoice Clone', provider: 'openvoice', modelId: 'clone-01', description: 'Instant voice clone' },
   ],
   voicePitch: 0,
   voiceConversionEnabled: false,
