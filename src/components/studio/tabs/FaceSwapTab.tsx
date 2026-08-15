@@ -22,7 +22,6 @@ export default function FaceSwapTab() {
     setFaceSwapFps,
     setActiveFaceProvider,
     setSettingsOpen,
-    setMobileControlsOpen,
     providers,
   } = useStudioStore()
   const fs = useFaceSwap()
@@ -116,12 +115,9 @@ export default function FaceSwapTab() {
                 type="file"
                 accept="image/*,.png,.jpg,.jpeg,.webp"
                 className="hidden"
-                onChange={async (e) => {
+                onChange={(e) => {
                   const file = e.target.files?.[0]
-                  if (file) {
-                    await fs.setReferenceFromFile(file)
-                    setMobileControlsOpen(false)
-                  }
+                  if (file) fs.setReferenceFromFile(file)
                 }}
               />
               <Button
@@ -130,10 +126,7 @@ export default function FaceSwapTab() {
                 className="flex-1 border-studio-border/50"
                 onClick={() => {
                   const video = document.querySelector('video') as HTMLVideoElement | null
-                  if (video) {
-                    fs.setReferenceFromVideo(video)
-                    setMobileControlsOpen(false)
-                  }
+                  if (video) fs.setReferenceFromVideo(video)
                 }}
               >
                 <Camera className="w-3.5 h-3.5 mr-1.5" />

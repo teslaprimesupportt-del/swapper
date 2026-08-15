@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Video, VideoOff, Mic, MicOff, Settings, Circle, Square,
-  RotateCcw, ChevronUp, ChevronDown,
+  RotateCcw, ChevronUp, ChevronDown, X, PanelRightClose, PanelRightOpen,
   Radio, Clock, Zap, AlertCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -52,9 +52,9 @@ export default function StudioShell() {
     recordingStatus, recordingDuration,
     audioLevels, isMuted,
     activeProvider, activeFaceProvider, voiceConversionEnabled,
-    faceSwap, isMobileControlsOpen,
+    faceSwap, isMobileControlsOpen, sidePanelOpen,
     startSession, endSession,
-    setMobileControlsOpen,
+    setMobileControlsOpen, setSidePanelOpen,
   } = useStudioStore()
 
   const { startCamera, stopCamera, flipCamera } = useCamera(videoRef)
@@ -409,33 +409,89 @@ export default function StudioShell() {
         </div>
 
         {/* ─── Desktop Side Panel ─── */}
-        <aside className="hidden lg:flex w-80 xl:w-96 border-l border-studio-border/50 bg-card/30 flex-col overflow-hidden">
-          <SidePanelContent />
-        </aside>
+        <AnimatePresence>
+          {sidePanelOpen && (
+            <motion.aside
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="hidden lg:flex flex-col overflow-hidden border-l border-studio-border/50 bg-card/30"
+            >
+              <div className="w-80 xl:w-96 flex flex-col h-full">
+                <div className="flex items-center justify-end px-2 py-1.5 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-7 h-7"
+                    onClick={() => setSidePanelOpen(false)}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+                <SidePanelContent />
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop sidebar reopen button (shown when closed) */}
+        {!sidePanelOpen && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-card/80 border border-studio-border/50 backdrop-blur-sm"
+            onClick={() => setSidePanelOpen(true)}
+          >
+            <PanelRightOpen className="w-4 h-4" />
+          </Button>
+        )}
 
         {/* ─── Mobile Bottom Sheet ─── */}
         <AnimatePresence>
           {isMobileControlsOpen && (
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="lg:hidden fixed inset-x-0 bottom-0 z-40 max-h-[70vh] bg-card/95 backdrop-blur-xl border-t border-studio-border/50 rounded-t-2xl"
-            >
-              <button
+            <>
+              {/* Backdrop — tap to dismiss */}
+              <motion.div
+                key="backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-30 bg-black/40 lg:hidden"
                 onClick={() => setMobileControlsOpen(false)}
-                className="flex justify-center pt-2 pb-1 w-full"
-                aria-label="Close panel"
+              />
+              <motion.div
+                key="sheet"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="lg:hidden fixed inset-x-0 bottom-0 z-40 max-h-[70vh] bg-card/95 backdrop-blur-xl border-t border-studio-border/50 rounded-t-2xl"
               >
-                <div className="w-10 h-1 rounded-full bg-studio-border/50" />
-              </button>
-              <ScrollArea className="h-[calc(70vh-2rem)]">
-                <div className="p-4">
-                  <SidePanelContent />
+                <div className="flex items-center justify-between px-3 pt-2 pb-1">
+                  <button
+                    onClick={() => setMobileControlsOpen(false)}
+                    className="flex justify-center flex-1"
+                    aria-label="Close panel"
+                  >
+                    <div className="w-10 h-1 rounded-full bg-studio-border/50" />
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-7 h-7 -mr-1"
+                    onClick={() => setMobileControlsOpen(false)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
-              </ScrollArea>
-            </motion.div>
+                <ScrollArea className="h-[calc(70vh-2.5rem)]">
+                  <div className="p-4">
+                    <SidePanelContent />
+                  </div>
+                </ScrollArea>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </main>

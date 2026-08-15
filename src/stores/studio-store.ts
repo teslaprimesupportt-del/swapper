@@ -109,8 +109,10 @@ interface StudioState {
 
   // UI
   isMobileControlsOpen: boolean
+  sidePanelOpen: boolean
   isSettingsOpen: boolean
   setMobileControlsOpen: (o: boolean) => void
+  setSidePanelOpen: (o: boolean) => void
   setSettingsOpen: (o: boolean) => void
 }
 
@@ -230,7 +232,9 @@ export const useStudioStore = create<StudioState>((set) => ({
 
   // UI
   isMobileControlsOpen: false,
+  sidePanelOpen: true,
   isSettingsOpen: false,
   setMobileControlsOpen: (o) => set({ isMobileControlsOpen: o }),
+  setSidePanelOpen: (o) => set({ sidePanelOpen: o }),
   setSettingsOpen: (o) => set({ isSettingsOpen: o }),
 }))
