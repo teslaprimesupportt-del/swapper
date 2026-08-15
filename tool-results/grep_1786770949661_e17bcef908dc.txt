@@ -1,0 +1,209 @@
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:5:from insightface.model_zoo.model_zoo import ModelRouter, PickableInferenceSession
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:6:from insightface.model_zoo.retinaface import RetinaFace
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:7:from insightface.model_zoo.landmark import Landmark
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:8:from insightface.model_zoo.attribute import Attribute
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:9:from insightface.model_zoo.inswapper import INSwapper
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:10:from insightface.model_zoo.arcface_onnx import ArcFaceONNX
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:13:from insightface.model_zoo import model_zoo
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:14:import onnxruntime
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:15:import onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:16:from onnx import numpy_helper
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:21:    session = PickableInferenceSession(self.onnx_file, **kwargs)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:29:        return RetinaFace(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:31:        return Landmark(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:33:        return Attribute(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:35:        return INSwapper(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:37:        return INSwapper(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:39:        return ArcFaceONNX(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:44:    session = PickableInferenceSession(self.onnx_file, **kwargs)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:51:        return RetinaFace(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:53:        return Landmark(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:55:        return Attribute(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:57:        return INSwapper(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:59:        return INSwapper(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:61:        return ArcFaceONNX(model_file=self.onnx_file, session=session)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:67:    onnxruntime.set_default_logger_severity(3)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:70:    onnx_files = glob.glob(osp.join(self.model_dir, '*.onnx'))
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:71:    onnx_files = sorted(onnx_files)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:72:    for onnx_file in onnx_files:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:73:        model = model_zoo.get_model(onnx_file, **kwargs)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:75:            print('model not recognized:', onnx_file)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:77:            print('model ignore:', onnx_file, model.taskname)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:82:            print('duplicated model task type, ignore:', onnx_file, model.taskname)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:99:def patched_inswapper_init(self, model_file=None, session=None):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:102:    model = onnx.load(self.model_file)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:108:        self.session = onnxruntime.InferenceSession(self.model_file, None)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:139:def patch_insightface(get_model, faceanalysis_init, faceanalysis_prepare, inswapper_init, retinaface_prepare):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:140:    insightface.model_zoo.model_zoo.ModelRouter.get_model = get_model
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:143:    insightface.model_zoo.inswapper.INSwapper.__init__ = inswapper_init
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:144:    insightface.model_zoo.retinaface.RetinaFace.prepare = retinaface_prepare
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:147:# original_functions = [ModelRouter.get_model, FaceAnalysis.__init__, FaceAnalysis.prepare, INSwapper.__init__, RetinaFace.prepare]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:148:original_functions = [patched_get_model_log, FaceAnalysis.__init__, FaceAnalysis.prepare, INSwapper.__init__, RetinaFace.prepare]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_patcher.py:149:patched_functions = [patched_get_model, patched_faceanalysis_init, patched_faceanalysis_prepare, patched_inswapper_init, pathced_retinaface_prepare]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/swapper.py:4:# The following code is almost entirely copied from INSwapper; the only change here is that we want to use Lanczos
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/utils/face_utils.py:214:    from custom_nodes.facerestore.facelib.detection import init_detection_model
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/utils/face_utils.py:215:    from custom_nodes.facerestore.facelib.utils.face_restoration_helper import get_largest_face
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:68:    model_path = folder_paths.get_full_path("facerestore_models", face_restore_model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:79:            if ".onnx" in face_restore_model:  # ONNX models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:81:                ort_session = set_ort_session(model_path, providers=providers)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:83:                facerestore_model = ort_session
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:106:                    checkpoint = torch.load(model_path)["params_ema"]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:108:                    facerestore_model = codeformer_net.eval()
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:110:                    sd = comfy.utils.load_torch_file(model_path, safe_load=True)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:111:                    facerestore_model = model_loading.load_state_dict(sd).eval()
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:112:                    facerestore_model.to(device)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:114:                output = facerestore_model(cropped_face_t, w=codeformer_weight)[
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_faceboost/restorer.py:115:                    0] if "codeformer" in face_restore_model.lower() else facerestore_model(cropped_face_t)[0]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_faceswap.py:37:        models = [x for x in models if x.endswith(".onnx") or x.endswith(".pth")]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/utils/face_restoration_helper.py:48:class FaceRestoreHelper(object):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:331:                beta=0.25, gumbel_straight_through=False, gumbel_kl_weight=1e-8, model_path=None):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:375:        if model_path is not None:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:376:            chkpt = torch.load(model_path, map_location='cpu')
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:378:                self.load_state_dict(torch.load(model_path, map_location='cpu')['params_ema'])
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:379:                logger.info(f'vqgan is loaded from: {model_path} [params_ema]')
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:381:                self.load_state_dict(torch.load(model_path, map_location='cpu')['params'])
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:382:                logger.info(f'vqgan is loaded from: {model_path} [params]')
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:398:    def __init__(self, nc=3, ndf=64, n_layers=4, model_path=None):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:426:        if model_path is not None:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:427:            chkpt = torch.load(model_path, map_location='cpu')
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:429:                self.load_state_dict(torch.load(model_path, map_location='cpu')['params_d'])
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_archs/vqgan_arch.py:431:                self.load_state_dict(torch.load(model_path, map_location='cpu')['params'])
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/parsing/__init__.py:18:    model_path = load_file_from_url(url=model_url, model_dir='../../models/facedetection', progress=True, file_name=None)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/parsing/__init__.py:19:    load_net = torch.load(model_path, map_location=lambda storage, loc: storage)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:7:import onnxruntime as ort
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:60:insightface_path_old = os.path.join(models_path_old, "insightface")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:61:insightface_models_path_old = os.path.join(insightface_path_old, "models")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:64:insightface_path = os.path.join(models_path, "insightface")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:65:insightface_models_path = os.path.join(insightface_path, "models")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:70:    move_path(insightface_models_path_old, insightface_models_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:79:CURRENT_FS_MODEL_PATH = None
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:104:    global FS_MODEL, CURRENT_FS_MODEL_PATH
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:118:            name="buffalo_l", providers=providers, root=insightface_path
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:124:def getFaceSwapModel(model_path: str):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:125:    global FS_MODEL, CURRENT_FS_MODEL_PATH
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:126:    if FS_MODEL is None or CURRENT_FS_MODEL_PATH is None or CURRENT_FS_MODEL_PATH != model_path:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:127:        CURRENT_FS_MODEL_PATH = model_path
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:129:        if "hyperswap" in model_path.lower():
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:130:            FS_MODEL = ort.InferenceSession(model_path, providers=providers)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:132:            FS_MODEL = insightface.model_zoo.get_model(model_path, providers=providers)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:446:    buffalo_path = os.path.join(insightface_models_path, "buffalo_l.zip")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:601:                if "inswapper" in model:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:602:                    model_path = os.path.join(insightface_path, model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:604:                    model_path = os.path.join(reswapper_path, model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:606:                    model_path = os.path.join(hyperswap_path, model)    
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:607:                face_swapper = getFaceSwapModel(model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:812:                model_path = model_path = os.path.join(insightface_path, model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/reactor_swapper.py:813:                face_swapper = getFaceSwapModel(model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_masking/subcore.py:14:def load_yolo(model_path: str):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_masking/subcore.py:16:        return YOLO(model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/scripts/r_masking/subcore.py:20:        return YOLO(model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:36:    model_path = load_file_from_url(url=model_url, model_dir='../../models/facedetection', progress=True, file_name=None)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:37:    load_net = torch.load(model_path, map_location=lambda storage, loc: storage)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:61:    model_path = load_file_from_url(url=model_url, model_dir='../../models/facedetection', progress=True, file_name=None)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:62:    load_net = torch.load(model_path, map_location=lambda storage, loc: storage)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:87:#     model_path = os.path.join('../../models/facedetection', list(f_id.keys())[0])
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:88:#     if not os.path.exists(model_path):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/__init__.py:91:#     load_net = torch.load(model_path, map_location=lambda storage, loc: storage)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:80:- Поддержка моделей ReSwapper. Несмотря на то, что Inswapper по-прежнему даёт лучшее сходство, но ReSwapper развивается - спасибо @somanchiu https://github.com/somanchiu/ReSwapper за эти модели и проект ReSwapper! Это хороший шаг для Сообщества в создании альтернативы Инсваппера!
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:95:- Поддержка ORT CoreML and ROCM EPs, достаточно установить ту версию onnxruntime, которая соответствует вашему GPU
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:106:- Поддержка моделей восстановления лиц GPEN 1024/2048 (доступны в датасете на HF https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:168:Скачать можно здесь: https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:169:<br>Добавьте модели в папку `ComfyUI\models\facerestore_models`
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:189:- Поддержка CUDA 12 - не забудьте запустить (Windows) `install.bat` или (Linux/MacOS) `install.py` для используемого Python окружения или попробуйте установить ORT-GPU для CU12 вручную (https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:238:10. (Начиная с версии 0.3.0) Скачайте дополнительные модели восстановления лиц (по ссылке ниже) и сохраните их в папку `extensions\sd-webui-comfyui\ComfyUI\models\facerestore_models`:<br>
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:239:https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:357:Эта ошибка появляется, если что-то не так с файлом модели `inswapper_128.onnx`
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:359:Скачайте вручную по ссылке [отсюда](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:421:Данное программное обеспечение использует предварительно обученные модели `buffalo_l` и `inswapper_128.onnx`, представленные разработчиками [InsightFace](https://github.com/deepinsight/insightface/). Эти модели распространяются при следующих условиях:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:433:inswapper_128.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:439:1k3d68.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:446:2d106det.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:453:det_10g.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:460:genderage.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:467:w600k_r50.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:487:|[buffalo_l.zip](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/buffalo_l.zip) | [DeepInsight](https://github.com/deepinsight/insightface) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:488:| [codeformer-v0.1.0.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/codeformer-v0.1.0.pth) | [sczhou](https://github.com/sczhou/CodeFormer) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:489:| [GFPGANv1.3.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/GFPGANv1.3.pth) | [TencentARC](https://github.com/TencentARC/GFPGAN) | ![license](https://img.shields.io/badge/license-Apache_2.0-green.svg) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:490:| [GFPGANv1.4.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/GFPGANv1.4.pth) | [TencentARC](https://github.com/TencentARC/GFPGAN) | ![license](https://img.shields.io/badge/license-Apache_2.0-green.svg) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:491:| [inswapper_128.onnx](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx) | [DeepInsight](https://github.com/deepinsight/insightface) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README_RU.md:492:| [inswapper_128_fp16.onnx](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128_fp16.onnx) | [Hillobar](https://github.com/Hillobar/Rope) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:80:- ReSwapper models support. Although Inswapper still has the best similarity, but ReSwapper is evolving - thanks @somanchiu https://github.com/somanchiu/ReSwapper for the ReSwapper models and the ReSwapper project! This is a good step for the Community in the Inswapper's alternative creation!
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:95:- Support of ORT CoreML and ROCM EPs, just install onnxruntime version you need
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:106:- Support of GPEN 1024/2048 restoration models (available in the HF dataset https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:107:- ReActorFaceBoost Node - an attempt to improve the quality of swapped faces. The idea is to restore and scale the swapped face (according to the `face_size` parameter of the restoration model) BEFORE pasting it to the target image (via inswapper algorithms)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:168:You can download models here: https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:169:<br>Put them into the `ComfyUI\models\facerestore_models` folder
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:189:- CUDA 12 Support - don't forget to run (Windows) `install.bat` or (Linux/MacOS) `install.py` for ComfyUI's Python enclosure or try to install ORT-GPU for CU12 manually (https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:236:10. (From the version 0.3.0) Download additional facerestorers models from the link below and put them into the `extensions\sd-webui-comfyui\ComfyUI\models\facerestore_models` directory:<br>
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:237:https://huggingface.co/datasets/Gourieff/ReActor/tree/main/models/facerestore_models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:352:This error may occur if there's smth wrong with the model file `inswapper_128.onnx`
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:354:Try to download it manually from [here](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:412:This software utilizes the pre-trained models `buffalo_l` and `inswapper_128.onnx`, which are provided by [InsightFace](https://github.com/deepinsight/insightface/). These models are included under the following conditions:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:414:[From insighface license](https://github.com/deepinsight/insightface/tree/master/python-package): The InsightFace’s pre-trained models are available for non-commercial research purposes only. This includes both auto-downloading models and manually downloaded models.
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:416:Users of this software must strictly adhere to these conditions of use. The developers and maintainers of this software are not responsible for any misuse of InsightFace’s pre-trained models.
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:424:inswapper_128.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:430:1k3d68.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:437:2d106det.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:444:det_10g.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:451:genderage.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:458:w600k_r50.onnx
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:478:|[buffalo_l.zip](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/buffalo_l.zip) | [DeepInsight](https://github.com/deepinsight/insightface) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:479:| [codeformer-v0.1.0.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/codeformer-v0.1.0.pth) | [sczhou](https://github.com/sczhou/CodeFormer) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:480:| [GFPGANv1.3.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/GFPGANv1.3.pth) | [TencentARC](https://github.com/TencentARC/GFPGAN) | ![license](https://img.shields.io/badge/license-Apache_2.0-green.svg) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:481:| [GFPGANv1.4.pth](https://huggingface.co/datasets/Gourieff/ReActor/blob/main/models/facerestore_models/GFPGANv1.4.pth) | [TencentARC](https://github.com/TencentARC/GFPGAN) | ![license](https://img.shields.io/badge/license-Apache_2.0-green.svg) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:482:| [inswapper_128.onnx](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128.onnx) | [DeepInsight](https://github.com/deepinsight/insightface) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/README.md:483:| [inswapper_128_fp16.onnx](https://github.com/facefusion/facefusion-assets/releases/download/models/inswapper_128_fp16.onnx) | [Hillobar](https://github.com/Hillobar/Rope) | ![license](https://img.shields.io/badge/license-non_commercial-red) |
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/r_facelib/detection/yolov5face/models/yolo.py:31:    export = False  # onnx export
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:23:model_url = "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx"
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:26:model_path = os.path.join(models_dir_path, model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:61:if not os.path.exists(model_path):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:62:    download(model_url, model_path, model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:66:        ort = "onnxruntime-gpu"
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:73:            ort = "onnxruntime"
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/install.py:77:                run_pip(ort,"--extra-index-url", "https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/requirements.txt:3:onnx>=1.14.0
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/__init__.py:33:    if module not in original_modules and not module.startswith("google.protobuf") and not module.startswith("onnx") and not module.startswith("cv2"):
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_utils.py:14:import onnxruntime
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_utils.py:187:def set_ort_session(model_path, providers) -> Any:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_utils.py:189:    onnxruntime.set_default_logger_severity(3)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/reactor_utils.py:190:    ORT_SESSION = onnxruntime.InferenceSession(model_path, providers=providers)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:59:from r_facelib.utils.face_restoration_helper import FaceRestoreHelper
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:76:dir_facerestore_models = os.path.join(models_dir, "facerestore_models")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:77:os.makedirs(dir_facerestore_models, exist_ok=True)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:78:folder_paths.folder_names_and_paths["facerestore_models"] = ([dir_facerestore_models], folder_paths.supported_pt_extensions)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:98:    models_path = os.path.join(models_dir, "facerestore_models/*")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:100:    models = [x for x in models if (x.endswith(".pth") or x.endswith(".onnx"))]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:103:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/GFPGANv1.3.pth",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:104:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/GFPGANv1.4.pth",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:105:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/codeformer-v0.1.0.pth",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:106:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/GPEN-BFR-512.onnx",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:107:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/GPEN-BFR-1024.onnx",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:108:            "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/facerestore_models/GPEN-BFR-2048.onnx",
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:112:            model_path = os.path.join(dir_facerestore_models, model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:113:            download(model_url, model_path, model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:115:        models = [x for x in models if (x.endswith(".pth") or x.endswith(".onnx"))]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:212:            model_path = folder_paths.get_full_path("facerestore_models", face_restore_model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:225:                checkpoint = torch.load(model_path)["params_ema"]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:227:                facerestore_model = codeformer_net.eval()
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:229:            elif ".onnx" in face_restore_model:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:231:                ort_session = set_ort_session(model_path, providers=providers)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:233:                facerestore_model = ort_session
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:237:                sd = comfy.utils.load_torch_file(model_path, safe_load=True)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:238:                facerestore_model = model_loading.load_state_dict(sd).eval()
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:239:                facerestore_model.to(device)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:242:                self.face_helper = FaceRestoreHelper(1, face_size=faceSize, crop_ratio=(1, 1), det_model=facedetection, save_ext='png', use_parse=True, device=device)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:264:                if facerestore_model is None or self.face_helper is None:
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:385:                            if ".onnx" in face_restore_model: # ONNX models
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:400:                                output = facerestore_model(cropped_face_t, w=codeformer_weight)[0] if "codeformer" in face_restore_model.lower() else facerestore_model(cropped_face_t)[0]
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:716:            face_model_path = os.path.join(self.face_models_path, self.face_model)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:717:            out = load_face_model(face_model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:938:                        face_model_path = os.path.join(FACE_MODELS_PATH, face_model_name + ".safetensors")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:939:                        save_face_model(blended_face,face_model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:940:                        # done_msg = f"Face model has been saved to '{face_model_path}'"
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:996:            face_model_path = os.path.join(self.output_dir, face_model_name + ".safetensors")
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:997:            save_face_model(face_model,face_model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:1102:                bbox_model_path = folder_paths.get_full_path("ultralytics", bbox_model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:1103:                model = subcore.load_yolo(bbox_model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:1115:                sam_model_path = folder_paths.get_full_path("sams", sam_model_name)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:1122:                sam = sam_model_registry[model_kind](checkpoint=sam_model_path)
+/home/z/ComfyUI-Reactor-Fast-Face-Swap-CPU/custom_nodes/comfyui-reactor-node/nodes.py:1123:                size = os.path.getsize(sam_model_path)

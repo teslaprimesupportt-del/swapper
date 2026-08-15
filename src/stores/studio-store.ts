@@ -208,7 +208,17 @@ export const useStudioStore = create<StudioState>((set) => ({
   })),
 
   // AI Provider
-  providers: [],
+  providers: [
+    // Pre-configured sandbox face swap provider (relative to preview URL)
+    {
+      id: 'sandbox-faceswap',
+      name: 'Sandbox Face Swap (CPU)',
+      type: 'faceswap',
+      endpoint: '/api/comfyui',
+      apiKey: '',
+      status: 'disconnected',
+    },
+  ],
   activeProvider: null,
   setProviders: (p) => set({ providers: p }),
   setActiveProvider: (p) => set({ activeProvider: p }),
