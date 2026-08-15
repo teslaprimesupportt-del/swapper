@@ -743,7 +743,7 @@ function SettingsDialog() {
                     Seed-VC zero-shot voice conversion. No training needed — upload a 1-30s reference clip.
                   </p>
                   <p className="text-[10px] text-studio-muted-foreground/50">
-                    API: GET /info → POST /call/{fn} → GET /call/{fn}/{event_id}
+                    API: GET /info → POST /call/fn_name → GET /call/fn_name/event_id
                   </p>
                 </div>
               )}
