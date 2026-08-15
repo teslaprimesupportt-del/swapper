@@ -165,3 +165,20 @@ Stage Summary:
 - Seed-VC adapter is fully built and integrated into the studio UI
 - User workflow: Settings > Add Seed-VC provider (paste Gradio URL) > Voice tab > Upload/record reference > Connect > Start Streaming
 - Adapter handles: zero-shot voice conversion, real-time audio pipeline, latency monitoring, chunk statistics
+---
+Task ID: 1
+Agent: main
+Task: Build Seed-VC adapter service and React hook for BYOK voice conversion integration
+
+Work Log:
+- Created /home/z/my-project/src/services/ directory
+- Built seed-vc-adapter.ts (~1180 lines): SeedVCAdapter class, SeedVCRealtimePipeline class, audio codec utilities (encode/decode WAV, resample, base64), Gradio API communication (named endpoints + legacy /api/predict), factory function createSeedVCAdapter()
+- Built use-seed-vc.ts (~472 lines): React hook wrapping adapter with studio store integration (provider endpoint, voice preset, pitch, noise gate, audio levels)
+- Fixed TypeScript strict mode issues: type narrowing in finally block, Set.forEach iteration, Float32Array ArrayBufferLike compatibility, Zustand setter callback vs value
+- Full project tsc --noEmit passes with zero errors on both files
+
+Stage Summary:
+- SeedVCAdapter: connect/disconnect, setReferenceAudio (from Float32Array, AudioBuffer, or File), convertChunk (real-time), convertFile (offline), testConnection, Gradio schema auto-detection, state change listeners
+- SeedVCRealtimePipeline: ScriptProcessorNode-based mic capture, 0.18s chunk size, 2.5s left context, noise gate, auto-playback via AudioBufferSourceNode
+- useSeedVC hook: full studio store binding, auto-connect/disconnect lifecycle, reference recording (3s mic clip), pipeline start/stop, output level metering
+- Files: src/services/seed-vc-adapter.ts, src/hooks/use-seed-vc.ts
