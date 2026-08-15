@@ -1,0 +1,83 @@
+[
+  {
+    "url": "https://github.com/w-okada/voice-changer/blob/master/README_en.md",
+    "name": "voice-changer/README_en.md at master · w-okada",
+    "snippet": "Supports Windows, Mac (including Apple Silicon M1), Linux, and Google Colaboratory. This is an app for performing voice changes with MMVC and so - vits - svc . You ...",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voicechanger.live/compare/vs-okada",
+    "name": "Echo vs W-Okada Voice Changer — Comparison | 2026",
+    "snippet": "W - Okada supports multiple model architectures beyond RVC (Beatrice, so - vits - svc , and more), Both have the same granular audio configuration controls.",
+    "host_name": "voicechanger.live",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voicechanger.easeus.com/voice-changer-tips/w-osaka-voice-changer.html",
+    "name": "2026 Full Guide on W-Okada Voice Changer & Alternative💮",
+    "snippet": "The software leverages AI and processes voice using various models like RVC , Beatrice, DDSP- SVC , and so - vits - svc . Supports importing custom-trained RVC models ...",
+    "host_name": "voicechanger.easeus.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/TransVoicechangers/comments/156y1g0/intro_to_wokada_voice_changer",
+    "name": "intro to w-okada voice changer : r/TransVoicechangers",
+    "snippet": "when RVC is set on High it only works with it by itself, you would have to set RVC on low quality to use it in games along w - okada but the ...",
+    "host_name": "www.reddit.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=SdscKhMdoWA",
+    "name": "W-Okada Voice Changer 2026: Best FREE Real-Time AI",
+    "snippet": "In this tutorial, I show you how to install and use W-Okada Voice Changer in 2026 — the best free real-time AI voice changer.",
+    "host_name": "www.youtube.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/TransVoicechangers/comments/14cymbt/found_a_good_voice_changer_that_hasnt_been",
+    "name": "Found a good voice changer that hasn't been mentioned",
+    "snippet": "W - Okada works in real-time, instantly modifying your voice and seamlessly switching between voice effects. also offers real-time voice ...",
+    "host_name": "www.reddit.com",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://context7.com/w-okada/voice-changer",
+    "name": "Realtime Voice Changer (w-okada",
+    "snippet": "VCClient is a real-time AI-powered voice changer software that supports various AI models and multiple platforms, offering both standalone and network ...",
+    "host_name": "context7.com",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=jMQT1_OuN2o",
+    "name": "FREE Realtime Voice Changer | Discord & More! | Local",
+    "snippet": "RVC is great for singing and speaking . Easily convert speaking with completely offline models for completely free.",
+    "host_name": "www.youtube.com",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/blog/Lenylvt/w-okada",
+    "name": "Guide : W-Okada, realtime voice cloning",
+    "snippet": "Feb 17, 2024 — X. Loading Custom RVC Audio Models into the Voice Changer : · 1 - Click the \" Edit \" button in the list of models . This will open up this menu. · 2 ... Read more",
+    "host_name": "huggingface.co",
+    "rank": 8,
+    "date": "Feb 17, 2024",
+    "favicon": ""
+  }
+]

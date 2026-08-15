@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://docs.aihub.gg",
+    "name": "Vonovox - AI Hub",
+    "snippet": "Mar 30, 2026 — Vonovox is a realtime voice changer that uses RVC for its conversion. Vonovox was developed by dr87. RVC does NOT mean realtime voice changer.",
+    "host_name": "docs.aihub.gg",
+    "rank": 0,
+    "date": "Mar 30, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com",
+    "name": "RVC realtime voice changer - standalone/lightweight",
+    "snippet": "Jan 20, 2026 — Step 1. Get the requirements needed for the voice changer to work . · Step 2. Open up the voice changer using the .bat files: ... Read more",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "Jan 20, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://dubbingai.io",
+    "name": "13 Best AI Voice Changers in 2026 (Real-Time & Cloning)",
+    "snippet": "Dubbing AI is the ultimate real-time voice changer for creators who demand flawless performance and zero lag during live broadcasts.",
+    "host_name": "dubbingai.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voice.ai",
+    "name": "RVC Voice Changer",
+    "snippet": "Try the best RVC voice changer free with Voice.ai. Transform your voice in real time , explore advanced RVC voice models and share with friends.",
+    "host_name": "voice.ai",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://discuss.huggingface.co",
+    "name": "Looking for a voice changer, where I can train models",
+    "snippet": "Nov 17, 2022 — 10 mins can also be used to train a good VC model! Play around with genres and voices at www.audiomodify.com.",
+    "host_name": "discuss.huggingface.co",
+    "rank": 4,
+    "date": "Nov 17, 2022",
+    "favicon": ""
+  }
+]

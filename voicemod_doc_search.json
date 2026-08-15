@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://control-api.voicemod.net",
+    "name": "Voicemod - Control API - Documentation",
+    "snippet": "The Control API allows you to change and customize your voice in real time. Integrate that into your own application to react to events and adjust your user's ... Read more",
+    "host_name": "control-api.voicemod.net",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.voicemod.net/en/developers",
+    "name": "Supercharge Your Audio Channels",
+    "snippet": "Control API. Get access to real-time voice effects by controlling the Voicemod app directly from your application. Get started. Read more",
+    "host_name": "www.voicemod.net",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://control-api.voicemod.net/sounds",
+    "name": "What are Sounds? | Voicemod - Control API",
+    "snippet": "\"Sounds\" are sound effects you can add on top of your voice filter. These sounds will be layered on top of your voice and whatever filter effect you might have ...",
+    "host_name": "control-api.voicemod.net",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.videosdk.live/ai-apps/voicemod",
+    "name": "Voicemod: Real-Time Voice Changer & Soundboard",
+    "snippet": "Developers (via Control API, Cloud API, SDK) Free download for Windows 10/11 and macOS . Bundles with voices and sounds: £9.99–£11.99 (store) Developer options ...",
+    "host_name": "www.videosdk.live",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/reactnative/comments/18hdexa/need_third_party_api_for_which_allows_you_to",
+    "name": "Need third party API for which allows you to change",
+    "snippet": "Here are some third-party APIs for real-time voice changing during calls: Voicemod SDK – Real-time voice effects for VoIP and streaming. ...",
+    "host_name": "www.reddit.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "url": "https://www.reddit.com/r/ArtificialInteligence/comments/171wdet/how_large_is_an_ai_voice_model_cuz_i_think_im",
+    "name": "How large is an AI Voice Model (cuz i think I'm getting",
+    "snippet": "All my RVC models are the same size at 52.4mb. The file will always be the same size , The pth file just contains a bunch of numbers called the  ...",
+    "host_name": "www.reddit.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://medium.com/axinc-ai/rvc-an-ai-powered-voice-changer-39927cc83bee",
+    "name": "RVC: An AI-Powered Voice Changer",
+    "snippet": "In v2 , these become 756-dimensional. specify the . pth file for the RVC model path , The model sizes are 293.5MB for hubert_base , and 110.2MB ...",
+    "host_name": "medium.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/wiki/Instructions-and-tips-for-RVC-training",
+    "name": "Instructions and tips for RVC training",
+    "snippet": "Apr 27, 2023 — This TIPS explains how data training is done. RVC starts training the model from pretrained weights instead of from 0, so it can be trained ...",
+    "host_name": "github.com",
+    "rank": 2,
+    "date": "Apr 27, 2023",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.runpod.io/articles/guides/ai-engineer-guide-rvc-cloud",
+    "name": "Deploying RVC Models in the Cloud",
+    "snippet": "May 8, 2025 — Model loading time on a 4090 from local disk/volume (for a ~150MB . pth file ) is on the order of 2 -5 seconds in PyTorch. Once loaded, conversion ... Read more",
+    "host_name": "www.runpod.io",
+    "rank": 3,
+    "date": "May 8, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.medoid.ai/blog/a-hands-on-walkthrough-on-model-quantization",
+    "name": "A Hands-On Walkthrough on Model Quantization",
+    "snippet": "Jul 2, 2024 — FP16 (16-bit floating point), aka half precision, INT8 (byte) INT8 is particularly useful during the inference phase,",
+    "host_name": "www.medoid.ai",
+    "rank": 4,
+    "date": "Jul 2, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://pub.towardsai.net/understanding-llm-quantization-why-fp32-fp16-bf16-and-int8-matter-for-modern-ai-systems-076ea6eb9ca6",
+    "name": "Understanding LLM Quantization: Why FP32, FP16, BF16",
+    "snippet": "Mar 8, 2026 — FP16 and BF16 reduce memory usage while maintaining reasonable accuracy, making them popular for training and inference. INT8 and lower-bit ... Read more",
+    "host_name": "pub.towardsai.net",
+    "rank": 5,
+    "date": "Mar 8, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.meta-intelligence.tech/en/insight-quantization",
+    "name": "Run 70B LLMs in 4 Bits — INT8, GPTQ, AWQ & GGUF [2026]",
+    "snippet": "Oct 12, 2025 — Quantization offers the highest ROI among model compression techniques — converting FP16 weights to INT4 immediately reduces memory by 75%, ... Read more",
+    "host_name": "www.meta-intelligence.tech",
+    "rank": 6,
+    "date": "Oct 12, 2025",
+    "favicon": ""
+  }
+]

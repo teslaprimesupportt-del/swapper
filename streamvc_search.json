@@ -1,0 +1,83 @@
+[
+  {
+    "url": "https://arxiv.org/abs/2401.03078",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "by Y Yang · 2024 · Cited by 56 — StreamVC produces the resulting waveform at low latency from the input signal even on a mobile platform, making it applicable to real-time ...",
+    "host_name": "arxiv.org",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.semanticscholar.org/paper/STREAMVC%3A-Real-Time-Low-Latency-Voice-Conversion-Yang-Kartynnik/2f22e9e2d84893084efff3cdca7828da53623a51",
+    "name": "STREAMVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "RT-VC is presented, a zero-shot real-time voice conversion system that delivers ultra-low latency and high-quality performance",
+    "host_name": "www.semanticscholar.org",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://news.ycombinator.com/item?id=40942307",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "Jul 12, 2024 — In this work, we propose a light-weight (~20M param.) causal voice conversion solution that can run in real - time with low latency on a ... Read more",
+    "host_name": "news.ycombinator.com",
+    "rank": 2,
+    "date": "Jul 12, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://google-research.github.io/seanet/stream_vc/poster/streamvc_poster.pdf",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "by Y Yang · Cited by 56 — In this work, we propose a light-weight (~20M param.) causal voice conversion solution that can run in real - time with low latency on a commercially available ... 1 page",
+    "host_name": "google-research.github.io",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/hrnoh24/stream-vc",
+    "name": "hrnoh24/stream-vc: An unofficial PyTorch implementation",
+    "snippet": "An unofficial PyTorch implementation of the StreamVC ( Real - Time Low- Latency Voice Conversion ) An unofficial PyTorch implementation of Google's StreamVC .",
+    "host_name": "github.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.researchgate.net/publication/379819006_STREAMVC_Real-Time_Low-Latency_Voice_Conversion",
+    "name": "STREAMVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "In this paper, we present RT-VC, a zero-shot real-time voice conversion system that delivers ultra-low latency and high-quality performance. Our approach ... Read more",
+    "host_name": "www.researchgate.net",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://hajim.rochester.edu/ece/sites/zduan/teaching/ece477/projects/2024/BaotongTian_ProjectReport.pdf",
+    "name": "STREAMING VOICE CONVERSION THROUGH CHUNK-",
+    "snippet": "We demonstrate that train- ing on chunked audio input can improve the performance in streaming scenarios compared to training on complete utterances. 5 pages",
+    "host_name": "hajim.rochester.edu",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.emergentmind.com/papers/2401.03078",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "Jan 5, 2024 — StreamVC produces the resulting waveform at low latency from the input signal even on a mobile platform, making it applicable to real-time ...",
+    "host_name": "www.emergentmind.com",
+    "rank": 7,
+    "date": "Jan 5, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://daily.dev/posts/streamvc-real-time-low-latency-voice-conversion-stwocpycr",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "Jul 12, 2024 — It operates at low latency , even on mobile platforms, making it suitable for real-time communication scenarios like calls and video conferencing ... Read more",
+    "host_name": "daily.dev",
+    "rank": 8,
+    "date": "Jul 12, 2024",
+    "favicon": ""
+  }
+]

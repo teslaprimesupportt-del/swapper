@@ -1,0 +1,65 @@
+[
+  {
+    "url": "https://www.runpod.io/articles/guides/ai-engineer-guide-rvc-cloud",
+    "name": "Deploying RVC Models in the Cloud",
+    "snippet": "May 8, 2025 — Real-time conversion is feasible, NVIDIA RTX 4090 (24GB, consumer card): delivers excellent RVC performance . speech and achieved up to 210× ...",
+    "host_name": "www.runpod.io",
+    "rank": 0,
+    "date": "May 8, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/blob/main/docs/en/README.en.md",
+    "name": "RVC-Project/Retrieval-based-Voice-Conversion-WebUI",
+    "snippet": "Webui Real-time voice changing. We have achieved an end-to-end latency of 170ms. training model uses nearly 50 hours of high quality audio. The WebUI creates ...",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://medium.com/@furkangozukara/the-ultimate-guide-to-ai-voice-cloning-rvc-webui-zero-to-hero-22aea49bffaa",
+    "name": "The ULTIMATE Guide to AI Voice Cloning: RVC WebUI",
+    "snippet": "Use NVIDIA Build: 80+ Free AI Models . Most people are still paying $20/month for a single AI model . A clap icon 1.6K. A response icon 34. Read more",
+    "host_name": "medium.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://bleekseeks.com/blog/how-to-run-rvc-webui-on-rtx-50-series-gpus-python-3-10-pytorch-2-7",
+    "name": "How to Run RVC WebUI on RTX 50-Series GPUs (Python",
+    "snippet": "Aug 5, 2025 — A step-by-step setup guide for installing Retrieval-based Voice Conversion WebUI ( RVC WebUI ) on machines with NVIDIA RTX 50-series GPUs . Read more",
+    "host_name": "bleekseeks.com",
+    "rank": 3,
+    "date": "Aug 5, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/blog/Blane187/what-is-rvc",
+    "name": "What is Retrieval-based Voice Conversion WebUI?",
+    "snippet": "Aug 17, 2024 — The WebUI supports a range of features, including real-time voice changing, AMD/Intel graphics cards acceleration supported; more GPU memory.  ...",
+    "host_name": "huggingface.co",
+    "rank": 4,
+    "date": "Aug 17, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ROCm/comments/1ntce8y/rvc_voice_cloning_for_windows_with_rdna3",
+    "name": "RVC Voice Cloning for Windows with RDNA3 : r/ROCm",
+    "snippet": "I hacked together a version of the old RVC WebUI project so that it would work on Windows and use my GPU . AMD GPU support yet. Real-time male- ...",
+    "host_name": "www.reddit.com",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voicechanger.live/blog/best-rvc-voice-changers",
+    "name": "Best RVC Voice Changers in 2026",
+    "snippet": "May 15, 2026 — We evaluated every major RVC -based voice changer available in 2026 on these criteria . All tools were tested on Windows 11 with an NVIDIA RTX ... Read more",
+    "host_name": "voicechanger.live",
+    "rank": 6,
+    "date": "May 15, 2026",
+    "favicon": ""
+  }
+]

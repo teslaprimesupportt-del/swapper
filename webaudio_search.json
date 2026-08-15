@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://stackoverflow.com/questions/58574052/pitch-shifter-using-web-audio-api",
+    "name": "pitch shifter using web-audio-api? - javascript",
+    "snippet": "Pitch Shifter using Node js Hi, I'm a beginner in web Development!  soo I'm trying to build an online audio player for that I need a pitch shifter. ...",
+    "host_name": "stackoverflow.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/WebAudio/web-audio-api/issues/2443",
+    "name": "Real-time pitch adjustment · Issue #2443 · WebAudio/web-",
+    "snippet": "Mar 27, 2018 — Add a new node, PitchShiftNode (placeholder name), that changes the pitch of incoming audio . This might need to delay the incoming audio by a ... Read more",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "Mar 27, 2018",
+    "favicon": ""
+  },
+  {
+    "url": "https://zpl.fi/pitch-shifting-in-web-audio-api",
+    "name": "Pitch shifting in Web Audio API - Tuomas Siipola",
+    "snippet": "Feb 23, 2020 — This article will teach you how to create a sample-based instrument using JavaScript and Web Audio API .",
+    "host_name": "zpl.fi",
+    "rank": 2,
+    "date": "Feb 23, 2020",
+    "favicon": ""
+  },
+  {
+    "url": "https://repository.gatech.edu/bitstreams/f4b1290d-061f-45ab-8016-dfa8240b024e/download",
+    "name": "Time Stretching & Pitch Shifting with the Web Audio API",
+    "snippet": "by B Dias · 2016 · Cited by 1 — Our aim in this work is to enable real-time pitch shifting and time-stretching in browsers, which is currently an under- explored aspect of the WAA.",
+    "host_name": "repository.gatech.edu",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.facebook.com/groups/1704410769839550/posts/2847499392197343",
+    "name": "How can you do formant shifting on iOS? And",
+    "snippet": "TRANSFORM your pitch/formant with the Vocal Transformer in GarageBand iPad/iPhone. Formants are the harmonic frequencies that our voices create ...",
+    "host_name": "www.facebook.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/webaudio/comments/hu7f1c/getting_voices_and_changing_how_it_sounds",
+    "name": "Getting voices and changing how it sounds, JavaScript",
+    "snippet": "Search for \" real-time pitch shift algorithm\". Not mine, but here's an example I found: https://github.com/urtzurd/html- audio oghenebrume",
+    "host_name": "www.reddit.com",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.html5gamedevs.com/topic/47208-web-audio-api-to-change-pitch-or-playbackrate",
+    "name": "Web Audio API to change Pitch or playbackRate?",
+    "snippet": "Apr 21, 2021 — I can adjust playbackRate to adjust the pitch of audio by disabling Preserves Pitch property (true by default) as an HTML5 Audio Object. var bgm ... Read more",
+    "host_name": "www.html5gamedevs.com",
+    "rank": 6,
+    "date": "Apr 21, 2021",
+    "favicon": ""
+  },
+  {
+    "url": "https://musicspeedchanger.com/forum_test/discussion/282/formant-correction-for-natural-sounding-pitch-shifting",
+    "name": "Formant Correction for Natural-sounding Pitch Shifting",
+    "snippet": "Jul 24, 2024 — Formant correction can make the vocals in your music sound natural when the pitch is shifted and create interesting audio effects.",
+    "host_name": "musicspeedchanger.com",
+    "rank": 7,
+    "date": "Jul 24, 2024",
+    "favicon": ""
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://arxiv.org/abs/2311.00873",
+    "name": "Low-latency Real-time Voice Conversion on CPU",
+    "snippet": "by K Sadov · 2023 · Cited by 10 — To our knowledge LLVC achieves both the lowest resource usage as well as the lowest latency of any open-source voice conversion model. We ...",
+    "host_name": "arxiv.org",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/koeai/llvc",
+    "name": "KoeAI/LLVC",
+    "snippet": "LLVC: Low-Latency Low-Resource Voice Conversion . This repository contains the code necessary to train Koe AI's LLVC models and to reproduce the LLVC paper. LLVC ...",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://koeai.github.io/llvc-demo",
+    "name": "LLVC Demo - Voice Conversion",
+    "snippet": "We adapt the architecture of the real-time streaming sound extraction network Waveformer for the purpose of low-latency voice conversion in real time.",
+    "host_name": "koeai.github.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.alphaxiv.org/overview/2311.00873",
+    "name": "Low-latency Real-time Voice Conversion on CPU",
+    "snippet": "LLVC introduces an ultra-low latency voice conversion model that runs efficiently on consumer CPUs, achieving under 20ms end-to-end latency while ...",
+    "host_name": "www.alphaxiv.org",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://ui.adsabs.harvard.edu/abs/arXiv:2311.00873",
+    "name": "Low-latency Real-time Voice Conversion on CPU - ADS",
+    "snippet": "LLVC achieves both the lowest resource usage as well as the lowest latency of any open - source voice conversion model.",
+    "host_name": "ui.adsabs.harvard.edu",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

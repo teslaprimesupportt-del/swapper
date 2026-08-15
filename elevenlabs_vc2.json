@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://elevenlabs.io/docs/overview/intro",
+    "name": "ElevenLabs Documentation",
+    "snippet": "ElevenLabs provides AI voice infrastructure: text-to-speech, speech-to-text, voice cloning, conversational agents, real-time use at ~75ms latency . Voice ...",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://inworld.ai/resources/elevenlabs-alternatives",
+    "name": "8 Best ElevenLabs Alternatives in 2026",
+    "snippet": "Jul 7, 2026 — The best ElevenLabs alternatives in 2026 for real time voice AI are Inworld AI, Cartesia, OpenAI, Deepgram, Hume, Google Gemini TTS, and Kokoro.",
+    "host_name": "inworld.ai",
+    "rank": 1,
+    "date": "Jul 7, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/voice-changer/conversational",
+    "name": "Conversational Voice Changer - Real-Time AI",
+    "snippet": "Transform your voice in real-time with our AI voice changer . Perfect for streaming, calls, and creative projects needing realistic voice changes.",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ElevenLabs/comments/12kfpyi/could_this_be_used_for_live_voice_changing",
+    "name": "Could this be used for live voice changing? : r/ElevenLabs",
+    "snippet": "Would it be possible to use this technology for live voice changing? Like while streaming? Sort of like voice.ai voice changer?",
+    "host_name": "www.reddit.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=1h0X9aZ8Ww8&vl=en-US",
+    "name": "How to Use ElevenLabs: Create Ultra Realistic AI Voices (Text",
+    "snippet": "In this complete guide, I'll show you how to use voice generation, dubbing, music creation, sound effects, voice isolation, and more—all in one ...",
+    "host_name": "www.youtube.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io",
+    "name": "ElevenLabs: Free AI Voice Generator & Voice Agents Platform",
+    "snippet": "Create lifelike speech with our AI voice generator and voice agents platform. Access 5000+ voices in 70+ languages with secure APIs and SDKs.",
+    "host_name": "elevenlabs.io",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/blog/conversational-ai-webrtc",
+    "name": "ElevenLabs Conversational AI now supports WebRTC",
+    "snippet": "Jul 21, 2025 — ElevenLabs Conversational AI now supports WebRTC , unlocking best-in-class echo cancellation and background noise removal for your AI agents.",
+    "host_name": "elevenlabs.io",
+    "rank": 6,
+    "date": "Jul 21, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/overview/capabilities/voice-changer",
+    "name": "Voice changer | ElevenLabs Documentation",
+    "snippet": "ElevenLabs voice changer API lets you transform any source audio (recorded or uploaded) into a different, fully cloned voice without losing the performance ... Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  }
+]

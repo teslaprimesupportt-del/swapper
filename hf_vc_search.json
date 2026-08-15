@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://huggingface.co/models?pipeline_tag=automatic-speech-recognition",
+    "name": "Automatic Speech Recognition Models",
+    "snippet": "Explore machine learning models. Automatic Speech Recognition . Automatic Speech Recognition • Updated Sep 29, 2025 -Realtime-2602 Automatic Speech Recognition",
+    "host_name": "huggingface.co",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/nvidia/NVIDIA-NemotronLabs-VoiceChat-11B",
+    "name": "nvidia/NVIDIA-NemotronLabs-VoiceChat-11B",
+    "snippet": "VoiceChat is a 11B end-to-end, real-time speech full duplex (FD) model for conversational AI that jointly performs streaming speech understanding and speech ...",
+    "host_name": "huggingface.co",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/papers/2401.03078",
+    "name": "StreamVC: Real-Time Low-Latency Voice Conversion",
+    "snippet": "Jan 5, 2024 — StreamVC is a real-time voice conversion system that maintains content and prosody while matching timbre, using SoundStream architecture and ... Read more",
+    "host_name": "huggingface.co",
+    "rank": 2,
+    "date": "Jan 5, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/LocalLLaMA/comments/1r7bsfd/best_audio_models_feb_2026",
+    "name": "Best Audio Models - Feb 2026 : r/LocalLLaMA",
+    "snippet": "If you need real-time : Canary-1b (fast, good for streaming ). If you can wait: Parakeet or SenseVoice for higher accuracy. The newer models ... Read more",
+    "host_name": "www.reddit.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/nvidia/personaplex-7b-v1",
+    "name": "nvidia/personaplex-7b-v1",
+    "snippet": "Jan 15, 2026 — Personaplex is a real-time speech-to-speech conversational model that jointly performs streaming speech understanding and speech generation.",
+    "host_name": "huggingface.co",
+    "rank": 4,
+    "date": "Jan 15, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/Plachtaa/seed-vc",
+    "name": "Plachtaa/seed-vc: zero-shot voice conversion",
+    "snippet": "Real-time voice conversion is support, with algorithm delay of ~300ms and device side delay of ~100ms, suitable for online meetings, gaming and live streaming. Read more",
+    "host_name": "github.com",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://northflank.com/blog/best-open-source-speech-to-text-stt-model-in-2026-benchmarks",
+    "name": "Best open source speech-to-text (STT) model in 2026 (with",
+    "snippet": "Jan 6, 2026 — Hugging Face Open ASR leaderboard as of late 2026 , processing audio dramatically faster than Whisper variants. Pricing is roughly $4.30 per 1, ...",
+    "host_name": "northflank.com",
+    "rank": 6,
+    "date": "Jan 6, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://arxiv.org/html/2603.05413v1",
+    "name": "Building Enterprise Realtime Voice Agents from Scratch",
+    "snippet": "Mar 5, 2026 — Abstract. We present a technical tutorial for building enterprise-grade realtime voice agents from first principles. Read more",
+    "host_name": "arxiv.org",
+    "rank": 7,
+    "date": "Mar 5, 2026",
+    "favicon": ""
+  }
+]

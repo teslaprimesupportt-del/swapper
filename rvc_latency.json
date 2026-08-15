@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://www.threads.com/@githubprojects/post/Dbi9DxwmEXK/rvc-is-an-open-source-voice-conversion-framework-that-now-supports-real-time",
+    "name": "RVC is an open-source voice conversion framework",
+    "snippet": "Aug 2, 2026 — RVC is an open-source voice conversion framework that now supports real-time conversion down to 90ms end-to-end latency using ASIO input / output ... Read more",
+    "host_name": "www.threads.com",
+    "rank": 0,
+    "date": "Aug 2, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=dZ_2HELnWJU",
+    "name": "Optimizing Settings in AI Voice Changer Client",
+    "snippet": "VCClient measures latency within VCClient, but additional latency is added when connecting to other devices. Besides MME, WASAPI and ASIO can ...",
+    "host_name": "www.youtube.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://x.com/GithubProjects/status/2083968581730222450",
+    "name": "good results with as little as 10 minutes of clean speech data",
+    "snippet": "RVC is an open-source voice conversion framework that now supports real-time conversion down to 90ms end-to-end latency using ASIO input / output ...",
+    "host_name": "x.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/blob/main/docs/en/README.en.md",
+    "name": "RVC-Project/Retrieval-based-Voice-Conversion-WebUI",
+    "snippet": "We have achieved an end-to-end latency of 170ms . With the use of ASIO input and output devices, we have managed to achieve an end-to-end latency of 90ms ,",
+    "host_name": "github.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://arxiv.org/pdf/2311.00873",
+    "name": "low-latency real-time voice conversion on cpu",
+    "snippet": "by K Sadov · 2023 · Cited by 10 — LLVC (Low- latency Low- resource Voice Conversion), has a latency of under 20ms at a bitrate of 16kHz and runs nearly 2.8x faster than real- - ...",
+    "host_name": "arxiv.org",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

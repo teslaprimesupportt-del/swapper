@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://www.suki.ai/blog/voice-first-future-lessons-from-scaling-browser-based-audio",
+    "name": "Voice-First: Scaling Browser-Based Audio",
+    "snippet": "Learn how Suki scaled browser -based audio for ASR using Web Audio API , AudioWorklets for 16kHz resampling, and a Pub/Sub AudioManager.",
+    "host_name": "www.suki.ai",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://stackoverflow.com/questions/58574052/pitch-shifter-using-web-audio-api",
+    "name": "pitch shifter using web-audio-api? - javascript",
+    "snippet": "Pitch Shifter using Node js Hi, I'm a beginner in web Development!  soo I'm trying to build an online audio player for that I need a pitch shifter. ...",
+    "host_name": "stackoverflow.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://zpl.fi/pitch-shifting-in-web-audio-api",
+    "name": "Pitch shifting in Web Audio API - Tuomas Siipola",
+    "snippet": "Feb 23, 2020 — Safari does not support detune at all . Firefox does support detune but its range is limited to one octave. This limitation comes from an old ...",
+    "host_name": "zpl.fi",
+    "rank": 2,
+    "date": "Feb 23, 2020",
+    "favicon": ""
+  },
+  {
+    "url": "https://repository.gatech.edu/bitstreams/f4b1290d-061f-45ab-8016-dfa8240b024e/download",
+    "name": "Time Stretching & Pitch Shifting with the Web Audio API",
+    "snippet": "by B Dias · 2016 · Cited by 1 — In this paper, we review the current state of the art for client-side implementa- tions of time stretching and pitch shifting , their limitations , and describe ... Read more",
+    "host_name": "repository.gatech.edu",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.facebook.com/groups/1704410769839550/posts/2847499392197343",
+    "name": "How can you do formant shifting on iOS? And",
+    "snippet": "TRANSFORM your pitch/ formant with the Vocal Transformer in GarageBand iPad/iPhone. You can find the user manual in PDF and HTML formats here: ...",
+    "host_name": "www.facebook.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

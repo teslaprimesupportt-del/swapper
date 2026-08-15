@@ -1,0 +1,65 @@
+[
+  {
+    "url": "https://elevenlabs.io/pricing",
+    "name": "ElevenLabs Pricing for Creators & Businesses of All Sizes",
+    "snippet": "Each text character you generate consumes credits, with the exact cost depending on the model used. discounted pricing applies for API usage, costing between 0 ...",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/overview/intro",
+    "name": "ElevenLabs Documentation",
+    "snippet": "How ElevenLabs works · ElevenCreative is a no-code web application where creators, producers, and editors generate voiceovers, music, dubs, and studio projects ...",
+    "host_name": "elevenlabs.io",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/pricing/api",
+    "name": "ElevenAPI Pricing for creators and businesses of all sizes",
+    "snippet": "API usage is billed in US dollars, not credits . Text to Speech $0.10 per 1,000 characters (Multilingual v2/v3) or $0.05 (Flash/Turbo). Speech to Text $0.22 per ...",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/api",
+    "name": "ElevenAPI - ElevenLabs the most powerful AI audio APIs",
+    "snippet": "Aug 6, 2026 — The ElevenLabs API provides programmatic access to our AI models for voice, music, sound effects, dubbing, and transcription.",
+    "host_name": "elevenlabs.io",
+    "rank": 3,
+    "date": "Aug 6, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://voice.ai/hub/tts/elevenlabs-pricing",
+    "name": "Complete Elevenlabs Pricing Guide With Features and",
+    "snippet": "ElevenLabs pricing encompasses more than voice selection . It covers processing speed, audio quality, available features, and generation limits. Voice Changer ...",
+    "host_name": "voice.ai",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://flexprice.io/blog/elevenlabs-pricing-breakdown",
+    "name": "The Complete Guide to ElevenLabs Plans Overages and",
+    "snippet": "Conversational AI This feature, used for generating interactive voice -based dialogues, comes per minute and drop to $0.096 per minute for Scale and Business ...",
+    "host_name": "flexprice.io",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/conversational-ai",
+    "name": "Build Conversational AI in minutes | Voice & Chat platform",
+    "snippet": "Learn to deploy human-like Conversational AI. ElevenLabs powers low latency voice and chat interactions in 70+ languages with enterprise-grade security.",
+    "host_name": "elevenlabs.io",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  }
+]

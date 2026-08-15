@@ -1,0 +1,65 @@
+[
+  {
+    "url": "https://elevenlabs.io/blog/speech-to-speech",
+    "name": "ElevenLabs — Introducing Voice Changer",
+    "snippet": "Nov 22, 2023 — Voice Changer is a voice conversion tool that lets you turn the recording of one voice to sound as if spoken by another.",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "Nov 22, 2023",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ElevenLabs/comments/12kfpyi/could_this_be_used_for_live_voice_changing",
+    "name": "Could this be used for live voice changing? : r/ElevenLabs",
+    "snippet": "Would it be possible to use this technology for live voice changing? Like while streaming? Sort of like voice.ai voice changer?",
+    "host_name": "www.reddit.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/text-to-speech",
+    "name": "Free Text To Speech Online with Lifelike AI Voices",
+    "snippet": "Transform text into lifelike speech with ElevenLabs ' Text to Speech . Ultra-realistic text-to - speech supports 70+ languages and TTS API integrations.",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/overview/capabilities/text-to-speech",
+    "name": "Text to Speech | ElevenLabs Documentation",
+    "snippet": "ElevenLabs Text to Speech (TTS) API turns text into lifelike audio with nuanced intonation, pacing and emotional awareness. Stream real-time audio from text",
+    "host_name": "elevenlabs.io",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.facebook.com/groups/elevenlabsai/posts/981925630553877",
+    "name": "Will ElevenLabs enable speech-to-speech in studio feature?",
+    "snippet": "Hello, does Elevenlabs plan to enable speech-to-speech within the Studio feature at some point?\n\nSome other features that would also speed up the production ...",
+    "host_name": "www.facebook.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/eleven-creative/playground/voice-changer",
+    "name": "Voice changer (product guide)",
+    "snippet": "Voice changer can be used to complement Text-to-Speech (TTS ) by fixing pronunciation errors or infusing that special performance you've been wanting to exude. Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/voice-changer/conversational",
+    "name": "Conversational Voice Changer - Real-Time AI",
+    "snippet": "Transform your voice in real-time with our AI voice changer . Perfect for streaming, calls, and creative projects needing realistic voice changes.",
+    "host_name": "elevenlabs.io",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  }
+]

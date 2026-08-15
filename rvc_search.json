@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/blob/main/docs/en/README.en.md",
+    "name": "RVC-Project/Retrieval-based-Voice-Conversion-WebUI",
+    "snippet": "Real-time voice changing. We have achieved an end-to-end latency of 170ms. uses nearly 50 hours of high quality audio … 2026 GitHub, Inc.",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.runpod.io/articles/guides/ai-engineer-guide-rvc-cloud",
+    "name": "Deploying RVC Models in the Cloud",
+    "snippet": "May 8, 2025 — Walks through how AI engineers can deploy Retrieval - Based Voice Conversion ( RVC ) models in the cloud. Covers setting up the environment with ...",
+    "host_name": "www.runpod.io",
+    "rank": 1,
+    "date": "May 8, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://en.wikipedia.org/wiki/Retrieval-based_Voice_Conversion",
+    "name": "Retrieval-based Voice Conversion",
+    "snippet": "Retrieval - based Voice Conversion ( RVC ) is an open source voice conversion AI algorithm that enables realistic speech-to-speech transformations, ... Read more",
+    "host_name": "en.wikipedia.org",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.threads.com/@githubprojects/post/Dbi9DxwmEXK/rvc-is-an-open-source-voice-conversion-framework-that-now-supports-real-time",
+    "name": "RVC is an open-source voice conversion framework",
+    "snippet": "Aug 2, 2026 — RVC is an open-source voice conversion framework that now supports real-time conversion down to 90ms end-to-end latency using ASIO input/output ... Read more",
+    "host_name": "www.threads.com",
+    "rank": 3,
+    "date": "Aug 2, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/TransVoicechangers/comments/1l74xb5/realtime_voice_changer_for_low_end_specs",
+    "name": "real-time voice changer for low end specs",
+    "snippet": "rvc apps like voicemod and voice .ai, the voice changer works fantasticly literally on the weakest RTX gpu, Voice AI latency is finally solved ( ...",
+    "host_name": "www.reddit.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voicechanger.live/hub/what-is-rvc",
+    "name": "What is RVC? Retrieval-Based Voice Conversion Explained",
+    "snippet": "May 28, 2026 — RVC is for live communication (gaming, calls, streaming). adds significant latency that makes live conversation impractical for most users.",
+    "host_name": "voicechanger.live",
+    "rank": 5,
+    "date": "May 28, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://arxiv.org/pdf/2311.00873",
+    "name": "low-latency real-time voice conversion on cpu",
+    "snippet": "by K Sadov · 2023 · Cited by 10 — ABSTRACT. We adapt the architectures of previous audio manipulation and generation neural networks to the task of real-time any-to-one voice ... Read more",
+    "host_name": "arxiv.org",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://dubbingai.io/articles/en/compare/dubbing-ai-vs-rvc-performance",
+    "name": "Which Is Better for Real-Time Voice Conversion in 2026?",
+    "snippet": "RVC (Retrieval-based Voice Conversion) ... Real-time voice conversion with latency under ~30ms — effectively imperceptible in live conversations and streams. Read more",
+    "host_name": "dubbingai.io",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  }
+]

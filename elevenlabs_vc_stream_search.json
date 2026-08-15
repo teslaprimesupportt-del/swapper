@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/streaming",
+    "name": "Streaming | ElevenLabs Documentation",
+    "snippet": "Learn how to stream real-time audio from the ElevenLabs API using. WebSocket Multi-Context WebSocket Voice changer. The ElevenLabs API supports real-time audio ...",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/speech-to-text/v-1-speech-to-text-realtime",
+    "name": "Realtime | ElevenLabs Documentation",
+    "snippet": "Realtime speech-to-text transcription service . This WebSocket API enables streaming audio input and receiving transcription results.",
+    "host_name": "elevenlabs.io",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/speech-to-speech/convert",
+    "name": "Voice changer | ElevenLabs Documentation",
+    "snippet": "Transform audio from one voice to another . Maintain full control over emotion, timing and delivery. WebSocket Multi-Context WebSocket Voice changer",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/text-to-speech/v-1-text-to-speech-voice-id-stream-input",
+    "name": "WebSocket | ElevenLabs Documentation",
+    "snippet": "The Text-to-Speech WebSockets API is designed to generate audio from partial text input while ensuring consistency throughout the generated audio.",
+    "host_name": "elevenlabs.io",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/eleven-api/guides/how-to/websockets/realtime-tts",
+    "name": "Generate audio in real-time",
+    "snippet": "This guide shows you how to generate audio in real-time via a WebSocket connection . WebSocket streaming is a method of sending and receiving data over a single, ...",
+    "host_name": "elevenlabs.io",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

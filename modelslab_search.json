@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://modelslab.com/voice-changer",
+    "name": "AI Voice Changer API — Real-Time Voice Modification via",
+    "snippet": "Pitch shift, gender change, emotion modulation, and real-time voice transformation . Adjust tone, pitch, reverb, and volume. Change narration speed and ...",
+    "host_name": "modelslab.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://modelslab.com/models/modelslab/voice-changer",
+    "name": "Voice Changer API",
+    "snippet": "May 13, 2026 — Voice Changer is a voice cloning AI model available on ModelsLab. Real-time audio processing via API . We provide SDKs for Python, JavaScript, ...",
+    "host_name": "modelslab.com",
+    "rank": 1,
+    "date": "May 13, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://modelslab.com/support",
+    "name": "ModelsLab Support - Help with AI APIs, Integration &",
+    "snippet": "Get support for your ModelsLab APIs and services. Access documentation , contact our team, and find solutions for integration, troubleshooting, and more.",
+    "host_name": "modelslab.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api",
+    "name": "Advancing voice intelligence with new models in the API",
+    "snippet": "May 7, 2026 — Explore new realtime voice models in the OpenAI API that can reason, translate, and transcribe speech, enabling more natural and intelligent ...",
+    "host_name": "openai.com",
+    "rank": 3,
+    "date": "May 7, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://modelslab.com/models/modelslab/voice-cloning",
+    "name": "Voice Cloning API | Text to Speech",
+    "snippet": "May 13, 2026 — We provide SDKs for Python, JavaScript, and cURL examples in the API documentation . Voice Cloning costs $0.0047 per generation. ModelsLab plans ...",
+    "host_name": "modelslab.com",
+    "rank": 4,
+    "date": "May 13, 2026",
+    "favicon": ""
+  }
+]

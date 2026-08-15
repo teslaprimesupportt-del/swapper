@@ -1,0 +1,83 @@
+[
+  {
+    "url": "https://control-api.voicemod.net",
+    "name": "Voicemod - Control API - Documentation",
+    "snippet": "With the Control API, developers can add real-time voice effects , modify the user's voice during recordings, and create engaging user experiences",
+    "host_name": "control-api.voicemod.net",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.cekura.ai/blogs/best-ai-voice-apis-for-developers",
+    "name": "Best AI Voice APIs for Developers in 2026 (Ranked)",
+    "snippet": "Jun 12, 2026 — Native integration for every major voice AI stack: LiveKit, Pipecat, Vapi, Retell, ElevenLabs. This guide ranks seven options, from full-stack ...",
+    "host_name": "www.cekura.ai",
+    "rank": 1,
+    "date": "Jun 12, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://medium.com/@codeinlife/10-real-time-ai-voice-apis-developers-should-know-in-2026-9ae4b5aef2f5",
+    "name": "10 Real-Time AI Voice APIs Developers Should Know in",
+    "snippet": "In this article, we explain what makes an AI voice API truly real-time, how these systems work, and which platforms developers commonly choose ... Read more",
+    "host_name": "medium.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://deepgram.com/learn/top-apis-programmable-voice-agents",
+    "name": "Top APIs for Programmable Voice Agents in 2026",
+    "snippet": "Jun 15, 2026 — Compare 8 voice agent APIs across STT, TTS, LLM, and telephony layers. Find the right stack for your latency, cost, and compliance needs.",
+    "host_name": "deepgram.com",
+    "rank": 3,
+    "date": "Jun 15, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://inworld.ai/resources/best-realtime-apis-for-voice-ai",
+    "name": "Best Realtime APIs for Voice AI",
+    "snippet": "Mar 26, 2026 — Realtime APIs make building voice AI substantially easier by providing an API that accepts speech input live and returns speech output. Read more",
+    "host_name": "inworld.ai",
+    "rank": 4,
+    "date": "Mar 26, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api",
+    "name": "Advancing voice intelligence with new models in the API",
+    "snippet": "May 7, 2026 — Explore new realtime voice models in the OpenAI API that can reason, translate, and transcribe speech, enabling more natural and intelligent ...",
+    "host_name": "openai.com",
+    "rank": 5,
+    "date": "May 7, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://dasha.ai/blog/best-ai-voice-apis-for-developers",
+    "name": "Best Voice AI APIs for Developers: 7 Options (2026)",
+    "snippet": "8 days ago — Compare 7 voice AI APIs by latency, telephony, tools, model choice, observability, pricing, and deployment control, plus who each fits best.",
+    "host_name": "dasha.ai",
+    "rank": 6,
+    "date": "Aug 7, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.voicemod.net/en/developers",
+    "name": "Supercharge Your Audio Channels",
+    "snippet": "What will you build with Voicemod ? The easiest way to add powerful real-time vocal processing and speech optimization to your apps, games, and hardware. Read more",
+    "host_name": "www.voicemod.net",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.assemblyai.com/blog/best-speech-to-speech-voice-agent-api",
+    "name": "Best API for building a speech-to-speech voice agent in 2026",
+    "snippet": "Jul 8, 2026 — A developer's guide to the voice agent APIs available in 2026 —what each one is best at, how they compare on speech accuracy, latency, and ... Read more",
+    "host_name": "www.assemblyai.com",
+    "rank": 8,
+    "date": "Jul 8, 2026",
+    "favicon": ""
+  }
+]

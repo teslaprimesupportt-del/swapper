@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://github.com/Plachtaa/seed-vc",
+    "name": "Plachtaa/seed-vc: zero-shot voice conversion",
+    "snippet": "Real-time voice conversion is support , with algorithm delay of ~300ms and device side delay of ~100ms, suitable for online meetings, gaming and live streaming. Read more",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://arxiv.org/html/2510.09245",
+    "name": "SynthVC: Leveraging Synthetic Data for End-to-End Low",
+    "snippet": "Oct 10, 2025 — Zero - shot voice conversion ( VC ) aims to convert speech to match the timbre of any unseen speaker, given only a short reference utterance. This ... Read more",
+    "host_name": "arxiv.org",
+    "rank": 1,
+    "date": "Oct 10, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.kaggle.com/general/703840",
+    "name": "🎤 I built a Kaggle Notebook for Seed-VC singing voice",
+    "snippet": "Seed-VC is an incredible open-source project by Plachtaa that performs zero-shot voice conversion — meaning you can swap the timbre of a singing voice",
+    "host_name": "www.kaggle.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://levelup.gitconnected.com/transform-voices-with-ai-a-complete-guide-to-seed-vc-52a93b0460d7",
+    "name": "Transform Voices with AI: A Complete Guide to Seed-VC",
+    "snippet": "Apr 27, 2026 — Learn zero-shot voice conversion with Seed-VC . This guide explains timbre leakage, diffusion models, and how to build a full PyTorch ...",
+    "host_name": "levelup.gitconnected.com",
+    "rank": 3,
+    "date": "Apr 27, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://openreview.net/pdf/319ab34195cd78781de8aaca8e21ed9d757c348d.pdf",
+    "name": "REAL-TIME ZERO-SHOT VOICE STYLE CONVERSION",
+    "snippet": "We introduce StyleStream, the first real-time voice style conversion system with an end-to- end latency of 1 second. • By combining ASR loss and a compact ... Read more",
+    "host_name": "openreview.net",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

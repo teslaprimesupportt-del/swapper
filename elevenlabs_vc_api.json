@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://elevenlabs.io/docs/overview/intro",
+    "name": "ElevenLabs Documentation",
+    "snippet": "ElevenLabs provides AI voice infrastructure: text-to-speech, speech-to-text, voice cloning, conversational agents, and generative audio. Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ElevenLabs/comments/1kd3y0a/generals_questions_about_voice_changer_elevenlabs",
+    "name": "Generals questions about Voice Changer/ ElevenLabs",
+    "snippet": "Do I make the voice on the website first, then use the API to run the conversion from my audio? Or is that also done through the API ? And last ... Read more",
+    "host_name": "www.reddit.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/speech-to-text/v-1-speech-to-text-realtime",
+    "name": "Realtime | ElevenLabs Documentation",
+    "snippet": "Realtime speech-to-text transcription service . This WebSocket API enables streaming audio input and receiving transcription results. Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/overview/capabilities/voice-changer",
+    "name": "Voice changer | ElevenLabs Documentation",
+    "snippet": "ElevenLabs voice changer API lets you transform any source audio (recorded or uploaded) into a different, fully cloned voice without losing the performance ...",
+    "host_name": "elevenlabs.io",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://stackoverflow.com/questions/78053136/cannot-access-elevenlabs-voice-using-the-api",
+    "name": "Cannot access elevenlabs voice using the API",
+    "snippet": "My problem was not setting enough scopes on the API key, need to provide TTS + Models Read + Voices Read. Share. Read more",
+    "host_name": "stackoverflow.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

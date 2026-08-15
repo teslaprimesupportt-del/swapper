@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://www.spheron.network/blog/voice-ai-gpu-infrastructure",
+    "name": "Voice AI GPU Infrastructure: GPU Requirements for Sub-",
+    "snippet": "Mar 11, 2026 — VRAM needed: 5-40GB depending on model size and quantization. GPU recommendation: H100 PCIe for 13B-70B models; RTX 5090 handles 7B with good ...",
+    "host_name": "www.spheron.network",
+    "rank": 0,
+    "date": "Mar 11, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/learnmachinelearning/comments/1h9sen4/what_gpu_to_get_for_fast_inference_and_model",
+    "name": "What GPU to get for fast inference and model training.",
+    "snippet": "But for RVC training, should be fine. General rule of thumb for training is system RAM = 2x total GPU VRAM .",
+    "host_name": "www.reddit.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.runpod.io/articles/guides/ai-engineer-guide-rvc-cloud",
+    "name": "Deploying RVC Models in the Cloud",
+    "snippet": "May 8, 2025 — RVC inference isn't as VRAM-hungry as giant LLMs, but you'll want at least 8–12 GB VRAM for smooth operation.",
+    "host_name": "www.runpod.io",
+    "rank": 2,
+    "date": "May 8, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI/issues/1037",
+    "name": "4090 is barely 1.5x faster for training than a 3060 with",
+    "snippet": "Aug 16, 2023 — Hey guys, I was running some tests with RVC between a 3060 12 GB and a 4090 and, on average, the 4090 is 1.5x faster than the 3060.",
+    "host_name": "github.com",
+    "rank": 3,
+    "date": "Aug 16, 2023",
+    "favicon": ""
+  },
+  {
+    "url": "https://discuss.huggingface.co/t/determining-if-a-model-will-run-locally/149068",
+    "name": "Determining if a model will run locally - Beginners",
+    "snippet": "Apr 6, 2025 — (If you want to run an 4-bit quantized 8B model , you'll need about 8GB. If your model is about 4.5GB, and you want to use the rest for inference ... Read more",
+    "host_name": "discuss.huggingface.co",
+    "rank": 4,
+    "date": "Apr 6, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://plugable.com/blogs/news/gpu-vram-requirements-for-local-llms-plugable-guide?srsltid=AfmBOorBULBvJZUVxkAmGjSr4AasrGuZouxqWgfvzSna1xmuiKIEuqC6",
+    "name": "GPU VRAM Requirements for Local LLMs | Plugable Guide",
+    "snippet": "Jun 2, 2026 — requires 6GB to 8GB of VRAM . At full 16-bit precision, that would require roughly 14GB of VRAM, A 12GB VRAM GPU can comfortably run 7B or 13B  ...",
+    "host_name": "plugable.com",
+    "rank": 5,
+    "date": "Jun 2, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://docs.aihub.gg/essentials/whats-rvc",
+    "name": "What's RVC - AI Hub",
+    "snippet": "Nov 9, 2025 — MINIMUM REQUIREMENT GPU NVIDIA GTX 900 Series / AMD RX580 . RAM 6GB Storage 30 GB 30 GB NOTES: For inference, the storage requirement varies ...",
+    "host_name": "docs.aihub.gg",
+    "rank": 6,
+    "date": "Nov 9, 2025",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.facebook.com/groups/runlocalai/posts/1370123041582073",
+    "name": "All-blackwell AI inference rig build and performance",
+    "snippet": "Scout - 64GB All-Blackwell AI Inference Rig\nThe build:\n\n🔧 ASRock X299 Steel Legend — i9-7900X, 44 PCIe lanes\n\n🎮 Three GPUs. RTX 5090 (32GB) + ...",
+    "host_name": "www.facebook.com",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  }
+]

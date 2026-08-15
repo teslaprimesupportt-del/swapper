@@ -1,0 +1,56 @@
+[
+  {
+    "url": "https://github.com/w-okada/voice-changer",
+    "name": "w-okada/voice-changer: リアルタイムボイスチェンジャー",
+    "snippet": "VCClient は、AI を用いてリアルタイム音声変換を行うソフトウェア です。 What's New! v.2.2.2-beta. リリースエディション ...",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://github.com/w-okada/voice-changer/blob/master/README_en.md",
+    "name": "voice-changer/README_en.md at master · w-okada",
+    "snippet": "This is a client software for performing real-time voice conversion using various Voice Conversion (VC) AI. The supported AI for voice conversion are as follows ...",
+    "host_name": "github.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/TransVoicechangers/comments/14cymbt/found_a_good_voice_changer_that_hasnt_been",
+    "name": "Found a good voice changer that hasn't been mentioned",
+    "snippet": "W-Okada works in real-time , instantly modifying your voice and seamlessly switching between voice effects. also offers real-time voice ...",
+    "host_name": "www.reddit.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/blog/Lenylvt/w-okada",
+    "name": "Guide : W-Okada, realtime voice cloning",
+    "snippet": "Feb 17, 2024 — To use the voice changer , follow these steps: 1 - Open the folder you extracted earlier. 2 - Run the start_http . 3 - Models will start ...",
+    "host_name": "huggingface.co",
+    "rank": 3,
+    "date": "Feb 17, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://voice-tools.com/tools/w-okada-voice-changer",
+    "name": "W-Okada Voice Changer | Voice Tools Directory",
+    "snippet": "Open-source realtime voice changer with local and Colab workflows. W-Okada Voice Changer is worth evaluating when your job is local realtime voice conversion. ...",
+    "host_name": "voice-tools.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voicechanger.live/compare/vs-okada",
+    "name": "Echo vs W-Okada Voice Changer — Comparison | 2026",
+    "snippet": "Both use RVC voice conversion technology. The difference is scope vs polish — W - Okada supports multiple model architectures, Echo Live is focused on being the ...",
+    "host_name": "voicechanger.live",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "url": "https://github.com/svc-develop-team/so-vits-svc",
+    "name": "svc-develop-team/so-vits-svc: SoftVC VITS Singing Voice",
+    "snippet": "Nov 11, 2023 — real-time conversion : In this project, TTS functionality is not supported, and VITS is incapable of performing SVC tasks.",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "Nov 11, 2023",
+    "favicon": ""
+  },
+  {
+    "url": "https://voice-tools.com/tools/so-vits-svc",
+    "name": "so-vits-svc | Voice Tools Directory",
+    "snippet": "Open-source singing voice conversion project for experimental creator workflows. Open-source realtime voice changer with. Recent Changes 2026-08-05 Product ...",
+    "host_name": "voice-tools.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://medium.com/qosmo-lab/state-of-the-art-singing-voice-conversion-methods-12f01b35405b",
+    "name": "State-of-the-art Singing Voice Conversion methods",
+    "snippet": "Singing voice conversion ( SVC ) deals with the task of converting the vocals of singer A(source vocals) to sound like Singer B(target singer).  ...",
+    "host_name": "medium.com",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://docs.openvino.ai/2023.3/notebooks/262-softvc-voice-conversion-with-output.html",
+    "name": "SoftVC VITS Singing Voice Conversion and OpenVINO",
+    "snippet": "Model components are PyTorch modules, that can be converted with ov.convert_model function directly. We also use ov.save_model function to serialize the result ... Read more",
+    "host_name": "docs.openvino.ai",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/cckavin/so-vits-svc",
+    "name": "cckavin/so-vits-svc",
+    "snippet": "The project was officially discontinued for maintenance and Archived. A client supports real-time conversion : Vits is TTS and this project is SVC .",
+    "host_name": "huggingface.co",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://so-vits-svc-fork.readthedocs.io",
+    "name": "SoftVC VITS Singing Voice Conversion Fork 4.2.30",
+    "snippet": "A fork of so - vits - svc with realtime support and greatly improved interface. Based on branch 4.0 (v1) (or 4.1 ) and the models are compatible. 4.1 models are ... Read more",
+    "host_name": "so-vits-svc-fork.readthedocs.io",
+    "rank": 5,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://hemslo.io/make-ai-generated-mv-using-so-vits-svc-and-sadtalker",
+    "name": "Make AI generated MV using so-vits-svc and SadTalker",
+    "snippet": "Learn how to create your own AI-generated music video using tools like so-vits-svc for voice conversion and SadTalker for animated photo matching.",
+    "host_name": "hemslo.io",
+    "rank": 6,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/so_vits_svc",
+    "name": "r/so_vits_svc",
+    "snippet": "Need Help: So - Vits - SVC Vibrated/Glitchy Output + Source Vocal Has Residual Music (G=98k, Diff=57k) · Hi everyone , I've been stuck on a So ... Read more",
+    "host_name": "www.reddit.com",
+    "rank": 7,
+    "date": "",
+    "favicon": ""
+  }
+]

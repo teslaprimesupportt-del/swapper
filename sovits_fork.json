@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://github.com/voicepaw/so-vits-svc-fork",
+    "name": "voicepaw/so-vits-svc-fork",
+    "snippet": "A fork of so - vits - svc with realtime support and greatly improved interface. Based on branch 4.0 (v1) (or 4.1 ) and the models are compatible. 4.1 models are ... Read more",
+    "host_name": "github.com",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://pypi.org/project/so-vits-svc-fork/1.2.7",
+    "name": "so-vits-svc-fork",
+    "snippet": "Mar 22, 2023 — A fork of so - vits - svc with realtime support and greatly improved interface. Based on branch 4.0 (v1) and the models are compatible. Installation. Read more",
+    "host_name": "pypi.org",
+    "rank": 1,
+    "date": "Mar 22, 2023",
+    "favicon": ""
+  },
+  {
+    "url": "https://huggingface.co/cckavin/so-vits-svc",
+    "name": "cckavin/so-vits-svc",
+    "snippet": "SoVitsSvc , The project was officially discontinued for maintenance and Archived. A client supports real-time conversion : this project is SVC .",
+    "host_name": "huggingface.co",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/so_vits_svc/comments/1354iqj/useful_tips_faq_for_sovitssvc_first_timers_python",
+    "name": "Useful Tips FAQ for so-vits-svc First Timers (Python, local",
+    "snippet": "For realtime or near realtime speech, you should roll with the default block seconds. Increasing any value in that panel increases latency.",
+    "host_name": "www.reddit.com",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://voice-tools.com/tools/so-vits-svc",
+    "name": "so-vits-svc | Voice Tools Directory",
+    "snippet": "Open-source singing voice conversion project for experimental creator workflows. Open-source realtime voice changer. Recent Changes 2026 -08-05",
+    "host_name": "voice-tools.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

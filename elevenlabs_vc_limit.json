@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/speech-to-speech/stream",
+    "name": "Voice changer stream",
+    "snippet": "Stream audio from one voice to another. Maintain full control over emotion, timing and delivery.",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://www.reddit.com/r/ElevenLabs/comments/12kfpyi/could_this_be_used_for_live_voice_changing",
+    "name": "Could this be used for live voice changing? : r/ElevenLabs",
+    "snippet": "Would it be possible to use this technology for live voice changing? Like while streaming? Sort of like voice.ai voice changer?",
+    "host_name": "www.reddit.com",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/api",
+    "name": "ElevenAPI - ElevenLabs the most powerful AI audio APIs",
+    "snippet": "Aug 6, 2026 — Voice Changer : Replace one voice with another. Create custom AI voices from text prompts when a needed voice isn't available in the library.",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "Aug 6, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/speech-to-text/v-1-speech-to-text-realtime",
+    "name": "Realtime | ElevenLabs Documentation",
+    "snippet": "Realtime speech-to-text transcription service . This WebSocket API enables streaming audio input and receiving transcription results. Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 3,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://stackoverflow.com/questions/78053136/cannot-access-elevenlabs-voice-using-the-api",
+    "name": "Cannot access elevenlabs voice using the API",
+    "snippet": "My problem was not setting enough scopes on the API key, need to provide TTS + Models Read + Voices Read. Share. Read more",
+    "host_name": "stackoverflow.com",
+    "rank": 4,
+    "date": "",
+    "favicon": ""
+  }
+]

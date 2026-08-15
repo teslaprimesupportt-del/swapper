@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://elevenlabs.io/docs/eleven-api/guides/how-to/best-practices/latency-optimization",
+    "name": "Latency optimization | ElevenLabs Documentation",
+    "snippet": "This guide shows you how to reduce text-to- speech latency in your application. Websockets endpoint: Streaming is supported for the Text to Speech API, Voice ...",
+    "host_name": "elevenlabs.io",
+    "rank": 0,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/eleven-api/guides/how-to/websockets/realtime-tts",
+    "name": "Generate audio in real-time",
+    "snippet": "If you want to quickly test out the latency (time to first byte) of a WebSocket connection to the ElevenLabs text-to- speech API, you can install elevenlabs - ... Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 1,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://elevenlabs.io/docs/api-reference/text-to-speech/v-1-text-to-speech-voice-id-stream-input",
+    "name": "WebSocket | ElevenLabs Documentation",
+    "snippet": "The Text-to- Speech WebSockets API is designed to generate audio from partial text input while ensuring consistency throughout the generated audio. Read more",
+    "host_name": "elevenlabs.io",
+    "rank": 2,
+    "date": "",
+    "favicon": ""
+  },
+  {
+    "url": "https://forum.convai.com/t/how-do-i-switch-the-elevenlabs-models-to-streaming-and-turbo-v2-5-to-reduce-latency/1712",
+    "name": "How do I switch the elevenlabs models to streaming and",
+    "snippet": "Sep 18, 2024 — Unfortunately, currently it is not possible , This is the single easiest way to reduce latency using elevenlabs. Speech & Language language-and- ...",
+    "host_name": "forum.convai.com",
+    "rank": 3,
+    "date": "Sep 18, 2024",
+    "favicon": ""
+  },
+  {
+    "url": "https://vexyl.ai/elevenlabs-tts-latency-test-2026-real-world-results",
+    "name": "ElevenLabs TTS Latency Test 2026 Real-World Results",
+    "snippet": "Jan 25, 2026 — TTS latency refers to the delay between sending text to a text-to-speech API and receiving the first audio bytes that can be played back to ... Read more",
+    "host_name": "vexyl.ai",
+    "rank": 4,
+    "date": "Jan 25, 2026",
+    "favicon": ""
+  }
+]
